@@ -2,6 +2,7 @@ package queries
 
 import (
 	"fmt"
+	"github.com/create-go-app/net_http-go-template/app/models"
 	"github.com/jmoiron/sqlx"
 	"log"
 )
@@ -19,15 +20,37 @@ func (q *CountryQueries) CreateCountryTable() error {
 	return nil
 }
 
-//func (q *CountryQueries) GetCountries() ([]models.Country, error) {
-//
-//	// Define countries variable.
-//	var countries []models.Country
-//
-//	// Send query to database.
-//	if err := q.Select(&countries, `SELECT * FROM country`); err != nil {
-//		return []models.Country{}, err
-//	}
-//
-//	return countries, nil
-//}
+func (q *CountryQueries) CreateCountry(c *models.Country) error {
+	// Send query to database.
+	if _, err := q.Exec(
+		`INSERT INTO country VALUES ($1, $2, $3, $4, $5, $6)`,
+		c.CountryName,
+		c.CountryIso2,
+		c.CountryIso3,
+		c.CountryIsoNumeric,
+		c.Population,
+		c.Capital,
+		c.Continent,
+		c.CurrencyName,
+		c.CurrencyCode,
+		c.FipsCode,
+		c.PhonePrefix,
+	); err != nil {
+		return fmt.Errorf("error inserting values: %w", err)
+	}
+
+	return nil
+}
+
+func (q *CountryQueries) GetCountries() ([]models.Country, error) {
+
+	// Define countries variable.
+	var countries []models.Country
+
+	// Send query to database.
+	if err := q.Select(&countries, `SELECT * FROM country`); err != nil {
+		return []models.Country{}, err
+	}
+
+	return countries, nil
+}

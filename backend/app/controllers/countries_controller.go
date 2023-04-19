@@ -2,66 +2,84 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
+
 	"github.com/create-go-app/net_http-go-template/app/api"
 	"github.com/create-go-app/net_http-go-template/app/models"
-	"github.com/jmoiron/sqlx"
+	"github.com/create-go-app/net_http-go-template/platform/database"
+
+	"net/http"
 )
 
-func FetchAndSaveCountries(db *sqlx.DB) error {
-	// Check if the table exists
-	var exists bool
-	err := db.Get(&exists, "SELECT EXISTS (SELECT 1 FROM defaultdb.tables WHERE table_name = 'country')")
+func GetAllCountries(w http.ResponseWriter, r *http.Request) {
+	// Open a database connection and defer its closure
+	db, err := database.OpenDBConnection()
 	if err != nil {
-		return err
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	// If the table doesn't exist, create it
-	if !exists {
-		_, err = db.Exec(`
-            CREATE TABLE country (
-                id SERIAL PRIMARY KEY,
-                CountryName TEXT,
-                CountryIso2 TEXT,
-                CountryIso3 TEXT,
-                CountryIsoNumeric INTEGER,
-                Population INTEGER,
-                Capital TEXT,
-                Continent TEXT,
-                CurrencyName TEXT,
-                FipsCode TEXT,
-                PhonePrefix TEXT
-            )
-        `)
+	// Try to get countries from the database
+	countries, err := db.GetCountries()
+	if err != nil {
+		log.Printf("error getting countries from database: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// If there are no countries in the database, fetch them from the API
+	if len(countries) == 0 {
+		body, err := api.GetAPICountries()
 		if err != nil {
-			return err
+			log.Printf("error getting countries from API: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var countryResponse models.CountryResponse
+		err = json.Unmarshal(body, &countryResponse)
+		if err != nil {
+			log.Printf("error unmarshaling API response: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		for _, c := range countryResponse.CountryList {
+			err := db.CreateCountry(&models.Country{
+				CountryName:       c.CountryName,
+				CountryIso2:       c.CountryIso2,
+				CountryIso3:       c.CountryIso3,
+				CountryIsoNumeric: c.CountryIsoNumeric,
+				Population:        c.Population,
+				Capital:           c.Capital,
+				Continent:         c.Continent,
+				CurrencyName:      c.CurrencyName,
+				CurrencyCode:      c.CurrencyCode,
+				FipsCode:          c.FipsCode,
+				PhonePrefix:       c.PhonePrefix,
+			})
+			if err != nil {
+				log.Printf("error creating country in database: %v", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		// Refresh the countries from the database after inserting them
+		countries, err = db.GetCountries()
+		if err != nil {
+			log.Printf("error getting countries from database: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 	}
 
-	// Fetch the data from the external API.
-	apiResponseBytes, err := api.GetAPICountries()
+	// Return the countries as a JSON response
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(countries)
 	if err != nil {
-		return err
+		log.Printf("error encoding countries as JSON: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-
-	// Unmarshal the response into a struct.
-	var apiResponse models.CountryResponse
-	err = json.Unmarshal(apiResponseBytes, &apiResponse)
-	if err != nil {
-		return err
-	}
-
-	// Iterate over the countries and insert them into the database.
-	for _, country := range apiResponse.CountryList {
-		// Define the SQL query to insert a single country.
-		query := `INSERT INTO country (CountryName, CountryIso2, CountryIso3, CountryIsoNumeric, Population, Capital, Continent, CurrencyName, FipsCode, PhonePrefix)
-            VALUES (:CountryName, :CountryIso2, :CountryIso3, :CountryIsoNumeric, :Population, :Capital, :Continent, :CurrencyName, :FipsCode, :PhonePrefix)`
-
-		// Execute the query, passing in the values for the named parameters.
-		_, err := db.NamedExec(query, country)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }

@@ -35,7 +35,11 @@ CREATE TABLE airline (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                       country_name varchar(255),
                       fleet_size varchar(255),
                       status varchar(255),
-                      type varchar(255));
+                      type varchar(255),
+                      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+                      updated_at TIMESTAMP NULL);
+;
+
 
 CREATE TABLE airplane (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                         iata_type varchar(255),
@@ -62,7 +66,9 @@ CREATE TABLE airplane (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                         plane_status varchar(255),
                         production_line varchar(255),
                         registration_date timestamp,
-                        rollout_date varchar(255));
+                        rollout_date varchar(255),
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+                        updated_at TIMESTAMP NULL);
 
 CREATE TABLE airport (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                         gmt varchar(255),
@@ -77,7 +83,9 @@ CREATE TABLE airport (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                         airport_name varchar(255),
                         country_name varchar(255),
                         phone_number varchar(255),
-                        timezone varchar(255));
+                        timezone varchar(255),
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+                        updated_at TIMESTAMP NULL);
 
 CREATE TABLE city (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                   gmt varchar(255),
@@ -88,7 +96,9 @@ CREATE TABLE city (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                   latitude varchar(255),
                   longitude varchar(255),
                   city_name varchar(255),
-                  timezone varchar(255));
+                  timezone varchar(255),
+                  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+                  updated_at TIMESTAMP NULL);
 
 CREATE TABLE country (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                       country_name varchar(255),
@@ -100,12 +110,16 @@ CREATE TABLE country (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                       continent varchar (255),
                       currency_name varchar(255),
                       fips_code varchar(255),
-                      phone_prefix varchar(255));
+                      phone_prefix varchar(255),
+                      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+                      updated_at TIMESTAMP NULL);
 
 CREATE TABLE tax (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                   tax_id varchar(255),
                   tax_name varchar(255),
-                  iata_code varchar(255));
+                  iata_code varchar(255),
+                  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+                  updated_at TIMESTAMP NULL);
 
 CREATE TABLE live_flights (
                             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -146,7 +160,9 @@ CREATE TABLE live_flights (
                             codeshared_flight_number varchar(255),
                             codeshared_flight_iata varchar(255),
                             codeshared_flight_icao varchar(255),
-                            aircraft_id UUID REFERENCES aircraft(id));
+                            aircraft_id UUID REFERENCES aircraft(id),
+                            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+                            updated_at TIMESTAMP NULL);
 
 -- Add indexes
 CREATE INDEX active_users ON users (email) WHERE user_status = 1;
