@@ -1,13 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"github.com/create-go-app/net_http-go-template/app/api"
-	"github.com/create-go-app/net_http-go-template/app/models"
 	"github.com/create-go-app/net_http-go-template/pkg/configs"
 	"github.com/create-go-app/net_http-go-template/pkg/routes"
 	"github.com/create-go-app/net_http-go-template/pkg/utils"
-	"github.com/create-go-app/net_http-go-template/platform/database"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
@@ -42,17 +38,17 @@ func main() {
 
 	// Initialize server.
 	server := configs.ServerConfig(r)
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		panic(err)
-	}
-	err = db.CreateCountry(models.Country{})
-	if err != nil {
-		error.Error(err)
-	}
+	//db, err := database.OpenDBConnection()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//err = db.CreateCountryTable()
+	//if err != nil {
+	//	error.Error(err)
+	//}
 
-	body, err := api.GetAPICountries()
-	fmt.Println(body)
+	//body, err := api.GetAPICountries()
+	//fmt.Println(body)
 	//
 	// Start API server.
 	utils.StartServerWithGracefulShutdown(server)
