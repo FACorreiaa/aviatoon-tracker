@@ -1,6 +1,7 @@
 package models
 
 type Country struct {
+	Id                string `json:"id"`
 	CountryName       string `json:"country_name"`
 	CountryIso2       string `json:"country_iso2"`
 	CountryIso3       string `json:"country_iso3"`

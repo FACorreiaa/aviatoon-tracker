@@ -1,13 +1,12 @@
 package main
 
 import (
+	_ "github.com/create-go-app/net_http-go-template/docs" // load Swagger docs
 	"github.com/create-go-app/net_http-go-template/pkg/configs"
 	"github.com/create-go-app/net_http-go-template/pkg/routes"
 	"github.com/create-go-app/net_http-go-template/pkg/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-
-	_ "github.com/create-go-app/net_http-go-template/docs" // load Swagger docs
 	_ "github.com/joho/godotenv/autoload"
 	// load .env file automatically
 )
@@ -49,7 +48,11 @@ func main() {
 
 	//body, err := api.GetAPICountries()
 	//fmt.Println(body)
-	//
+	//if err != nil {
+	//	log.Printf("error encoding countries as JSON: %v", err)
+	//	return
+	//}
+
 	// Start API server.
 	utils.StartServerWithGracefulShutdown(server)
 }

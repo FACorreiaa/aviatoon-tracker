@@ -23,7 +23,7 @@ func (q *CountryQueries) CreateCountryTable() error {
 func (q *CountryQueries) CreateCountry(c *models.Country) error {
 	// Send query to database.
 	if _, err := q.Exec(
-		`INSERT INTO country VALUES ($1, $2, $3, $4, $5, $6)`,
+		`INSERT INTO country VALUES ($1, $2, $3, $4, $5, $6,  $7, $8, $9, $10, $11)`,
 		c.CountryName,
 		c.CountryIso2,
 		c.CountryIso3,
@@ -48,9 +48,28 @@ func (q *CountryQueries) GetCountries() ([]models.Country, error) {
 	var countries []models.Country
 
 	// Send query to database.
-	if err := q.Select(&countries, `SELECT * FROM country`); err != nil {
-		return []models.Country{}, err
+	rows, err := q.Query(`SELECT * FROM country`)
+	if err != nil {
+		
+	}
+	println(rows)
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var country models.Country
+		err := rows.Scan(&country.CountryName, &country.Population)
+		if err != nil {
+			// Handle error
+		}
+		countries = append(countries, country)
+		println(countries)
+
 	}
 
+	err = rows.Err()
+	if err != nil {
+		// Handle error
+	}
 	return countries, nil
 }

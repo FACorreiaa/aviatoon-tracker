@@ -13,4 +13,5 @@ func PublicRoutes(router *chi.Mux) {
 	router.Get("/api/v1/users", controllers.GetUsers)
 	router.Get("/api/v1", controllers.Index)
 	router.Get("/api/v1/countries", controllers.GetAllCountries)
+	router.Get("/api/v1/test/countries", controllers.GetCountries)
 }
