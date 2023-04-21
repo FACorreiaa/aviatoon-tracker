@@ -23,7 +23,8 @@ func (q *CountryQueries) CreateCountryTable() error {
 func (q *CountryQueries) CreateCountry(c *models.Country) error {
 	// Send query to database.
 	if _, err := q.Exec(
-		`INSERT INTO country VALUES ($1, $2, $3, $4, $5, $6,  $7, $8, $9, $10, $11)`,
+		`INSERT INTO country VALUES ($1, $2, $3, $4, $5, $6, $7,  $8, $9, $10, $11, $12, $13, $14)`,
+		c.ID,
 		c.CountryName,
 		c.CountryIso2,
 		c.CountryIso3,
@@ -35,6 +36,8 @@ func (q *CountryQueries) CreateCountry(c *models.Country) error {
 		c.CurrencyCode,
 		c.FipsCode,
 		c.PhonePrefix,
+		c.CreatedAt,
+		c.UpdatedAt,
 	); err != nil {
 		return fmt.Errorf("error inserting values: %w", err)
 	}
@@ -50,7 +53,7 @@ func (q *CountryQueries) GetCountries() ([]models.Country, error) {
 	// Send query to database.
 	rows, err := q.Query(`SELECT * FROM country`)
 	if err != nil {
-		
+
 	}
 	println(rows)
 
