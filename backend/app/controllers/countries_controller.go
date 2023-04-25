@@ -24,12 +24,14 @@ func GetCountries(w http.ResponseWriter, r *http.Request) {
 
 	// Get the list of countries from the database.
 	countries, err := db.GetCountries()
+
 	if err != nil {
 		log.Printf("error getting countries from database: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	println(countries)
 	// If there are no countries in the database, fetch them from the API
 	if len(countries) == 0 {
 		body, err := api.GetAPICountries()
@@ -38,7 +40,7 @@ func GetCountries(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
+		println(body)
 		var countryResponse models.CountryListResponse
 		err = json.Unmarshal(body, &countryResponse)
 		if err != nil {
@@ -46,7 +48,7 @@ func GetCountries(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
+		println(countryResponse)
 		// Insert the countries into the database
 		for _, c := range countryResponse {
 

@@ -46,33 +46,36 @@ func (q *CountryQueries) CreateCountry(c *models.Country) error {
 }
 
 func (q *CountryQueries) GetCountries() ([]models.Country, error) {
-
 	// Define countries variable.
 	var countries []models.Country
 
 	// Send query to database.
 	rows, err := q.Query(`SELECT * FROM country`)
 	if err != nil {
-
+		return nil, err
 	}
-	println(rows)
-
 	defer rows.Close()
 
 	for rows.Next() {
 		var country models.Country
-		err := rows.Scan(&country.CountryName, &country.Population)
+		err := rows.Scan(
+			&country.ID,
+			&country.CountryName, &country.CountryIso2,
+			&country.CountryIso3, &country.CountryIsoNumeric,
+			&country.Population, &country.Capital,
+			&country.Continent, &country.CurrencyName,
+			&country.CurrencyCode, &country.FipsCode,
+			&country.PhonePrefix, &country.CreatedAt, &country.UpdatedAt)
+
 		if err != nil {
-			// Handle error
+			return nil, err
 		}
 		countries = append(countries, country)
-		println(countries)
-
 	}
 
-	err = rows.Err()
-	if err != nil {
-		// Handle error
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
+
 	return countries, nil
 }
