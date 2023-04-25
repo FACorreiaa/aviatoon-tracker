@@ -1,6 +1,8 @@
 package queries
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"github.com/create-go-app/net_http-go-template/app/models"
 	"github.com/jmoiron/sqlx"
@@ -20,9 +22,44 @@ func (q *CountryQueries) CreateCountryTable() error {
 	return nil
 }
 
+//func InsertCountryRows(ctx context.Context, tx pgx.Tx, c *models.Country) error {
+//	// Insert four rows into the "accounts" table.
+//	log.Println("Creating new rows...")
+//	if _, err := tx.Exec(ctx,
+//		`INSERT INTO country VALUES ($1, $2, $3, $4, $5, $6, $7,  $8, $9, $10, $11, $12, $13, $14)`,
+//		c.ID,
+//		c.CountryName,
+//		c.CountryIso2,
+//		c.CountryIso3,
+//		c.CountryIsoNumeric,
+//		c.Population,
+//		c.Capital,
+//		c.Continent,
+//		c.CurrencyName,
+//		c.CurrencyCode,
+//		c.FipsCode,
+//		c.PhonePrefix,
+//		c.CreatedAt,
+//		c.UpdatedAt); err != nil {
+//		return fmt.Errorf("error inserting values: %w", err)
+//	}
+//	return nil
+//}
+
 func (q *CountryQueries) CreateCountry(c *models.Country) error {
-	// Send query to database.
-	if _, err := q.Exec(
+	// Start a transaction.
+
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return fmt.Errorf("error starting transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if _, err := tx.ExecContext(context.Background(),
 		`INSERT INTO country VALUES ($1, $2, $3, $4, $5, $6, $7,  $8, $9, $10, $11, $12, $13, $14)`,
 		c.ID,
 		c.CountryName,
@@ -40,6 +77,10 @@ func (q *CountryQueries) CreateCountry(c *models.Country) error {
 		c.UpdatedAt,
 	); err != nil {
 		return fmt.Errorf("error inserting values: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("error committing transaction: %w", err)
 	}
 
 	return nil
@@ -65,7 +106,8 @@ func (q *CountryQueries) GetCountries() ([]models.Country, error) {
 			&country.Population, &country.Capital,
 			&country.Continent, &country.CurrencyName,
 			&country.CurrencyCode, &country.FipsCode,
-			&country.PhonePrefix, &country.CreatedAt, &country.UpdatedAt)
+			&country.PhonePrefix, &country.CreatedAt,
+			&country.UpdatedAt)
 
 		if err != nil {
 			return nil, err
