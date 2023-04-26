@@ -6,6 +6,7 @@ import (
 	"github.com/create-go-app/net_http-go-template/app/api"
 	"github.com/create-go-app/net_http-go-template/app/models"
 	"github.com/create-go-app/net_http-go-template/platform/database"
+	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"time"
@@ -16,28 +17,28 @@ import (
 //	return 0, fmt.Errorf("CreateOrder: %v", err)
 //}
 
-func fetchCountriesFromAPI(w http.ResponseWriter, r *http.Request) (models.CountryListResponse, error) {
+func fetchCitiesFromAPI(w http.ResponseWriter, r *http.Request) (models.CityListResponse, error) {
 	body, err := api.GetAPIData("http://localhost:3000/data")
 	if err != nil {
 		log.Printf("error getting countries from API: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	var countryResponse models.CountryListResponse
-	err = json.Unmarshal(body, &countryResponse)
+	var cityResponse models.CityListResponse
+	err = json.Unmarshal(body, &cityResponse)
 	if err != nil {
 		log.Printf("error unmarshaling API response: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 
 	}
 
-	return countryResponse, err
+	return cityResponse, err
 }
 
-func InsertCountriesIntoDB(db *database.Queries, w http.ResponseWriter, r *http.Request) error {
-	countryResponse, err := fetchCountriesFromAPI(w, r)
+func InsertCitiesIntoDB(db *database.Queries, w http.ResponseWriter, r *http.Request) error {
+	cityResponse, err := fetchCitiesFromAPI(w, r)
 	// Start a new transaction.
-	tx, err := db.CountryQueries.BeginTx(context.Background(), nil)
+	tx, err := db.CityQueries.BeginTx(context.Background(), nil)
 	if err != nil {
 		log.Printf("error starting transaction: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -56,22 +57,20 @@ func InsertCountriesIntoDB(db *database.Queries, w http.ResponseWriter, r *http.
 		}
 	}()
 	// Insert the countries into the database within the transaction.
-	for _, c := range countryResponse {
-		err := db.CreateCountry(&models.Country{
-			ID:                c.ID,
-			CountryName:       c.CountryName,
-			CountryIso2:       c.CountryIso2,
-			CountryIso3:       c.CountryIso3,
-			CountryIsoNumeric: c.CountryIsoNumeric,
-			Population:        c.Population,
-			Capital:           c.Capital,
-			Continent:         c.Continent,
-			CurrencyName:      c.CurrencyName,
-			CurrencyCode:      c.CurrencyCode,
-			FipsCode:          c.FipsCode,
-			PhonePrefix:       c.PhonePrefix,
-			CreatedAt:         time.Now(),
-			UpdatedAt:         nil,
+	for _, c := range cityResponse {
+		err := db.CreateCity(&models.City{
+			ID:          uuid.NewString(),
+			GMT:         c.GMT,
+			CityId:      c.CityId,
+			IataCode:    c.IataCode,
+			CountryIso2: c.CountryIso2,
+			GeonameId:   c.GeonameId,
+			Latitude:    c.Latitude,
+			Longitude:   c.Longitude,
+			CityName:    c.CityName,
+			Timezone:    c.Timezone,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   nil,
 		})
 		if err != nil {
 			log.Printf("error creating country in database: %v", err)

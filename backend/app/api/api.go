@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-func GetAPICountries() ([]byte, error) {
+func GetAPIData(url string) ([]byte, error) {
 	httpClient := http.Client{}
 
-	req, err := http.NewRequest("GET", "http://localhost:3000/data", nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		panic(err)
 	}

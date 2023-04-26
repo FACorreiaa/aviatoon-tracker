@@ -13,6 +13,7 @@ func PublicRoutes(router *chi.Mux) {
 	router.Get("/api/v1/users", controllers.GetUsers)
 	router.Get("/api/v1", controllers.Index)
 	router.Get("/api/v1/countries", controllers.GetCountries)
+	router.Get("/api/v1/countries/count", controllers.GetNumberOfCountries)
 
 	router.Route("/api/v1/countries/{id}", func(r chi.Router) {
 		r.Get("/", controllers.GetCountryByID)
@@ -20,4 +21,5 @@ func PublicRoutes(router *chi.Mux) {
 		r.Put("/", controllers.UpdateCountryByID)
 	})
 
+	router.Get("/api/v1/cities", controllers.GetCities)
 }

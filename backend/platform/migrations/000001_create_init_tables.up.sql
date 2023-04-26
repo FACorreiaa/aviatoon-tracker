@@ -87,7 +87,8 @@ CREATE TABLE airport (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
                         updated_at TIMESTAMP NULL);
 
-CREATE TABLE city (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE city (
+                  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                   gmt varchar(255),
                   city_id varchar(255),
                   iata_code varchar(255),

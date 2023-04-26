@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
+	"time"
 )
 
 func GetCountries(w http.ResponseWriter, r *http.Request) {
@@ -133,6 +134,8 @@ func UpdateCountryByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	updates["UpdatedAt"] = time.Now()
+
 	err = db.UpdateCountryByID(param, updates)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -140,4 +143,40 @@ func UpdateCountryByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func GetNumberOfCountries(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	count, err := db.GetNumberOfCountries()
+	if err != nil {
+		log.Printf("failed to get number of countries: %v", err)
+		response := struct {
+			Error string `json:"error"`
+		}{"failed to get number of countries"}
+		jsonBytes, _ := json.Marshal(response)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(jsonBytes)
+		return
+	}
+
+	response := struct {
+		Count int `json:"count"`
+	}{count}
+
+	jsonBytes, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonBytes)
 }
