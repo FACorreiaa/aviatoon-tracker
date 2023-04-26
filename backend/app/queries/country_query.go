@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"log"
+	"strings"
 )
 
 type CountryQueries struct {
@@ -132,7 +133,7 @@ func (q *CountryQueries) GetCountries() ([]models.Country, error) {
 	return countries, nil
 }
 
-func (q *CountryQueries) GetCountry(id string) (models.Country, error) {
+func (q *CountryQueries) GetCountryByID(id string) (models.Country, error) {
 	var country models.Country
 	println(id)
 	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
@@ -187,4 +188,52 @@ func (q *CountryQueries) GetCountry(id string) (models.Country, error) {
 	}
 
 	return country, nil
+}
+
+func (q *CountryQueries) DeleteCountryByID(id string) error {
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(context.Background(), "DELETE FROM country WHERE id = $1", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete country: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (q *CountryQueries) UpdateCountryByID(id string, updates map[string]interface{}) error {
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	var setColumns []string
+	var args []interface{}
+
+	for key, value := range updates {
+		setColumns = append(setColumns, fmt.Sprintf("%s = $%d", key, len(args)+1))
+		args = append(args, value)
+	}
+	args = append(args, id)
+
+	stmt := fmt.Sprintf("UPDATE country SET %s WHERE id = $%d", strings.Join(setColumns, ", "), len(args))
+	_, err = tx.ExecContext(context.Background(), stmt, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update country: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
 }

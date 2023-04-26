@@ -53,7 +53,7 @@ func GetCountries(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetCountry(w http.ResponseWriter, r *http.Request) {
+func GetCountryByID(w http.ResponseWriter, r *http.Request) {
 	// Open a database connection and defer its closure
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -68,7 +68,7 @@ func GetCountry(w http.ResponseWriter, r *http.Request) {
 
 	println(param)
 	// Get the list of countries from the database.
-	country, err := db.GetCountry(param)
+	country, err := db.GetCountryByID(param)
 
 	if err != nil {
 		log.Printf("error getting countries from database: %v", err)
@@ -83,4 +83,61 @@ func GetCountry(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func DeleteCountryByID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	param := chi.URLParam(r, "id")
+
+	println(param)
+	// Get the list of countries from the database.
+	country := db.DeleteCountryByID(param)
+
+	// Write the list of countries to the response
+	err = json.NewEncoder(w).Encode(country)
+	if err != nil {
+		log.Printf("error encoding countries as JSON: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func UpdateCountryByID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	param := chi.URLParam(r, "id")
+	if param == "" {
+		http.Error(w, "missing ID parameter", http.StatusBadRequest)
+		return
+	}
+
+	var updates map[string]interface{}
+	err = json.NewDecoder(r.Body).Decode(&updates)
+	if err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err = db.UpdateCountryByID(param, updates)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

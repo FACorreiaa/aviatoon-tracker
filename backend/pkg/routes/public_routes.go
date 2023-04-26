@@ -15,7 +15,9 @@ func PublicRoutes(router *chi.Mux) {
 	router.Get("/api/v1/countries", controllers.GetCountries)
 
 	router.Route("/api/v1/countries/{id}", func(r chi.Router) {
-		r.Get("/", controllers.GetCountry)
+		r.Get("/", controllers.GetCountryByID)
+		r.Delete("/", controllers.DeleteCountryByID)
+		r.Put("/", controllers.UpdateCountryByID)
 	})
 
 }
