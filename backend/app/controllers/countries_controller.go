@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/create-go-app/net_http-go-template/app/helpers"
 	"github.com/create-go-app/net_http-go-template/platform/database"
+	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
 )
@@ -45,6 +46,38 @@ func GetCountries(w http.ResponseWriter, r *http.Request) {
 
 	// Write the list of countries to the response
 	err = json.NewEncoder(w).Encode(countries)
+	if err != nil {
+		log.Printf("error encoding countries as JSON: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func GetCountry(w http.ResponseWriter, r *http.Request) {
+	// Open a database connection and defer its closure
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	param := chi.URLParam(r, "id")
+
+	println(param)
+	// Get the list of countries from the database.
+	country, err := db.GetCountry(param)
+
+	if err != nil {
+		log.Printf("error getting countries from database: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Write the list of countries to the response
+	err = json.NewEncoder(w).Encode(country)
 	if err != nil {
 		log.Printf("error encoding countries as JSON: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

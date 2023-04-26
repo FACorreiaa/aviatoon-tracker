@@ -13,14 +13,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// GetUsers func gets all exists users.
-// @Description Get all exists users.
-// @Summary get all exists users
-// @Tags Users
-// @Accept json
-// @Produce json
-// @Success 200 {array} models.User
-// @Router /v1/users [get]
 func Index(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("welcome"))
 
@@ -109,6 +101,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 
 	// Get user by ID.
 	user, err := db.GetUser(id)
+
 	if err != nil {
 		// Return status 404 and not found message.
 		payload, _ := json.Marshal(map[string]interface{}{

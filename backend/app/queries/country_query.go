@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/create-go-app/net_http-go-template/app/models"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"log"
 )
 
@@ -87,11 +88,16 @@ func (q *CountryQueries) CreateCountry(c *models.Country) error {
 }
 
 func (q *CountryQueries) GetCountries() ([]models.Country, error) {
-	// Define countries variable.
 	var countries []models.Country
 
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
 	// Send query to database.
-	rows, err := q.Query(`SELECT * FROM country`)
+	rows, err := tx.Query(`SELECT * FROM country`)
 	if err != nil {
 		return nil, err
 	}
@@ -119,5 +125,66 @@ func (q *CountryQueries) GetCountries() ([]models.Country, error) {
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return countries, nil
+}
+
+func (q *CountryQueries) GetCountry(id string) (models.Country, error) {
+	var country models.Country
+	println(id)
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return country, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	row := tx.QueryRowContext(context.Background(), `SELECT
+			id,
+			country_name,
+			country_iso_2,
+			country_iso_3,
+			country_iso_numeric,
+			population,
+			capital,
+			continent,
+			currency_name,
+			currency_code,
+			fips_code,
+			phone_prefix,
+			created_at,
+			updated_at
+		FROM country
+		WHERE id = $1 LIMIT 1`, id)
+	err = row.Scan(
+		&country.ID,
+		&country.CountryName,
+		&country.CountryIso2,
+		&country.CountryIso3,
+		&country.CountryIsoNumeric,
+		&country.Population,
+		&country.Capital,
+		&country.Continent,
+		&country.CurrencyName,
+		&country.CurrencyCode,
+		&country.FipsCode,
+		&country.PhonePrefix,
+		&country.CreatedAt,
+		&country.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return country, fmt.Errorf("country with ID %s not found: %w", id, err)
+		}
+		return country, fmt.Errorf("failed to scan country: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return country, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return country, nil
 }

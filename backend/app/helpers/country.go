@@ -37,7 +37,7 @@ func fetchCountriesFromAPI(w http.ResponseWriter, r *http.Request) (models.Count
 func InsertCountriesIntoDB(db *database.Queries, w http.ResponseWriter, r *http.Request) error {
 	countryResponse, err := fetchCountriesFromAPI(w, r)
 	// Start a new transaction.
-	tx, err := db.BeginTx(context.Background(), nil)
+	tx, err := db.CountryQueries.BeginTx(context.Background(), nil)
 	if err != nil {
 		log.Printf("error starting transaction: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
