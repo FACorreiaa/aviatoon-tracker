@@ -101,7 +101,7 @@ func (q *CountryQueries) GetCountries() ([]models.Country, error) {
 
 func (q *CountryQueries) GetCountryByID(id string) (models.Country, error) {
 	var country models.Country
-	println(id)
+
 	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return country, fmt.Errorf("failed to begin transaction: %w", err)

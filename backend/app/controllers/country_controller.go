@@ -67,7 +67,6 @@ func GetCountryByID(w http.ResponseWriter, r *http.Request) {
 
 	param := chi.URLParam(r, "id")
 
-	println(param)
 	// Get the list of countries from the database.
 	country, err := db.GetCountryByID(param)
 
@@ -98,7 +97,6 @@ func DeleteCountryByID(w http.ResponseWriter, r *http.Request) {
 
 	param := chi.URLParam(r, "id")
 
-	println(param)
 	// Get the list of countries from the database.
 	country := db.DeleteCountryByID(param)
 
