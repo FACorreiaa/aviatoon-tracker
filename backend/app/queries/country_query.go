@@ -226,3 +226,85 @@ func (q *CountryQueries) GetNumberOfCountries() (int, error) {
 
 	return count, nil
 }
+
+func (q *CountryQueries) GetCitiesFromCountry() ([]models.CityInfo, error) {
+	var cities []models.CityInfo
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return cities, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT city.city_name, country.population, country.country_name,
+               country.currency_name, country.currency_code, country.continent,
+               country.phone_prefix
+        FROM country
+        INNER JOIN city ON city.country_iso2 = country.country_iso_2`)
+	if err != nil {
+		return cities, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var cityInfo models.CityInfo
+		err := rows.Scan(&cityInfo.CityName, &cityInfo.Population,
+			&cityInfo.CountryName, &cityInfo.CurrencyName,
+			&cityInfo.CurrencyCode, &cityInfo.Continent, &cityInfo.PhonePrefix)
+		if err != nil {
+			return cities, fmt.Errorf("failed to scan city info: %w", err)
+		}
+		cities = append(cities, cityInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return cities, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return cities, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return cities, nil
+}
+
+func (q *CountryQueries) GetCitiesFromCountryByID(id string) ([]models.CityInfo, error) {
+	var cities []models.CityInfo
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return cities, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT country.id, city.city_name, country.population, country.country_name,
+               country.currency_name, country.currency_code, country.continent,
+               country.phone_prefix
+        FROM country
+        INNER JOIN city ON city.country_iso2 = country.country_iso_2
+        WHERE country.id = $1
+        `, id)
+	if err != nil {
+		return cities, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var cityInfo models.CityInfo
+		err := rows.Scan(&cityInfo.ID, &cityInfo.CityName, &cityInfo.Population,
+			&cityInfo.CountryName, &cityInfo.CurrencyName,
+			&cityInfo.CurrencyCode, &cityInfo.Continent, &cityInfo.PhonePrefix)
+		if err != nil {
+			return cities, fmt.Errorf("failed to scan city info: %w", err)
+		}
+		cities = append(cities, cityInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return cities, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return cities, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return cities, nil
+}

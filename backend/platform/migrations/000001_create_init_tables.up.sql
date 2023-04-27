@@ -1,8 +1,8 @@
 -- Add UUID extension
--- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Set timezone
-SET TIMEZONE="Europe/Moscow";
+SET TIMEZONE="Europe/Berlin";
 
 -- Create users table
 CREATE TABLE users (

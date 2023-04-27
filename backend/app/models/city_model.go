@@ -17,4 +17,15 @@ type City struct {
 	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at"`
 }
 
+type CityInfo struct {
+	ID           string
+	CityName     string
+	Population   int
+	CountryName  string
+	CurrencyName string
+	CurrencyCode string
+	Continent    string
+	PhonePrefix  string
+}
+
 type CityListResponse []City

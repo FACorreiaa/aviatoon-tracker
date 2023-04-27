@@ -43,6 +43,7 @@ func InsertCitiesIntoDB(db *database.Queries, w http.ResponseWriter, r *http.Req
 		log.Printf("error starting transaction: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+
 	defer func() {
 		// If there was an error, rollback the transaction.
 		if err != nil {
@@ -56,6 +57,7 @@ func InsertCitiesIntoDB(db *database.Queries, w http.ResponseWriter, r *http.Req
 			return
 		}
 	}()
+
 	// Insert the countries into the database within the transaction.
 	for _, c := range cityResponse {
 		err := db.CreateCity(&models.City{

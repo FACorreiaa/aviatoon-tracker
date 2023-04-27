@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/create-go-app/net_http-go-template/app/models"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
+	"strings"
 )
 
 type CityQueries struct {
@@ -106,4 +108,128 @@ func (q *CountryQueries) GetCities() ([]models.City, error) {
 	}
 
 	return cities, nil
+}
+
+func (q *CountryQueries) GetCityByID(id string) (models.City, error) {
+	var city models.City
+	println(id)
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return city, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	row := tx.QueryRowContext(context.Background(), `SELECT
+			id,
+			gmt,
+			city_id,
+			iata_code,
+			country_iso2,
+			geoname_id,
+			latitude,
+			longitude,
+			city_name,
+			timezone,
+			created_at,
+			updated_at
+		FROM city
+		WHERE id = $1 LIMIT 1`, id)
+	err = row.Scan(
+		&city.ID,
+		&city.GMT,
+		&city.CityId,
+		&city.IataCode,
+		&city.CountryIso2,
+		&city.GeonameId,
+		&city.Latitude,
+		&city.Longitude,
+		&city.CityName,
+		&city.Timezone,
+		&city.CreatedAt,
+		&city.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return city, fmt.Errorf("country with ID %s not found: %w", id, err)
+		}
+		return city, fmt.Errorf("failed to scan country: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return city, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return city, nil
+}
+
+func (q *CountryQueries) DeleteCityByID(id string) error {
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(context.Background(), "DELETE FROM city WHERE id = $1", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete country: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (q *CountryQueries) UpdateCityByID(id string, updates map[string]interface{}) error {
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	var setColumns []string
+	var args []interface{}
+
+	for key, value := range updates {
+		setColumns = append(setColumns, fmt.Sprintf("%s = $%d", key, len(args)+1))
+		args = append(args, value)
+	}
+	args = append(args, id)
+
+	stmt := fmt.Sprintf("UPDATE city SET %s WHERE id = $%d", strings.Join(setColumns, ", "), len(args))
+	_, err = tx.ExecContext(context.Background(), stmt, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update country: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (q *CountryQueries) GetNumberOfCities() (int, error) {
+	tx, err := q.BeginTx(context.TODO(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	var count int
+	err = tx.QueryRowContext(context.TODO(), "SELECT COUNT(*) FROM city").Scan(&count)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, fmt.Errorf("no cities found")
+		}
+		return 0, fmt.Errorf("failed to get number of cities: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
