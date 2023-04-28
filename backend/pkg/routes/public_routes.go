@@ -55,4 +55,14 @@ func PublicRoutes(router *chi.Mux) {
 		r.Delete("/", controllers.DeleteAircraftTypeByID)
 		r.Put("/", controllers.UpdateAircraftTypeByID)
 	})
+
+	//Airline
+	router.Get("/api/v1/airline", controllers.GetAirlines)
+	router.Get("/api/v1/airline/count", controllers.GetNumberOfAirlines)
+
+	router.Route("/api/v1/airline/{id}", func(r chi.Router) {
+		r.Get("/", controllers.GetAirlineByID)
+		r.Delete("/", controllers.DeleteAirlineByID)
+		r.Put("/", controllers.UpdateAirlineByID)
+	})
 }
