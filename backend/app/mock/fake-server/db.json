@@ -1,1 +1,610 @@
-{"pagination":{"offset":0,"limit":100,"count":100,"total":521},"data":[{"id":"1","tax_id":"1","tax_name":"Government Tax","iata_code":"AB"},{"id":"2","tax_id":"2","tax_name":"Value Added Tax","iata_code":"AC"},{"id":"3","tax_id":"3","tax_name":"Passenger Service Charge (International)","iata_code":"AE"},{"id":"4","tax_id":"4","tax_name":"Airport Departure Fee (Domestic\/International)","iata_code":"AF"},{"id":"5","tax_id":"5","tax_name":"Ticket Tax","iata_code":"AG"},{"id":"6","tax_id":"6","tax_name":"Airport Tax","iata_code":"AH"},{"id":"7","tax_id":"7","tax_name":"Baggage Security Screening Fee","iata_code":"AI"},{"id":"8","tax_id":"8","tax_name":"Airport Exit Tax (International)","iata_code":"AJ"},{"id":"9","tax_id":"9","tax_name":"Airport Departure Tax (International)","iata_code":"AK"},{"id":"10","tax_id":"10","tax_name":"Passenger Service Charge (Domestic\/International)","iata_code":"AL"},{"id":"11","tax_id":"11","tax_name":"Tax","iata_code":"AM"},{"id":"12","tax_id":"12","tax_name":"Airport Facility Charge (Domestic\/International)","iata_code":"AN"},{"id":"13","tax_id":"13","tax_name":"Embarkation Tax (International)","iata_code":"AO"},{"id":"14","tax_id":"14","tax_name":"Security Charge (Domestic\/International)","iata_code":"AP"},{"id":"15","tax_id":"15","tax_name":"Ticket Tax","iata_code":"AR"},{"id":"16","tax_id":"16","tax_name":"Passenger Security Charge(Domestic\/International)","iata_code":"AT"},{"id":"17","tax_id":"17","tax_name":"Passenger Movement Charge","iata_code":"AU"},{"id":"18","tax_id":"18","tax_name":"Tourism Development Tax (International)","iata_code":"AV"},{"id":"19","tax_id":"19","tax_name":"Passenger Facility and Security Charge","iata_code":"AW"},{"id":"20","tax_id":"20","tax_name":"Passenger Service Charge (Domestic)","iata_code":"AX"},{"id":"21","tax_id":"21","tax_name":"Passenger Civil Aviation Security Service Fee (Domestic\/International)","iata_code":"AY"},{"id":"22","tax_id":"22","tax_name":"Departure Tax (International)","iata_code":"AZ"},{"id":"23","tax_id":"23","tax_name":"Passenger Service Charge (Domestic\/International)","iata_code":"BA"},{"id":"24","tax_id":"24","tax_name":"Value Added Tax","iata_code":"BB"},{"id":"25","tax_id":"25","tax_name":"Airport Security Charge -(Domestic\/International)","iata_code":"BC"},{"id":"26","tax_id":"26","tax_name":"Embarkation Fee (Domestic\/International)","iata_code":"BD"},{"id":"27","tax_id":"27","tax_name":"Passenger Service and Security Charge","iata_code":"BE"},{"id":"28","tax_id":"28","tax_name":"Fiscal Stamp \/ Security \/ Sales \/ Tourism Tax (Domestic\/International)","iata_code":"BF"},{"id":"29","tax_id":"29","tax_name":"Passenger Charge (Domestic\/International)","iata_code":"BG"},{"id":"30","tax_id":"30","tax_name":"Government Tax","iata_code":"BH"},{"id":"31","tax_id":"31","tax_name":"Airport Departure Fee (Domestic\/International)","iata_code":"BK"},{"id":"32","tax_id":"32","tax_name":"Aviation Security Fee","iata_code":"BL"},{"id":"33","tax_id":"33","tax_name":"Government Passenger Tax","iata_code":"BM"},{"id":"34","tax_id":"34","tax_name":"Passenger Services Charge (International)","iata_code":"BN"},{"id":"35","tax_id":"35","tax_name":"Sales Tax (Domestic\/International)","iata_code":"BO"},{"id":"36","tax_id":"36","tax_name":"PSC, Departure Tax and Contribution to International Poverty Eradication ","iata_code":"BP"},{"id":"37","tax_id":"37","tax_name":"Airport Fee","iata_code":"BQ"},{"id":"38","tax_id":"38","tax_name":"Embarkation Tax (Domestic\/International)","iata_code":"BR"},{"id":"39","tax_id":"39","tax_name":"Ticket Tax (International)","iata_code":"BS"},{"id":"40","tax_id":"40","tax_name":"Airport Development Fee","iata_code":"BU"},{"id":"41","tax_id":"41","tax_name":"Departure Tax (Domestic\/International)","iata_code":"BW"},{"id":"42","tax_id":"42","tax_name":"Security Tax (Domestic\/International)","iata_code":"BX"},{"id":"43","tax_id":"43","tax_name":"Sales Tax (International)","iata_code":"BY"},{"id":"44","tax_id":"44","tax_name":"Ticket Tax","iata_code":"BZ"},{"id":"45","tax_id":"45","tax_name":"Air Travellers Security Charge (Domestic\/International)","iata_code":"CA"},{"id":"46","tax_id":"46","tax_name":"Passenger Service Charge (Domestic\/International)","iata_code":"CB"},{"id":"47","tax_id":"47","tax_name":"Cocos Island Passenger Service Charge","iata_code":"CC"},{"id":"48","tax_id":"48","tax_name":"Embarkation \/ Sales \/ Tourism Tax (Domestic\/International)","iata_code":"CD"},{"id":"49","tax_id":"49","tax_name":"Aviation Security Screening Levy (Domestic)","iata_code":"CE"},{"id":"50","tax_id":"50","tax_name":"Security Tax","iata_code":"CF"},{"id":"51","tax_id":"51","tax_name":"Sales \/ Security Tax (Domestic\/International)","iata_code":"CG"},{"id":"52","tax_id":"52","tax_name":"Airport Passenger Security and Noise Charge (Domestic\/International)","iata_code":"CH"},{"id":"53","tax_id":"53","tax_name":"Security \/ Tourism Tax (Domestic\/International)","iata_code":"CI"},{"id":"54","tax_id":"54","tax_name":"Security Service Charge (Domestic\/International)","iata_code":"CJ"},{"id":"55","tax_id":"55","tax_name":"Airport Facility Charge (Domestic)","iata_code":"CL"},{"id":"56","tax_id":"56","tax_name":"Tax on Value (Domestic\/International)","iata_code":"CM"},{"id":"57","tax_id":"57","tax_name":"Airport Fee (Domestic\/International)","iata_code":"CN"},{"id":"58","tax_id":"58","tax_name":"Airport Tax (Domestic\/International)","iata_code":"CO"},{"id":"59","tax_id":"59","tax_name":"Rehabilitation fund and care of handicapped person","iata_code":"CQ"},{"id":"60","tax_id":"60","tax_name":"Transportation Tax","iata_code":"CR"},{"id":"61","tax_id":"61","tax_name":"Security Tax (Domestic\/International)","iata_code":"CT"},{"id":"62","tax_id":"62","tax_name":"Airport Embarkation Tax (Domestic\/International)","iata_code":"CV"},{"id":"63","tax_id":"63","tax_name":"Value Added Tax (Domestic)","iata_code":"CW"},{"id":"64","tax_id":"64","tax_name":"Christmas Island Passenger Service Charge (Domestic\/International)","iata_code":"CX"},{"id":"65","tax_id":"65","tax_name":"Airport Service Charge (International)","iata_code":"CY"},{"id":"66","tax_id":"66","tax_name":"Embarkation Tax (Domestic\/International)","iata_code":"CZ"},{"id":"67","tax_id":"67","tax_name":"Passenger Service Charge (Domestic)","iata_code":"DA"},{"id":"68","tax_id":"68","tax_name":"Airport Security Charge","iata_code":"DB"},{"id":"69","tax_id":"69","tax_name":"Security Charge (Domestic\/International)","iata_code":"DC"},{"id":"70","tax_id":"70","tax_name":"Concourse Fee (Intl)","iata_code":"DD"},{"id":"71","tax_id":"71","tax_name":"Airport Security Charge (Domestic\/International)","iata_code":"DE"},{"id":"72","tax_id":"72","tax_name":"Security Charge (Intl)","iata_code":"DF"},{"id":"73","tax_id":"73","tax_name":"Resident Exit Tax (Timbre)","iata_code":"DG"},{"id":"74","tax_id":"74","tax_name":"Passenger Facility Charge","iata_code":"DH"},{"id":"75","tax_id":"75","tax_name":"Airport Facilitation Fee (International)","iata_code":"DI"},{"id":"76","tax_id":"76","tax_name":"Departure Tax","iata_code":"DJ"},{"id":"77","tax_id":"77","tax_name":"Value Added Tax (Passengers)","iata_code":"DL"},{"id":"78","tax_id":"78","tax_name":"Transportation Tax (International)","iata_code":"DM"},{"id":"79","tax_id":"79","tax_name":"Value Added Tax (Excess Baggage)","iata_code":"DN"},{"id":"80","tax_id":"80","tax_name":"Transportation Tax (Domestic\/International)","iata_code":"DO"},{"id":"81","tax_id":"81","tax_name":"Goods and Services Tax (GST), (Domestic\/International)","iata_code":"DP"},{"id":"82","tax_id":"82","tax_name":"Security Charge (Domestic\/International)","iata_code":"DQ"},{"id":"83","tax_id":"83","tax_name":"Airport Facility Charge (Domestic\/International)","iata_code":"DR"},{"id":"84","tax_id":"84","tax_name":"Safety Fee (Intl)","iata_code":"DS"},{"id":"85","tax_id":"85","tax_name":"Transfer Passenger Fee (Domestic\/International)","iata_code":"DT"},{"id":"86","tax_id":"86","tax_name":"Embarkation Tax (Domestic\/International)","iata_code":"DW"},{"id":"87","tax_id":"87","tax_name":"Aeronautical Development Charge (Intl)","iata_code":"DX"},{"id":"88","tax_id":"88","tax_name":"Tourism Arrival Tax","iata_code":"DY"},{"id":"89","tax_id":"89","tax_name":"Transportation \/ Fiscal \/ Airport Tax","iata_code":"DZ"},{"id":"90","tax_id":"90","tax_name":"Passenger Departure Tax","iata_code":"EA"},{"id":"91","tax_id":"91","tax_name":"Passenger and Safety Charge (Domestic\/International)","iata_code":"EB"},{"id":"92","tax_id":"92","tax_name":"Government Transportation Tax (Domestic\/International)","iata_code":"EC"},{"id":"93","tax_id":"93","tax_name":"Tourism Fee (International)","iata_code":"ED"},{"id":"94","tax_id":"94","tax_name":"Passenger Service Charge (Domestic\/International)","iata_code":"EE"},{"id":"95","tax_id":"95","tax_name":"Security Tax (Domestic\/International)","iata_code":"EF"},{"id":"96","tax_id":"96","tax_name":"Transportation Tax","iata_code":"EG"},{"id":"97","tax_id":"97","tax_name":"VAT Adjustment Tax (Dom)","iata_code":"EI"},{"id":"98","tax_id":"98","tax_name":"PTA surcharge (International)","iata_code":"EJ"},{"id":"99","tax_id":"99","tax_name":"Passenger Service and Security Fee (Domestic\/International)","iata_code":"EK"},{"id":"100","tax_id":"100","tax_name":"Airport Improvement Fee","iata_code":"EL"}]}
+{
+  "pagination":{
+    "offset":0,
+    "limit":100,
+    "count":100,
+    "total":313
+  },
+  "data":[
+    {
+      "id":"1",
+      "iata_code":"100",
+      "aircraft_name":"Fokker 100",
+      "plane_type_id":"1"
+    },
+    {
+      "id":"2",
+      "iata_code":"141",
+      "aircraft_name":"British Aerospace BAe 146-100",
+      "plane_type_id":"2"
+    },
+    {
+      "id":"3",
+      "iata_code":"142",
+      "aircraft_name":"British Aerospace BAe 146-200",
+      "plane_type_id":"3"
+    },
+    {
+      "id":"4",
+      "iata_code":"143",
+      "aircraft_name":"British Aerospace BAe 146-300",
+      "plane_type_id":"4"
+    },
+    {
+      "id":"5",
+      "iata_code":"146",
+      "aircraft_name":"British Aerospace BAe 146",
+      "plane_type_id":"5"
+    },
+    {
+      "id":"6",
+      "iata_code":"14F",
+      "aircraft_name":"British Aerospace BAe 146 Freighter",
+      "plane_type_id":"6"
+    },
+    {
+      "id":"7",
+      "iata_code":"14X",
+      "aircraft_name":"British Aerospace BAe 146-100QT\/QC",
+      "plane_type_id":"7"
+    },
+    {
+      "id":"8",
+      "iata_code":"14Y",
+      "aircraft_name":"British Aerospace BAe 146-200QT\/QC",
+      "plane_type_id":"8"
+    },
+    {
+      "id":"9",
+      "iata_code":"14Z",
+      "aircraft_name":"British Aerospace BAe 146-300QT\/QC",
+      "plane_type_id":"9"
+    },
+    {
+      "id":"10",
+      "iata_code":"310",
+      "aircraft_name":"Airbus Industrie A310",
+      "plane_type_id":"10"
+    },
+    {
+      "id":"11",
+      "iata_code":"312",
+      "aircraft_name":"Airbus Industrie A310-200",
+      "plane_type_id":"11"
+    },
+    {
+      "id":"12",
+      "iata_code":"313",
+      "aircraft_name":"Airbus Industrie A310-300",
+      "plane_type_id":"12"
+    },
+    {
+      "id":"13",
+      "iata_code":"318",
+      "aircraft_name":"Airbus Industrie A318",
+      "plane_type_id":"13"
+    },
+    {
+      "id":"14",
+      "iata_code":"319",
+      "aircraft_name":"Airbus Industrie A319",
+      "plane_type_id":"14"
+    },
+    {
+      "id":"15",
+      "iata_code":"31F",
+      "aircraft_name":"Airbus Industrie A310 Freighter",
+      "plane_type_id":"15"
+    },
+    {
+      "id":"16",
+      "iata_code":"31X",
+      "aircraft_name":"Airbus Industrie A310-200 Freighter",
+      "plane_type_id":"16"
+    },
+    {
+      "id":"17",
+      "iata_code":"31Y",
+      "aircraft_name":"Airbus Industrie A310-300 Freighter",
+      "plane_type_id":"17"
+    },
+    {
+      "id":"18",
+      "iata_code":"320",
+      "aircraft_name":"Airbus Industrie A320",
+      "plane_type_id":"18"
+    },
+    {
+      "id":"19",
+      "iata_code":"321",
+      "aircraft_name":"Airbus Industrie A321",
+      "plane_type_id":"19"
+    },
+    {
+      "id":"20",
+      "iata_code":"32S",
+      "aircraft_name":"Airbus Industrie A318\/319\/320\/321",
+      "plane_type_id":"20"
+    },
+    {
+      "id":"21",
+      "iata_code":"330",
+      "aircraft_name":"Airbus Industrie A330",
+      "plane_type_id":"21"
+    },
+    {
+      "id":"22",
+      "iata_code":"332",
+      "aircraft_name":"Airbus Industrie A330-200",
+      "plane_type_id":"22"
+    },
+    {
+      "id":"23",
+      "iata_code":"333",
+      "aircraft_name":"Airbus Industrie A330-300",
+      "plane_type_id":"23"
+    },
+    {
+      "id":"24",
+      "iata_code":"340",
+      "aircraft_name":"Airbus Industrie A340",
+      "plane_type_id":"24"
+    },
+    {
+      "id":"25",
+      "iata_code":"342",
+      "aircraft_name":"Airbus Industrie A340-200",
+      "plane_type_id":"25"
+    },
+    {
+      "id":"26",
+      "iata_code":"343",
+      "aircraft_name":"Airbus Industrie A340-300",
+      "plane_type_id":"26"
+    },
+    {
+      "id":"27",
+      "iata_code":"345",
+      "aircraft_name":"Airbus Industrie A340-500",
+      "plane_type_id":"27"
+    },
+    {
+      "id":"28",
+      "iata_code":"346",
+      "aircraft_name":"Airbus Industrie A340-600",
+      "plane_type_id":"28"
+    },
+    {
+      "id":"29",
+      "iata_code":"380",
+      "aircraft_name":"Airbus Industrie A380",
+      "plane_type_id":"29"
+    },
+    {
+      "id":"30",
+      "iata_code":"388",
+      "aircraft_name":"Airbus Industrie A380-800",
+      "plane_type_id":"30"
+    },
+    {
+      "id":"31",
+      "iata_code":"38F",
+      "aircraft_name":"Airbus Industrie A380 Freighter",
+      "plane_type_id":"31"
+    },
+    {
+      "id":"32",
+      "iata_code":"703",
+      "aircraft_name":"Boeing 707-300",
+      "plane_type_id":"32"
+    },
+    {
+      "id":"33",
+      "iata_code":"707",
+      "aircraft_name":"Boeing 707\/720",
+      "plane_type_id":"33"
+    },
+    {
+      "id":"34",
+      "iata_code":"70F",
+      "aircraft_name":"Boeing 707-300 Freighter",
+      "plane_type_id":"34"
+    },
+    {
+      "id":"35",
+      "iata_code":"70M",
+      "aircraft_name":"Boeing 707-300 Combi",
+      "plane_type_id":"35"
+    },
+    {
+      "id":"36",
+      "iata_code":"717",
+      "aircraft_name":"Boeing 717-200",
+      "plane_type_id":"36"
+    },
+    {
+      "id":"37",
+      "iata_code":"721",
+      "aircraft_name":"Boeing 727-100",
+      "plane_type_id":"37"
+    },
+    {
+      "id":"38",
+      "iata_code":"722",
+      "aircraft_name":"Boeing 727-200",
+      "plane_type_id":"38"
+    },
+    {
+      "id":"39",
+      "iata_code":"727",
+      "aircraft_name":"Boeing 727",
+      "plane_type_id":"39"
+    },
+    {
+      "id":"40",
+      "iata_code":"72A",
+      "aircraft_name":"Boeing 727-200 Advanced",
+      "plane_type_id":"40"
+    },
+    {
+      "id":"41",
+      "iata_code":"72B",
+      "aircraft_name":"Boeing 727-100 Combi",
+      "plane_type_id":"41"
+    },
+    {
+      "id":"42",
+      "iata_code":"72C",
+      "aircraft_name":"Boeing 727-200 Combi",
+      "plane_type_id":"42"
+    },
+    {
+      "id":"43",
+      "iata_code":"72F",
+      "aircraft_name":"Boeing 727 Freighter",
+      "plane_type_id":"43"
+    },
+    {
+      "id":"44",
+      "iata_code":"72M",
+      "aircraft_name":"Boeing 727 Combi",
+      "plane_type_id":"44"
+    },
+    {
+      "id":"45",
+      "iata_code":"72S",
+      "aircraft_name":"Boeing 727-200",
+      "plane_type_id":"45"
+    },
+    {
+      "id":"46",
+      "iata_code":"72X",
+      "aircraft_name":"Boeing 727-100 Freighter",
+      "plane_type_id":"46"
+    },
+    {
+      "id":"47",
+      "iata_code":"72Y",
+      "aircraft_name":"Boeing 727-200 Freighter",
+      "plane_type_id":"47"
+    },
+    {
+      "id":"48",
+      "iata_code":"731",
+      "aircraft_name":"Boeing 737-100",
+      "plane_type_id":"48"
+    },
+    {
+      "id":"49",
+      "iata_code":"732",
+      "aircraft_name":"Boeing 737-200",
+      "plane_type_id":"49"
+    },
+    {
+      "id":"50",
+      "iata_code":"733",
+      "aircraft_name":"Boeing 737-300",
+      "plane_type_id":"50"
+    },
+    {
+      "id":"51",
+      "iata_code":"734",
+      "aircraft_name":"Boeing 737-400",
+      "plane_type_id":"51"
+    },
+    {
+      "id":"52",
+      "iata_code":"735",
+      "aircraft_name":"Boeing 737-500",
+      "plane_type_id":"52"
+    },
+    {
+      "id":"53",
+      "iata_code":"736",
+      "aircraft_name":"Boeing 737-600",
+      "plane_type_id":"53"
+    },
+    {
+      "id":"54",
+      "iata_code":"737",
+      "aircraft_name":"Boeing 737",
+      "plane_type_id":"54"
+    },
+    {
+      "id":"55",
+      "iata_code":"738",
+      "aircraft_name":"Boeing 737-800",
+      "plane_type_id":"55"
+    },
+    {
+      "id":"56",
+      "iata_code":"739",
+      "aircraft_name":"Boeing 737-900",
+      "plane_type_id":"56"
+    },
+    {
+      "id":"57",
+      "iata_code":"73A",
+      "aircraft_name":"Boeing 737-200\/200C Advanced",
+      "plane_type_id":"57"
+    },
+    {
+      "id":"58",
+      "iata_code":"73C",
+      "aircraft_name":"Boeing 737-300",
+      "plane_type_id":"58"
+    },
+    {
+      "id":"59",
+      "iata_code":"73E",
+      "aircraft_name":"Boeing 737-900ER",
+      "plane_type_id":"59"
+    },
+    {
+      "id":"60",
+      "iata_code":"73F",
+      "aircraft_name":"Boeing 737 Freighter",
+      "plane_type_id":"60"
+    },
+    {
+      "id":"61",
+      "iata_code":"73G",
+      "aircraft_name":"Boeing 737-700",
+      "plane_type_id":"61"
+    },
+    {
+      "id":"62",
+      "iata_code":"73H",
+      "aircraft_name":"Boeing 737-800 With Winglets",
+      "plane_type_id":"62"
+    },
+    {
+      "id":"63",
+      "iata_code":"73J",
+      "aircraft_name":"Boeing 737-900 With Winglets",
+      "plane_type_id":"63"
+    },
+    {
+      "id":"64",
+      "iata_code":"73M",
+      "aircraft_name":"Boeing 737-200 Combi",
+      "plane_type_id":"64"
+    },
+    {
+      "id":"65",
+      "iata_code":"73N",
+      "aircraft_name":"Boeing 737-300 Mixed Config",
+      "plane_type_id":"65"
+    },
+    {
+      "id":"66",
+      "iata_code":"73P",
+      "aircraft_name":"Boeing 737-400 Freighter",
+      "plane_type_id":"66"
+    },
+    {
+      "id":"67",
+      "iata_code":"73Q",
+      "aircraft_name":"Boeing 737-400 Mixed Config",
+      "plane_type_id":"67"
+    },
+    {
+      "id":"68",
+      "iata_code":"73S",
+      "aircraft_name":"Boeing 737 Advanced",
+      "plane_type_id":"68"
+    },
+    {
+      "id":"69",
+      "iata_code":"73W",
+      "aircraft_name":"Boeing 737-700 With Winglets",
+      "plane_type_id":"69"
+    },
+    {
+      "id":"70",
+      "iata_code":"73X",
+      "aircraft_name":"Boeing 737-200 Freighter",
+      "plane_type_id":"70"
+    },
+    {
+      "id":"71",
+      "iata_code":"73Y",
+      "aircraft_name":"Boeing 737-300 Freighter",
+      "plane_type_id":"71"
+    },
+    {
+      "id":"72",
+      "iata_code":"741",
+      "aircraft_name":"Boeing 747-100",
+      "plane_type_id":"72"
+    },
+    {
+      "id":"73",
+      "iata_code":"742",
+      "aircraft_name":"Boeing 747-200",
+      "plane_type_id":"73"
+    },
+    {
+      "id":"74",
+      "iata_code":"743",
+      "aircraft_name":"Boeing 747-300 (including -100SUD and -200SUD)",
+      "plane_type_id":"74"
+    },
+    {
+      "id":"75",
+      "iata_code":"744",
+      "aircraft_name":"Boeing 747-400",
+      "plane_type_id":"75"
+    },
+    {
+      "id":"76",
+      "iata_code":"747",
+      "aircraft_name":"Boeing 747",
+      "plane_type_id":"76"
+    },
+    {
+      "id":"77",
+      "iata_code":"74C",
+      "aircraft_name":"Boeing 747-200 Combi",
+      "plane_type_id":"77"
+    },
+    {
+      "id":"78",
+      "iata_code":"74D",
+      "aircraft_name":"Boeing 747-300 Combi (including -200SUD)",
+      "plane_type_id":"78"
+    },
+    {
+      "id":"79",
+      "iata_code":"74E",
+      "aircraft_name":"Boeing 747-400 Combi",
+      "plane_type_id":"79"
+    },
+    {
+      "id":"80",
+      "iata_code":"74F",
+      "aircraft_name":"Boeing 747 Freighter",
+      "plane_type_id":"80"
+    },
+    {
+      "id":"81",
+      "iata_code":"74J",
+      "aircraft_name":"Boeing 747-400 Domestic",
+      "plane_type_id":"81"
+    },
+    {
+      "id":"82",
+      "iata_code":"74L",
+      "aircraft_name":"Boeing 747SP",
+      "plane_type_id":"82"
+    },
+    {
+      "id":"83",
+      "iata_code":"74M",
+      "aircraft_name":"Boeing 747 Combi",
+      "plane_type_id":"83"
+    },
+    {
+      "id":"84",
+      "iata_code":"74T",
+      "aircraft_name":"Boeing 747-100 Freighter",
+      "plane_type_id":"84"
+    },
+    {
+      "id":"85",
+      "iata_code":"74U",
+      "aircraft_name":"Boeing 747-300 Freighter",
+      "plane_type_id":"85"
+    },
+    {
+      "id":"86",
+      "iata_code":"74V",
+      "aircraft_name":"Boeing 747SR Freighter",
+      "plane_type_id":"86"
+    },
+    {
+      "id":"87",
+      "iata_code":"74X",
+      "aircraft_name":"Boeing 747-200 Freighter",
+      "plane_type_id":"87"
+    },
+    {
+      "id":"88",
+      "iata_code":"74Y",
+      "aircraft_name":"Boeing 747-400 Freighter",
+      "plane_type_id":"88"
+    },
+    {
+      "id":"89",
+      "iata_code":"752",
+      "aircraft_name":"Boeing 757-200",
+      "plane_type_id":"89"
+    },
+    {
+      "id":"90",
+      "iata_code":"753",
+      "aircraft_name":"Boeing 757-300",
+      "plane_type_id":"90"
+    },
+    {
+      "id":"91",
+      "iata_code":"757",
+      "aircraft_name":"Boeing 757",
+      "plane_type_id":"91"
+    },
+    {
+      "id":"92",
+      "iata_code":"75F",
+      "aircraft_name":"Boeing 757-200 Freighter",
+      "plane_type_id":"92"
+    },
+    {
+      "id":"93",
+      "iata_code":"75M",
+      "aircraft_name":"Boeing 757-200 Combi",
+      "plane_type_id":"93"
+    },
+    {
+      "id":"94",
+      "iata_code":"75W",
+      "aircraft_name":"Boeing 757-200 With Winglets",
+      "plane_type_id":"94"
+    },
+    {
+      "id":"95",
+      "iata_code":"762",
+      "aircraft_name":"Boeing 767-200",
+      "plane_type_id":"95"
+    },
+    {
+      "id":"96",
+      "iata_code":"763",
+      "aircraft_name":"Boeing 767-300",
+      "plane_type_id":"96"
+    },
+    {
+      "id":"97",
+      "iata_code":"764",
+      "aircraft_name":"Boeing 767-400",
+      "plane_type_id":"97"
+    },
+    {
+      "id":"98",
+      "iata_code":"767",
+      "aircraft_name":"Boeing 767",
+      "plane_type_id":"98"
+    },
+    {
+      "id":"99",
+      "iata_code":"76F",
+      "aircraft_name":"Boeing 767 Freighter",
+      "plane_type_id":"99"
+    },
+    {
+      "id":"100",
+      "iata_code":"76X",
+      "aircraft_name":"Boeing 767-200 Freighter",
+      "plane_type_id":"100"
+    }
+  ]
+}

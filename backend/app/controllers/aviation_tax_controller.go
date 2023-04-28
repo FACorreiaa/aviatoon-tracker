@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func GetTax(w http.ResponseWriter, r *http.Request) {
+func GetAviationTax(w http.ResponseWriter, r *http.Request) {
 	// Open a database connection and defer its closure
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -22,24 +22,24 @@ func GetTax(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the list of countries from the database.
-	tax, err := db.GetTax()
+	tax, err := db.GetAviationTax()
 
 	if err != nil {
-		log.Printf("error getting countries from database: %v", err)
+		log.Printf("error getting aviation tax from database: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// If there are no countries in the database, fetch them from the API
 	if len(tax) == 0 {
-		err := helpers.InsertTaxIntoDB(db, w, r)
+		err := helpers.InsertAviationTaxIntoDB(db, w, r)
 		// Insert the countries into the database
 
 		//Refresh the countries from the database after inserting them
-		tax, err = db.GetTax()
+		tax, err = db.GetAviationTax()
 
 		if err != nil {
-			log.Printf("error getting tax from database: %v", err)
+			log.Printf("error getting aviation tax  from database: %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -54,7 +54,7 @@ func GetTax(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetTaxByID(w http.ResponseWriter, r *http.Request) {
+func GetAviationTaxByID(w http.ResponseWriter, r *http.Request) {
 	// Open a database connection and defer its closure
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -68,7 +68,7 @@ func GetTaxByID(w http.ResponseWriter, r *http.Request) {
 	param := chi.URLParam(r, "id")
 
 	// Get the list of countries from the database.
-	tax, err := db.GetTaxByID(param)
+	tax, err := db.GetAviationTaxByID(param)
 
 	if err != nil {
 		log.Printf("error getting cities from database: %v", err)
@@ -85,7 +85,7 @@ func GetTaxByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DeleteTaxByID(w http.ResponseWriter, r *http.Request) {
+func DeleteAviationTaxByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -98,7 +98,7 @@ func DeleteTaxByID(w http.ResponseWriter, r *http.Request) {
 	param := chi.URLParam(r, "id")
 
 	// Get the list of countries from the database.
-	tax := db.DeleteTaxByID(param)
+	tax := db.DeleteAviationTaxByID(param)
 
 	// Write the list of countries to the response
 	err = json.NewEncoder(w).Encode(tax)
@@ -109,7 +109,7 @@ func DeleteTaxByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func UpdateTaxByID(w http.ResponseWriter, r *http.Request) {
+func UpdateAviationTaxByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -143,7 +143,7 @@ func UpdateTaxByID(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func GetNumberOfTax(w http.ResponseWriter, r *http.Request) {
+func GetNumberOfAviationTax(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -153,7 +153,7 @@ func GetNumberOfTax(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	count, err := db.GetNumberOfTax()
+	count, err := db.GetNumberOfAviationTax()
 	if err != nil {
 		log.Printf("failed to get number of countries: %v", err)
 		response := struct {
@@ -177,79 +177,4 @@ func GetNumberOfTax(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonBytes)
-}
-
-func GetTaxFromCity(w http.ResponseWriter, r *http.Request) {
-	// Open a database connection and defer its closure
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Get the list of countries from the database.
-	taxInfo, err := db.GetTaxPerCity()
-
-	if err != nil {
-		log.Printf("error getting countries from database: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	//If there are no countries in the database, fetch them from the API
-	//if len(cities) == 0 {
-	//	err := helpers.InsertCitiesIntoDB(db, w, r)
-	//	// Insert the countries into the database
-	//
-	//	//Refresh the countries from the database after inserting them
-	//	cities, err = db.GetCities()
-	//
-	//	if err != nil {
-	//		log.Printf("error getting countries from database: %v", err)
-	//		http.Error(w, err.Error(), http.StatusInternalServerError)
-	//		return
-	//	}
-	//}
-
-	// Write the list of countries to the response
-	err = json.NewEncoder(w).Encode(taxInfo)
-	if err != nil {
-		log.Printf("error encoding countries as JSON: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-func GetTaxFromCityByTaxId(w http.ResponseWriter, r *http.Request) {
-	// Open a database connection and defer its closure
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	param := chi.URLParam(r, "id")
-
-	// Get the list of countries from the database.
-	taxInfo, err := db.GetTaxPerCityByTaxID(param)
-
-	if err != nil {
-		log.Printf("error getting cities from database: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Write the list of countries to the response
-	err = json.NewEncoder(w).Encode(taxInfo)
-	if err != nil {
-		log.Printf("error encoding cities as JSON: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 }

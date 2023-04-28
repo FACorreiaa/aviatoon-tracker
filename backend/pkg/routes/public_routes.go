@@ -35,17 +35,24 @@ func PublicRoutes(router *chi.Mux) {
 		r.Put("/", controllers.UpdateCityByID)
 	})
 
-	//Tax
-	router.Get("/api/v1/tax", controllers.GetTax)
-	router.Get("/api/v1/tax/count", controllers.GetNumberOfTax)
-	router.Get("/api/v1/tax/city/country", controllers.GetTaxFromCity)
+	//Aviation Tax
+	router.Get("/api/v1/tax", controllers.GetAviationTax)
+	router.Get("/api/v1/tax/count", controllers.GetNumberOfAviationTax)
 
 	router.Route("/api/v1/tax/{id}", func(r chi.Router) {
-		r.Get("/", controllers.GetTaxByID)
-		r.Delete("/", controllers.DeleteTaxByID)
-		r.Put("/", controllers.UpdateTaxByID)
-		r.Get("/city/country", controllers.GetTaxFromCityByTaxId)
+		r.Get("/", controllers.GetAviationTaxByID)
+		r.Delete("/", controllers.DeleteAviationTaxByID)
+		r.Put("/", controllers.UpdateAviationTaxByID)
 
 	})
 
+	//Aircraft Type
+	router.Get("/api/v1/aircraft", controllers.GetAircraftType)
+	router.Get("/api/v1/aircraft/count", controllers.GetNumberOfAircraftTypes)
+
+	router.Route("/api/v1/aircraft/{id}", func(r chi.Router) {
+		r.Get("/", controllers.GetAircraftTypeByID)
+		r.Delete("/", controllers.DeleteAircraftTypeByID)
+		r.Put("/", controllers.UpdateAircraftTypeByID)
+	})
 }

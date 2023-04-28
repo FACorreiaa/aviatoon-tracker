@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func GetCities(w http.ResponseWriter, r *http.Request) {
+func GetAircraftType(w http.ResponseWriter, r *http.Request) {
 	// Open a database connection and defer its closure
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -22,31 +22,31 @@ func GetCities(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the list of countries from the database.
-	cities, err := db.GetCities()
+	aircraftTypes, err := db.GetAircraftType()
 
 	if err != nil {
-		log.Printf("error getting cities from database: %v", err)
+		log.Printf("error getting aircraft from database: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// If there are no countries in the database, fetch them from the API
-	if len(cities) == 0 {
-		err := helpers.InsertCitiesIntoDB(db, w, r)
+	if len(aircraftTypes) == 0 {
+		err := helpers.InsertAircraftTypeIntoDB(db, w, r)
 		// Insert the countries into the database
 
 		//Refresh the countries from the database after inserting them
-		cities, err = db.GetCities()
+		aircraftTypes, err = db.GetAircraftType()
 
 		if err != nil {
-			log.Printf("error getting cities from database: %v", err)
+			log.Printf("error getting aircraft from database: %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
 
 	// Write the list of countries to the response
-	err = json.NewEncoder(w).Encode(cities)
+	err = json.NewEncoder(w).Encode(aircraftTypes)
 	if err != nil {
 		log.Printf("error encoding countries as JSON: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -54,7 +54,7 @@ func GetCities(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetCityByID(w http.ResponseWriter, r *http.Request) {
+func GetAircraftTypeByID(w http.ResponseWriter, r *http.Request) {
 	// Open a database connection and defer its closure
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -68,7 +68,7 @@ func GetCityByID(w http.ResponseWriter, r *http.Request) {
 	param := chi.URLParam(r, "id")
 
 	// Get the list of countries from the database.
-	city, err := db.GetCityByID(param)
+	city, err := db.GetAircraftTypeID(param)
 
 	if err != nil {
 		log.Printf("error getting cities from database: %v", err)
@@ -85,7 +85,7 @@ func GetCityByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DeleteCityByID(w http.ResponseWriter, r *http.Request) {
+func DeleteAircraftTypeByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -98,7 +98,7 @@ func DeleteCityByID(w http.ResponseWriter, r *http.Request) {
 	param := chi.URLParam(r, "id")
 
 	// Get the list of countries from the database.
-	city := db.DeleteCityByID(param)
+	city := db.DeleteAircraftTypeByID(param)
 
 	// Write the list of countries to the response
 	err = json.NewEncoder(w).Encode(city)
@@ -109,7 +109,7 @@ func DeleteCityByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func UpdateCityByID(w http.ResponseWriter, r *http.Request) {
+func UpdateAircraftTypeByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -134,7 +134,7 @@ func UpdateCityByID(w http.ResponseWriter, r *http.Request) {
 
 	updates["UpdatedAt"] = time.Now()
 
-	err = db.UpdateCityByID(param, updates)
+	err = db.UpdateAircraftTypeByID(param, updates)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -143,7 +143,7 @@ func UpdateCityByID(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func GetNumberOfCities(w http.ResponseWriter, r *http.Request) {
+func GetNumberOfAircraftTypes(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
@@ -153,12 +153,12 @@ func GetNumberOfCities(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	count, err := db.GetNumberOfCities()
+	count, err := db.GetNumberOfAircraftTypes()
 	if err != nil {
 		log.Printf("failed to get number of countries: %v", err)
 		response := struct {
 			Error string `json:"error"`
-		}{"failed to get number of cities"}
+		}{"failed to get number of aircraft types"}
 		jsonBytes, _ := json.Marshal(response)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(jsonBytes)
@@ -177,79 +177,4 @@ func GetNumberOfCities(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonBytes)
-}
-
-func GetCitiesFromCountry(w http.ResponseWriter, r *http.Request) {
-	// Open a database connection and defer its closure
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Get the list of countries from the database.
-	cities, err := db.GetCitiesFromCountry()
-
-	if err != nil {
-		log.Printf("error getting cities from database: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// If there are no countries in the database, fetch them from the API
-	//if len(cities) == 0 {
-	//	err := helpers.InsertCitiesIntoDB(db, w, r)
-	//	// Insert the countries into the database
-	//
-	//	//Refresh the countries from the database after inserting them
-	//	cities, err = db.GetCities()
-	//
-	//	if err != nil {
-	//		log.Printf("error getting countries from database: %v", err)
-	//		http.Error(w, err.Error(), http.StatusInternalServerError)
-	//		return
-	//	}
-	//}
-
-	// Write the list of countries to the response
-	err = json.NewEncoder(w).Encode(cities)
-	if err != nil {
-		log.Printf("error encoding countries as JSON: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-func GetCitiesFromCountryByID(w http.ResponseWriter, r *http.Request) {
-	// Open a database connection and defer its closure
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	db, err := database.OpenDBConnection()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	param := chi.URLParam(r, "id")
-
-	// Get the list of countries from the database.
-	city, err := db.GetCitiesFromCountryByID(param)
-
-	if err != nil {
-		log.Printf("error getting cities from database: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Write the list of countries to the response
-	err = json.NewEncoder(w).Encode(city)
-	if err != nil {
-		log.Printf("error encoding cities as JSON: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 }

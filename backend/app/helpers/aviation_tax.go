@@ -17,7 +17,7 @@ import (
 //	return 0, fmt.Errorf("CreateOrder: %v", err)
 //}
 
-func fetchTaxFromAPI(w http.ResponseWriter, r *http.Request) (models.TaxListResponse, error) {
+func fetchAviationTaxFromAPI(w http.ResponseWriter, r *http.Request) (models.TaxListResponse, error) {
 	body, err := api.GetAPIData("http://localhost:3000/data")
 	if err != nil {
 		log.Printf("error getting countries from API: %v", err)
@@ -35,8 +35,8 @@ func fetchTaxFromAPI(w http.ResponseWriter, r *http.Request) (models.TaxListResp
 	return taxResponse, err
 }
 
-func InsertTaxIntoDB(db *database.Queries, w http.ResponseWriter, r *http.Request) error {
-	taxResponse, err := fetchTaxFromAPI(w, r)
+func InsertAviationTaxIntoDB(db *database.Queries, w http.ResponseWriter, r *http.Request) error {
+	taxResponse, err := fetchAviationTaxFromAPI(w, r)
 	// Start a new transaction.
 	tx, err := db.CountryQueries.BeginTx(context.Background(), nil)
 	if err != nil {
@@ -59,7 +59,7 @@ func InsertTaxIntoDB(db *database.Queries, w http.ResponseWriter, r *http.Reques
 	// Insert the countries into the database within the transaction.
 	for _, t := range taxResponse {
 
-		err := db.CreateTax(&models.Tax{
+		err := db.CreateAviationTax(&models.Tax{
 			ID:        uuid.NewString(),
 			TaxId:     t.TaxId,
 			TaxName:   t.TaxName,

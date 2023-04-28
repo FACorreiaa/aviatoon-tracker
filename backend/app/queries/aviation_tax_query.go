@@ -24,7 +24,7 @@ func (q *TaxQueries) CreateTaxTable() error {
 	return nil
 }
 
-func (q *CountryQueries) CreateTax(t *models.Tax) error {
+func (q *CountryQueries) CreateAviationTax(t *models.Tax) error {
 	// Start a transaction.
 
 	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
@@ -55,7 +55,7 @@ func (q *CountryQueries) CreateTax(t *models.Tax) error {
 	return nil
 }
 
-func (q *CountryQueries) GetTax() ([]models.Tax, error) {
+func (q *CountryQueries) GetAviationTax() ([]models.Tax, error) {
 	var tax []models.Tax
 
 	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
@@ -98,7 +98,7 @@ func (q *CountryQueries) GetTax() ([]models.Tax, error) {
 	return tax, nil
 }
 
-func (q *CountryQueries) GetTaxByID(id string) (models.Tax, error) {
+func (q *CountryQueries) GetAviationTaxByID(id string) (models.Tax, error) {
 	var tax models.Tax
 
 	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
@@ -139,7 +139,7 @@ func (q *CountryQueries) GetTaxByID(id string) (models.Tax, error) {
 	return tax, nil
 }
 
-func (q *CountryQueries) DeleteTaxByID(id string) error {
+func (q *CountryQueries) DeleteAviationTaxByID(id string) error {
 	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -158,7 +158,7 @@ func (q *CountryQueries) DeleteTaxByID(id string) error {
 	return nil
 }
 
-func (q *CountryQueries) UpdateTaxByID(id string, updates map[string]interface{}) error {
+func (q *CountryQueries) UpdateAviationTaxByID(id string, updates map[string]interface{}) error {
 	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -187,7 +187,7 @@ func (q *CountryQueries) UpdateTaxByID(id string, updates map[string]interface{}
 	return nil
 }
 
-func (q *CountryQueries) GetNumberOfTax() (int, error) {
+func (q *CountryQueries) GetNumberOfAviationTax() (int, error) {
 	tx, err := q.BeginTx(context.TODO(), &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return 0, err
@@ -208,93 +208,4 @@ func (q *CountryQueries) GetNumberOfTax() (int, error) {
 	}
 
 	return count, nil
-}
-
-func (q *CountryQueries) GetTaxPerCity() ([]models.TaxPerCityInfo, error) {
-	var taxPerCity []models.TaxPerCityInfo
-	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
-	if err != nil {
-		return taxPerCity, fmt.Errorf("failed to begin transaction: %w", err)
-	}
-	defer tx.Rollback()
-
-	rows, err := tx.QueryContext(context.Background(), `
-        SELECT country.country_name, country.currency_code, country.currency_name,
-               country.capital, country.continent, city.city_name,
-               tax.tax_id, tax.tax_name, city.timezone, city.gmt from tax
-		INNER JOIN city
-		ON city.iata_code = tax.iata_code
-		INNER JOIN country
-		ON city.country_iso2 = country.country_iso_2`)
-	if err != nil {
-		return taxPerCity, fmt.Errorf("failed to execute query: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var taxInfo models.TaxPerCityInfo
-		err := rows.Scan(&taxInfo.TaxId, &taxInfo.TaxName, &taxInfo.Capital,
-			&taxInfo.CityName, &taxInfo.CountryName, &taxInfo.CurrencyName,
-			&taxInfo.CurrencyCode, &taxInfo.GMT, &taxInfo.Continent,
-			&taxInfo.Timezone,
-		)
-		if err != nil {
-			return taxPerCity, fmt.Errorf("failed to scan city info: %w", err)
-		}
-		taxPerCity = append(taxPerCity, taxInfo)
-	}
-	if err := rows.Err(); err != nil {
-		return taxPerCity, fmt.Errorf("failed to iterate over results: %w", err)
-	}
-
-	if err := tx.Commit(); err != nil {
-		return taxPerCity, fmt.Errorf("failed to commit transaction: %w", err)
-	}
-
-	return taxPerCity, nil
-}
-
-func (q *CountryQueries) GetTaxPerCityByTaxID(id string) ([]models.TaxPerCityInfo, error) {
-	var taxPerCity []models.TaxPerCityInfo
-	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
-	if err != nil {
-		return taxPerCity, fmt.Errorf("failed to begin transaction: %w", err)
-	}
-	defer tx.Rollback()
-
-	rows, err := tx.QueryContext(context.Background(), `
-        SELECT country.country_name, country.currency_code, country.currency_name,
-               country.capital, country.continent, city.city_name,
-               tax.tax_id, tax.tax_name, city.timezone, city.gmt from tax
-		INNER JOIN city
-		ON city.iata_code = tax.iata_code
-		INNER JOIN country
-		ON city.country_iso2 = country.country_iso_2
-        WHERE tax.tax_id = $1
-        `, id)
-	if err != nil {
-		return taxPerCity, fmt.Errorf("failed to execute query: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var taxInfo models.TaxPerCityInfo
-		err := rows.Scan(&taxInfo.TaxId,
-			&taxInfo.TaxName, &taxInfo.Capital, &taxInfo.CityName,
-			&taxInfo.CountryName, &taxInfo.CurrencyName, &taxInfo.CurrencyCode,
-			&taxInfo.GMT, &taxInfo.Continent, &taxInfo.Timezone)
-		if err != nil {
-			return taxPerCity, fmt.Errorf("failed to scan city info: %w", err)
-		}
-		taxPerCity = append(taxPerCity, taxInfo)
-	}
-	if err := rows.Err(); err != nil {
-		return taxPerCity, fmt.Errorf("failed to iterate over results: %w", err)
-	}
-
-	if err := tx.Commit(); err != nil {
-		return taxPerCity, fmt.Errorf("failed to commit transaction: %w", err)
-	}
-
-	return taxPerCity, nil
 }
