@@ -73,4 +73,8 @@ func PublicRoutes(router *chi.Mux) {
 		r.Delete("/", controllers.DeleteAirlineByID)
 		r.Put("/", controllers.UpdateAirlineByID)
 	})
+
+	//Airplanes
+	router.Get("/api/v1/airplanes", controllers.GetAirplanes)
+
 }

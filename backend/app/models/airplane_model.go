@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Airplane struct {
-	Id                     string      `json:"id"`
+	ID                     string      `json:"id"`
 	IataType               string      `json:"iata_type"`
 	AirplaneId             string      `json:"airplane_id"`
 	AirlineIataCode        string      `json:"airline_iata_code"`
@@ -11,10 +11,10 @@ type Airplane struct {
 	IataCodeShort          string      `json:"iata_code_short"`
 	AirlineIcaoCode        interface{} `json:"airline_icao_code"`
 	ConstructionNumber     string      `json:"construction_number"`
-	DeliveryDate           time.Time   `json:"delivery_date"`
+	DeliveryDate           time.Time   `db:"delivery_date" json:"delivery_date"`
 	EnginesCount           string      `json:"engines_count"`
 	EnginesType            string      `json:"engines_type"`
-	FirstFlightDate        time.Time   `json:"first_flight_date"`
+	FirstFlightDate        time.Time   `db:"first_flight_date" json:"first_flight_date"`
 	IcaoCodeHex            string      `json:"icao_code_hex"`
 	LineNumber             interface{} `json:"line_number"`
 	ModelCode              string      `json:"model_code"`
@@ -27,10 +27,10 @@ type Airplane struct {
 	PlaneSeries            string      `json:"plane_series"`
 	PlaneStatus            string      `json:"plane_status"`
 	ProductionLine         string      `json:"production_line"`
-	RegistrationDate       time.Time   `json:"registration_date"`
-	RolloutDate            string      `json:"rollout_date"`
+	RegistrationDate       time.Time   `db:"registration_date" json:"registration_date"`
+	RolloutDate            time.Time   `db:"rollout_date" json:"rollout_date"`
+	CreatedAt              time.Time   `db:"created_at" json:"created_at"`
+	UpdatedAt              *time.Time  `db:"updated_at" json:"updated_at"`
 }
 
-type AirplaneResponse struct {
-	AirplaneList []Airplane `json:"results"`
-}
+type AirplaneResponse []Airplane
