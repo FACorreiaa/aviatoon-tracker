@@ -57,11 +57,19 @@ func PublicRoutes(router *chi.Mux) {
 	})
 
 	//Airline
-	router.Get("/api/v1/airline", controllers.GetAirlines)
-	router.Get("/api/v1/airline/count", controllers.GetNumberOfAirlines)
 
-	router.Route("/api/v1/airline/{id}", func(r chi.Router) {
+	router.Get("/api/v1/airlines", controllers.GetAirlines)
+	router.Get("/api/v1/airlines/count", controllers.GetNumberOfAirlines)
+	router.Get("/api/v1/airlines/city/country", controllers.GetAirlineFromCountry)
+	router.Get("/api/v1/airlines?city_name={city_name}", controllers.GetAirlineFromCityName)
+	router.Get("/api/v1/airlines?country_name={country_name}", controllers.GetAirlineFromCountryName)
+	router.Get("/api/v1/airlines?city_name={city_name}", controllers.GetAirlineFromCityName)
+	router.Get("/api/v1/airlines?country_name={country_name}&city_name={city_name}", controllers.GetAirlineFromCountryAndCityName)
+
+	router.Route("/api/v1/airlines/{id}", func(r chi.Router) {
 		r.Get("/", controllers.GetAirlineByID)
+		r.Get("/city/country", controllers.GetAirlineFromCountryByID)
+
 		r.Delete("/", controllers.DeleteAirlineByID)
 		r.Put("/", controllers.UpdateAirlineByID)
 	})

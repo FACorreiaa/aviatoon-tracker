@@ -252,3 +252,261 @@ func (q *AirlineQueries) GetNumberOfAirlines() (int, error) {
 
 	return count, nil
 }
+
+func (q *AirlineQueries) GetAirlinesFromCountry() ([]models.AirlineInfo, error) {
+	var airlines []models.AirlineInfo
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airlines, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+                SELECT DISTINCT a.airline_id, a.airline_name, a.call_sign, a.hub_code,
+               a.data_founded, a.status, a.type, a.iata_code, a.icao_code, a.country_iso_2,
+               a.iata_prefix_accounting,
+               ct.city_name, ct.gmt, ct.city_id, ct.timezone, ct.latitude, ct.longitude,
+               c.id, c.population, c.country_name, c.capital, c.currency_name, c.currency_code, c.continent,
+               c.phone_prefix, a.created_at, a.updated_at
+        FROM airline a
+        INNER JOIN city ct ON ct.country_iso2 = a.country_iso_2
+        INNER JOIN country c   ON a.country_iso_2 = c.country_iso_2
+        ORDER BY a.airline_id`)
+	if err != nil {
+		return airlines, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airlineInfo models.AirlineInfo
+		err := rows.Scan(&airlineInfo.AirlineId, &airlineInfo.AirlineName, &airlineInfo.CallSign,
+			&airlineInfo.HubCode, &airlineInfo.DataFounded, &airlineInfo.Status,
+			&airlineInfo.Type, &airlineInfo.IataCode, &airlineInfo.IcaoCode,
+			&airlineInfo.CountryIso2, &airlineInfo.IataPrefixAccounting, &airlineInfo.CityName,
+			&airlineInfo.GMT, &airlineInfo.CityId, &airlineInfo.Timezone, &airlineInfo.Latitude, &airlineInfo.Longitude,
+			&airlineInfo.CountryId, &airlineInfo.Population, &airlineInfo.CountryName, &airlineInfo.Capital,
+			&airlineInfo.CurrencyName, &airlineInfo.CurrencyCode, &airlineInfo.Continent, &airlineInfo.PhonePrefix,
+			&airlineInfo.CreatedAt, &airlineInfo.UpdatedAt)
+
+		if err != nil {
+			return airlines, fmt.Errorf("failed to scan airline info: %w", err)
+		}
+		airlines = append(airlines, airlineInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airlines, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airlines, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airlines, nil
+}
+
+func (q *AirlineQueries) GetAirlinesFromCountryByID(id string) ([]models.AirlineInfo, error) {
+	var airlines []models.AirlineInfo
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airlines, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT DISTINCT a.airline_id, a.airline_name, a.call_sign, a.hub_code,
+               a.data_founded, a.status, a.type, a.iata_code, a.icao_code, a.country_iso_2,
+               a.iata_prefix_accounting,
+               ct.city_name, ct.gmt, ct.city_id, ct.timezone, ct.latitude, ct.longitude,
+               c.id, c.population, c.country_name, c.capital, c.currency_name, c.currency_code, c.continent,
+               c.phone_prefix, a.created_at, a.updated_at
+        FROM airline a
+        INNER JOIN city ct ON ct.country_iso2 = a.country_iso_2
+        INNER JOIN country c   ON a.country_iso_2 = c.country_iso_2
+        WHERE a.airline_id = $1
+        ORDER BY a.airline_id`, id)
+	if err != nil {
+		return airlines, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airlineInfo models.AirlineInfo
+		err := rows.Scan(&airlineInfo.AirlineId, &airlineInfo.AirlineName, &airlineInfo.CallSign,
+			&airlineInfo.HubCode, &airlineInfo.DataFounded, &airlineInfo.Status,
+			&airlineInfo.Type, &airlineInfo.IataCode, &airlineInfo.IcaoCode,
+			&airlineInfo.CountryIso2, &airlineInfo.IataPrefixAccounting, &airlineInfo.CityName,
+			&airlineInfo.GMT, &airlineInfo.CityId, &airlineInfo.Timezone, &airlineInfo.Latitude, &airlineInfo.Longitude,
+			&airlineInfo.CountryId, &airlineInfo.Population, &airlineInfo.CountryName, &airlineInfo.Capital,
+			&airlineInfo.CurrencyName, &airlineInfo.CurrencyCode, &airlineInfo.Continent, &airlineInfo.PhonePrefix,
+			&airlineInfo.CreatedAt, &airlineInfo.UpdatedAt)
+		if err != nil {
+			return airlines, fmt.Errorf("failed to scan airline info: %w", err)
+		}
+		airlines = append(airlines, airlineInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airlines, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airlines, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airlines, nil
+}
+
+func (q *AirlineQueries) GetAirlinesFromCountryName(countryName string) ([]models.AirlineInfo, error) {
+	var airlines []models.AirlineInfo
+
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airlines, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT DISTINCT a.airline_id, a.airline_name, a.call_sign, a.hub_code,
+               a.data_founded, a.status, a.type, a.iata_code, a.icao_code, a.country_iso_2,
+               a.iata_prefix_accounting,
+               ct.city_name, ct.gmt, ct.city_id, ct.timezone, ct.latitude, ct.longitude,
+               c.id, c.population, c.country_name, c.capital, c.currency_name, c.currency_code, c.continent,
+               c.phone_prefix, a.created_at, a.updated_at
+        FROM airline a
+        INNER JOIN city ct ON ct.country_iso2 = a.country_iso_2
+        INNER JOIN country c   ON a.country_iso_2 = c.country_iso_2
+        WHERE c.country_name = $1
+        ORDER BY a.airline_id`, countryName)
+	if err != nil {
+		return airlines, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airlineInfo models.AirlineInfo
+		err := rows.Scan(&airlineInfo.AirlineId, &airlineInfo.AirlineName, &airlineInfo.CallSign,
+			&airlineInfo.HubCode, &airlineInfo.DataFounded, &airlineInfo.Status,
+			&airlineInfo.Type, &airlineInfo.IataCode, &airlineInfo.IcaoCode,
+			&airlineInfo.CountryIso2, &airlineInfo.IataPrefixAccounting, &airlineInfo.CityName,
+			&airlineInfo.GMT, &airlineInfo.CityId, &airlineInfo.Timezone, &airlineInfo.Latitude, &airlineInfo.Longitude,
+			&airlineInfo.CountryId, &airlineInfo.Population, &airlineInfo.CountryName, &airlineInfo.Capital,
+			&airlineInfo.CurrencyName, &airlineInfo.CurrencyCode, &airlineInfo.Continent, &airlineInfo.PhonePrefix,
+			&airlineInfo.CreatedAt, &airlineInfo.UpdatedAt)
+		if err != nil {
+			return airlines, fmt.Errorf("failed to scan airline info: %w", err)
+		}
+		airlines = append(airlines, airlineInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airlines, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airlines, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airlines, nil
+}
+
+func (q *AirlineQueries) GetAirlinesFromCityName(cityName string) ([]models.AirlineInfo, error) {
+	var airlines []models.AirlineInfo
+
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airlines, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT DISTINCT a.airline_id, a.airline_name, a.call_sign, a.hub_code,
+               a.data_founded, a.status, a.type, a.iata_code, a.icao_code, a.country_iso_2,
+               a.iata_prefix_accounting,
+               ct.city_name, ct.gmt, ct.city_id, ct.timezone, ct.latitude, ct.longitude,
+               c.id, c.population, c.country_name, c.capital, c.currency_name, c.currency_code, c.continent,
+               c.phone_prefix, a.created_at, a.updated_at
+        FROM airline a
+        INNER JOIN city ct ON ct.country_iso2 = a.country_iso_2
+        INNER JOIN country c   ON a.country_iso_2 = c.country_iso_2
+        WHERE ct.city_name = $1
+        ORDER BY a.airline_id`, cityName)
+	if err != nil {
+		return airlines, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airlineInfo models.AirlineInfo
+		err := rows.Scan(&airlineInfo.AirlineId, &airlineInfo.AirlineName, &airlineInfo.CallSign,
+			&airlineInfo.HubCode, &airlineInfo.DataFounded, &airlineInfo.Status,
+			&airlineInfo.Type, &airlineInfo.IataCode, &airlineInfo.IcaoCode,
+			&airlineInfo.CountryIso2, &airlineInfo.IataPrefixAccounting, &airlineInfo.CityName,
+			&airlineInfo.GMT, &airlineInfo.CityId, &airlineInfo.Timezone, &airlineInfo.Latitude, &airlineInfo.Longitude,
+			&airlineInfo.CountryId, &airlineInfo.Population, &airlineInfo.CountryName, &airlineInfo.Capital,
+			&airlineInfo.CurrencyName, &airlineInfo.CurrencyCode, &airlineInfo.Continent, &airlineInfo.PhonePrefix,
+			&airlineInfo.CreatedAt, &airlineInfo.UpdatedAt)
+		if err != nil {
+			return airlines, fmt.Errorf("failed to scan airline info: %w", err)
+		}
+		airlines = append(airlines, airlineInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airlines, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airlines, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airlines, nil
+}
+
+func (q *AirlineQueries) GetAirlineFromCountryAndCityName(countryName string, cityName string) ([]models.AirlineInfo, error) {
+	var airlines []models.AirlineInfo
+
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airlines, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT DISTINCT a.airline_id, a.airline_name, a.call_sign, a.hub_code,
+               a.data_founded, a.status, a.type, a.iata_code, a.icao_code, a.country_iso_2,
+               a.iata_prefix_accounting,
+               ct.city_name, ct.gmt, ct.city_id, ct.timezone, ct.latitude, ct.longitude,
+               c.id, c.population, c.country_name, c.capital, c.currency_name, c.currency_code, c.continent,
+               c.phone_prefix, a.created_at, a.updated_at
+        FROM airline a
+        INNER JOIN city ct ON ct.country_iso2 = a.country_iso_2
+        INNER JOIN country c   ON a.country_iso_2 = c.country_iso_2
+        WHERE c.country_name = $1 AND ct.city_name = $2
+        ORDER BY a.airline_id`, countryName, cityName)
+	if err != nil {
+		return airlines, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airlineInfo models.AirlineInfo
+		err := rows.Scan(&airlineInfo.AirlineId, &airlineInfo.AirlineName, &airlineInfo.CallSign,
+			&airlineInfo.HubCode, &airlineInfo.DataFounded, &airlineInfo.Status,
+			&airlineInfo.Type, &airlineInfo.IataCode, &airlineInfo.IcaoCode,
+			&airlineInfo.CountryIso2, &airlineInfo.IataPrefixAccounting, &airlineInfo.CityName,
+			&airlineInfo.GMT, &airlineInfo.CityId, &airlineInfo.Timezone, &airlineInfo.Latitude, &airlineInfo.Longitude,
+			&airlineInfo.CountryId, &airlineInfo.Population, &airlineInfo.CountryName, &airlineInfo.Capital,
+			&airlineInfo.CurrencyName, &airlineInfo.CurrencyCode, &airlineInfo.Continent, &airlineInfo.PhonePrefix,
+			&airlineInfo.CreatedAt, &airlineInfo.UpdatedAt)
+		if err != nil {
+			return airlines, fmt.Errorf("failed to scan airline info: %w", err)
+		}
+		airlines = append(airlines, airlineInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airlines, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airlines, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airlines, nil
+}
