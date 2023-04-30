@@ -234,3 +234,164 @@ func (q *AirportQueries) GetNumberOfAirports() (int, error) {
 
 	return count, nil
 }
+
+func (q *AirportQueries) GetAirportCities() ([]models.AirportInfo, error) {
+	var airportsInfo []models.AirportInfo
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airportsInfo, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT ap.*, ct.city_name  FROM airport ap
+		INNER JOIN city ct ON ap.city_iata_code = ct.iata_code
+        ORDER BY ap.airport_id`)
+	if err != nil {
+		return airportsInfo, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airportInfo models.AirportInfo
+		err := rows.Scan(
+			&airportInfo.ID,
+			&airportInfo.GMT,
+			&airportInfo.AirportId,
+			&airportInfo.IataCode,
+			&airportInfo.CityIataCode,
+			&airportInfo.IcaoCode,
+			&airportInfo.CountryIso2,
+			&airportInfo.GeonameId,
+			&airportInfo.Latitude,
+			&airportInfo.Longitude,
+			&airportInfo.AirportName,
+			&airportInfo.CountryName,
+			&airportInfo.PhoneNumber,
+			&airportInfo.Timezone,
+			&airportInfo.CreatedAt,
+			&airportInfo.UpdatedAt,
+			&airportInfo.CityName)
+		if err != nil {
+			return airportsInfo, fmt.Errorf("failed to scan airplanes info: %w", err)
+		}
+		airportsInfo = append(airportsInfo, airportInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airportsInfo, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airportsInfo, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airportsInfo, nil
+}
+
+func (q *AirportQueries) GetAirportsByCityName(city_name string) ([]models.AirportInfo, error) {
+	var airportsInfo []models.AirportInfo
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airportsInfo, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT ap.*, ct.city_name  FROM airport ap
+		INNER JOIN city ct ON ap.city_iata_code = ct.iata_code
+        WHERE ct.city_name = $1
+        ORDER BY ap.airport_id`, city_name)
+	if err != nil {
+		return airportsInfo, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airportInfo models.AirportInfo
+		err := rows.Scan(
+			&airportInfo.ID,
+			&airportInfo.GMT,
+			&airportInfo.AirportId,
+			&airportInfo.IataCode,
+			&airportInfo.CityIataCode,
+			&airportInfo.IcaoCode,
+			&airportInfo.CountryIso2,
+			&airportInfo.GeonameId,
+			&airportInfo.Latitude,
+			&airportInfo.Longitude,
+			&airportInfo.AirportName,
+			&airportInfo.CountryName,
+			&airportInfo.PhoneNumber,
+			&airportInfo.Timezone,
+			&airportInfo.CreatedAt,
+			&airportInfo.UpdatedAt,
+			&airportInfo.CityName)
+		if err != nil {
+			return airportsInfo, fmt.Errorf("failed to scan airplanes info: %w", err)
+		}
+		airportsInfo = append(airportsInfo, airportInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airportsInfo, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airportsInfo, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airportsInfo, nil
+}
+
+func (q *AirportQueries) GetAirportsByCountryName(country_name string) ([]models.AirportInfo, error) {
+	var airportsInfo []models.AirportInfo
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airportsInfo, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT ap.*, ct.city_name  FROM airport ap
+		INNER JOIN city ct ON ap.city_iata_code = ct.iata_code
+        WHERE ap.country_name = $1
+        ORDER BY ap.airport_id`, country_name)
+	if err != nil {
+		return airportsInfo, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airportInfo models.AirportInfo
+		err := rows.Scan(
+			&airportInfo.ID,
+			&airportInfo.GMT,
+			&airportInfo.AirportId,
+			&airportInfo.IataCode,
+			&airportInfo.CityIataCode,
+			&airportInfo.IcaoCode,
+			&airportInfo.CountryIso2,
+			&airportInfo.GeonameId,
+			&airportInfo.Latitude,
+			&airportInfo.Longitude,
+			&airportInfo.AirportName,
+			&airportInfo.CountryName,
+			&airportInfo.PhoneNumber,
+			&airportInfo.Timezone,
+			&airportInfo.CreatedAt,
+			&airportInfo.UpdatedAt,
+			&airportInfo.CityName)
+		if err != nil {
+			return airportsInfo, fmt.Errorf("failed to scan airplanes info: %w", err)
+		}
+		airportsInfo = append(airportsInfo, airportInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airportsInfo, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airportsInfo, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airportsInfo, nil
+}

@@ -94,5 +94,8 @@ func PublicRoutes(router *chi.Mux) {
 		r.Delete("/", controllers.DeleteAirportByID)
 		r.Put("/", controllers.UpdateAirportByID)
 	})
+	router.Get("/api/v1/airports/city", controllers.GetAirportCities)
+	router.Get("/api/v1/airports/city?city_name={city_name}", controllers.GetAirportsByCityName)
+	router.Get("/api/v1/airports/city?country_name={country_name}", controllers.GetAirportsByCountryName)
 
 }
