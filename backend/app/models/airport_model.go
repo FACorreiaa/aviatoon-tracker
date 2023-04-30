@@ -1,8 +1,10 @@
 package models
 
+import "time"
+
 type Airport struct {
-	Id           string      `json:"id"`
-	Gmt          string      `json:"gmt"`
+	ID           string      `json:"id"`
+	GMT          string      `json:"gmt"`
 	AirportId    string      `json:"airport_id"`
 	IataCode     string      `json:"iata_code"`
 	CityIataCode string      `json:"city_iata_code"`
@@ -15,8 +17,8 @@ type Airport struct {
 	CountryName  string      `json:"country_name"`
 	PhoneNumber  interface{} `json:"phone_number"`
 	Timezone     string      `json:"timezone"`
+	CreatedAt    time.Time   `db:"created_at" json:"created_at"`
+	UpdatedAt    *time.Time  `db:"updated_at" json:"updated_at"`
 }
 
-type AirportResponse struct {
-	AirportList []Airport `json:"results"`
-}
+type AirportResponse []Airport

@@ -13,22 +13,6 @@ import (
 	"time"
 )
 
-// change later
-//func failError(err error) (int64, error) {
-//	return 0, fmt.Errorf("CreateOrder: %v", err)
-//}
-
-//func parseTime(s string) (time.Time, error) {
-//	if s == "0000-00-00" {
-//		return time.Time{}, nil
-//	}
-//	if s == "" {
-//		return time.Time{}, nil
-//	}
-//
-//	return time.Parse("2006-01-02T15:04:05.000Z07:00", s)
-//}
-
 func fetchAirplanesFromAPI(w http.ResponseWriter, r *http.Request) (models.AirplaneResponse, error) {
 	body, err := api.GetAPIData("http://localhost:3000/data")
 	if err != nil {

@@ -85,8 +85,14 @@ func PublicRoutes(router *chi.Mux) {
 	router.Get("/api/v1/airplanes/airlines", controllers.GetAirplanesFromAirline)
 	router.Get("/api/v1/airplanes/airlines?airline_name={airline_name}", controllers.GetAirplanesFromAirlineName)
 	router.Get("/api/v1/airplanes/airlines?country_name={country_name}", controllers.GetAirplanesFromAirlineCountry)
-	//Make another one to search by name
-	//SELECT ap.*, al.airline_name, al.country_name, al.fleet_size, al.status, al.type, al.hub_code, al.call_sign, al.country_name FROM airplane ap
-	//INNER JOIN airline al ON ap.airline_iata_code = al.iata_code;
+
+	//Airports
+	router.Get("/api/v1/airports", controllers.GetAirports)
+	router.Get("/api/v1/airports/count", controllers.GetNumberOfAirports)
+	router.Route("/api/v1/airports/{id}", func(r chi.Router) {
+		r.Get("/", controllers.GetAirportByID)
+		r.Delete("/", controllers.DeleteAirportByID)
+		r.Put("/", controllers.UpdateAirportByID)
+	})
 
 }
