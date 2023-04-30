@@ -49,10 +49,10 @@ func (q *AirplaneQueries) CreateAirplane(a *models.Airplane) error {
 		a.IataCodeShort,
 		a.AirlineIcaoCode,
 		a.ConstructionNumber,
-		a.DeliveryDate.Format("2006-01-02 15:04:05-07"),
+		a.DeliveryDate,
 		a.EnginesCount,
 		a.EnginesType,
-		a.FirstFlightDate.Format("2006-01-02 15:04:05-07"),
+		a.FirstFlightDate,
 		a.IcaoCodeHex,
 		a.LineNumber,
 		a.ModelCode,
@@ -65,7 +65,7 @@ func (q *AirplaneQueries) CreateAirplane(a *models.Airplane) error {
 		a.PlaneSeries,
 		a.PlaneStatus,
 		a.ProductionLine,
-		a.RegistrationDate.Format("2006-01-02 15:04:05-07"),
+		a.RegistrationDate,
 		a.RolloutDate,
 		a.CreatedAt,
 		a.UpdatedAt,
@@ -276,4 +276,167 @@ func (q *AirplaneQueries) GetNumberOfAirplanes() (int, error) {
 	}
 
 	return count, nil
+}
+
+func (q *AirplaneQueries) GetAirplanesFromAirline() ([]models.AirplaneInfo, error) {
+	var airplanesInfo []models.AirplaneInfo
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airplanesInfo, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT ap.id, ap.iata_type, ap.airplane_id, ap.airline_iata_code, ap.iata_code_long,
+				ap.iata_code_short, ap.airline_icao_code, ap.construction_number, ap.delivery_date,
+				ap.engines_type, ap.first_flight_date, ap.icao_code_hex, ap.line_number, ap.model_code,
+				ap.registration_number, ap.test_registration_number, ap.plane_age, ap.plane_class,
+				ap.model_name, ap.plane_owner, ap.plane_series, ap.plane_status, ap.production_line,
+				ap.registration_date, ap.rollout_date, ap.created_at, ap.updated_at,
+					al.airline_name, al.country_name,
+              	 	al.country_iso_2, al.fleet_size, al.status,
+               		al.type, al.hub_code, al.call_sign
+        FROM airplane ap
+        INNER JOIN airline al ON ap.airline_iata_code = al.iata_code`)
+	if err != nil {
+		return airplanesInfo, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airplaneInfo models.AirplaneInfo
+		err := rows.Scan(
+			&airplaneInfo.ID, &airplaneInfo.IataType, &airplaneInfo.AirplaneId,
+			&airplaneInfo.AirlineIataCode, &airplaneInfo.IataCodeLong, &airplaneInfo.IataCodeShort,
+			&airplaneInfo.AirlineIcaoCode, &airplaneInfo.ConstructionNumber, &airplaneInfo.DeliveryDate,
+			&airplaneInfo.EnginesCount, &airplaneInfo.EnginesType, &airplaneInfo.FirstFlightDate,
+			&airplaneInfo.IcaoCodeHex, &airplaneInfo.LineNumber, &airplaneInfo.ModelCode,
+			&airplaneInfo.RegistrationNumber, &airplaneInfo.TestRegistrationNumber, &airplaneInfo.PlaneAge,
+			&airplaneInfo.PlaneClass, &airplaneInfo.ModelName, &airplaneInfo.PlaneOwner,
+			&airplaneInfo.PlaneSeries, &airplaneInfo.PlaneStatus, &airplaneInfo.ProductionLine,
+			&airplaneInfo.RegistrationDate, &airplaneInfo.RolloutDate, &airplaneInfo.CreatedAt,
+			&airplaneInfo.UpdatedAt, &airplaneInfo.AirlineName, &airplaneInfo.CountryName, &airplaneInfo.CountryIso2,
+			&airplaneInfo.FleetSize, &airplaneInfo.Status, &airplaneInfo.Type, &airplaneInfo.HubCode, &airplaneInfo.CallSign)
+		if err != nil {
+			return airplanesInfo, fmt.Errorf("failed to scan airplanes info: %w", err)
+		}
+		airplanesInfo = append(airplanesInfo, airplaneInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airplanesInfo, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airplanesInfo, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airplanesInfo, nil
+}
+
+func (q *AirplaneQueries) GetAirplanesFromAirlineName(airline_name string) ([]models.AirplaneInfo, error) {
+	var airplanesInfo []models.AirplaneInfo
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airplanesInfo, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT ap.*, al.airline_name, al.country_name,
+               al.country_iso_2, al.fleet_size, al.status,
+               al.type, al.hub_code, al.call_sign
+        FROM airplane ap
+        INNER JOIN airline al ON ap.airline_iata_code = al.iata_code
+        WHERE al.airline_name = $1
+        ORDER BY ap.airplane_id`, airline_name)
+	if err != nil {
+		return airplanesInfo, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airplaneInfo models.AirplaneInfo
+		err := rows.Scan(
+			&airplaneInfo.ID, &airplaneInfo.IataType, &airplaneInfo.AirplaneId,
+			&airplaneInfo.AirlineIataCode, &airplaneInfo.IataCodeLong, &airplaneInfo.IataCodeShort,
+			&airplaneInfo.AirlineIcaoCode, &airplaneInfo.ConstructionNumber, &airplaneInfo.DeliveryDate,
+			&airplaneInfo.EnginesCount, &airplaneInfo.EnginesType, &airplaneInfo.FirstFlightDate,
+			&airplaneInfo.IcaoCodeHex, &airplaneInfo.LineNumber, &airplaneInfo.ModelCode,
+			&airplaneInfo.RegistrationNumber, &airplaneInfo.TestRegistrationNumber, &airplaneInfo.PlaneAge,
+			&airplaneInfo.PlaneClass, &airplaneInfo.ModelName, &airplaneInfo.PlaneOwner,
+			&airplaneInfo.PlaneSeries, &airplaneInfo.PlaneStatus, &airplaneInfo.ProductionLine,
+			&airplaneInfo.RegistrationDate, &airplaneInfo.RolloutDate, &airplaneInfo.CreatedAt,
+			&airplaneInfo.UpdatedAt, &airplaneInfo.AirlineName, &airplaneInfo.CountryName, &airplaneInfo.CountryIso2,
+			&airplaneInfo.FleetSize, &airplaneInfo.Status, &airplaneInfo.Type, &airplaneInfo.HubCode, &airplaneInfo.CallSign)
+		if err != nil {
+			return airplanesInfo, fmt.Errorf("failed to scan airplanes info: %w", err)
+		}
+		airplanesInfo = append(airplanesInfo, airplaneInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airplanesInfo, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airplanesInfo, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airplanesInfo, nil
+}
+
+func (q *AirplaneQueries) GetAirplanesFromAirlineCountry(country_name string) ([]models.AirplaneInfo, error) {
+	var airplanesInfo []models.AirplaneInfo
+	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return airplanesInfo, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.QueryContext(context.Background(), `
+        SELECT ap.id, ap.iata_type, ap.airplane_id, ap.airline_iata_code, ap.iata_code_long,
+				ap.iata_code_short, ap.airline_icao_code, ap.construction_number, ap.delivery_date,
+				ap.engines_type, ap.first_flight_date, ap.icao_code_hex, ap.line_number, ap.model_code,
+				ap.registration_number, ap.test_registration_number, ap.plane_age, ap.plane_class,
+				ap.model_name, ap.plane_owner, ap.plane_series, ap.plane_status, ap.production_line,
+				ap.registration_date, ap.rollout_date, ap.created_at, ap.updated_at,
+					al.airline_name, al.country_name,
+              	 	al.country_iso_2, al.fleet_size, al.status,
+               		al.type, al.hub_code, al.call_sign
+        FROM airplane ap
+        INNER JOIN airline al ON ap.airline_iata_code = al.iata_code
+        WHERE al.country_name = $1
+        ORDER BY ap.airplane_id`, country_name)
+	if err != nil {
+		return airplanesInfo, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var airplaneInfo models.AirplaneInfo
+		err := rows.Scan(
+			&airplaneInfo.ID, &airplaneInfo.IataType, &airplaneInfo.AirplaneId,
+			&airplaneInfo.AirlineIataCode, &airplaneInfo.IataCodeLong, &airplaneInfo.IataCodeShort,
+			&airplaneInfo.AirlineIcaoCode, &airplaneInfo.ConstructionNumber, &airplaneInfo.DeliveryDate,
+			&airplaneInfo.EnginesCount, &airplaneInfo.EnginesType, &airplaneInfo.FirstFlightDate,
+			&airplaneInfo.IcaoCodeHex, &airplaneInfo.LineNumber, &airplaneInfo.ModelCode,
+			&airplaneInfo.RegistrationNumber, &airplaneInfo.TestRegistrationNumber, &airplaneInfo.PlaneAge,
+			&airplaneInfo.PlaneClass, &airplaneInfo.ModelName, &airplaneInfo.PlaneOwner,
+			&airplaneInfo.PlaneSeries, &airplaneInfo.PlaneStatus, &airplaneInfo.ProductionLine,
+			&airplaneInfo.RegistrationDate, &airplaneInfo.RolloutDate, &airplaneInfo.CreatedAt,
+			&airplaneInfo.UpdatedAt, &airplaneInfo.AirlineName, &airplaneInfo.CountryName, &airplaneInfo.CountryIso2,
+			&airplaneInfo.FleetSize, &airplaneInfo.Status, &airplaneInfo.Type, &airplaneInfo.HubCode, &airplaneInfo.CallSign)
+		if err != nil {
+			return airplanesInfo, fmt.Errorf("failed to scan airplanes info: %w", err)
+		}
+		airplanesInfo = append(airplanesInfo, airplaneInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return airplanesInfo, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return airplanesInfo, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return airplanesInfo, nil
 }

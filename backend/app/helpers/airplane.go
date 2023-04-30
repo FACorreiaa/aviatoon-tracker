@@ -18,6 +18,17 @@ import (
 //	return 0, fmt.Errorf("CreateOrder: %v", err)
 //}
 
+//func parseTime(s string) (time.Time, error) {
+//	if s == "0000-00-00" {
+//		return time.Time{}, nil
+//	}
+//	if s == "" {
+//		return time.Time{}, nil
+//	}
+//
+//	return time.Parse("2006-01-02T15:04:05.000Z07:00", s)
+//}
+
 func fetchAirplanesFromAPI(w http.ResponseWriter, r *http.Request) (models.AirplaneResponse, error) {
 	body, err := api.GetAPIData("http://localhost:3000/data")
 	if err != nil {
@@ -26,7 +37,7 @@ func fetchAirplanesFromAPI(w http.ResponseWriter, r *http.Request) (models.Airpl
 	}
 
 	// Replace "0000-00-00" datetime values with zero value of time.Time
-	body = bytes.ReplaceAll(body, []byte("0000-00-00"), []byte("1970-01-01"))
+	body = bytes.ReplaceAll(body, []byte("0000-00-00"), []byte("2006-01-02T15:04:05.000Z"))
 
 	var airplaneResponse models.AirplaneResponse
 	err = json.Unmarshal(body, &airplaneResponse)
@@ -64,11 +75,6 @@ func InsertAirplaneIntoDB(db *database.Queries, w http.ResponseWriter, r *http.R
 
 	// Insert the countries into the database within the transaction.
 	for _, a := range airplaneResponse {
-		//parsedRolloutDate, err := parseTime(a.RolloutDate.Format("2006-01-02 15:04:05"))
-		if err != nil {
-			log.Printf("error parsing rollout date for airplane %q: %v", a.AirplaneId, err)
-			continue
-		}
 
 		err := db.CreateAirplane(&models.Airplane{
 			ID:                     uuid.NewString(),

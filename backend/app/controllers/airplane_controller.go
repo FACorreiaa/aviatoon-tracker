@@ -178,3 +178,109 @@ func GetNumberOfAirplanes(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonBytes)
 }
+
+func GetAirplanesFromAirline(w http.ResponseWriter, r *http.Request) {
+	// Open a database connection and defer its closure
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Get the list of airplanes from the database.
+	airplanes, err := db.GetAirplanesFromAirline()
+
+	if err != nil {
+		log.Printf("error getting airplanes from database: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// If there are no countries in the database, fetch them from the API
+	//if len(cities) == 0 {
+	//	err := helpers.InsertCitiesIntoDB(db, w, r)
+	//	// Insert the countries into the database
+	//
+	//	//Refresh the countries from the database after inserting them
+	//	cities, err = db.GetCities()
+	//
+	//	if err != nil {
+	//		log.Printf("error getting countries from database: %v", err)
+	//		http.Error(w, err.Error(), http.StatusInternalServerError)
+	//		return
+	//	}
+	//}
+
+	// Write the list of countries to the response
+	err = json.NewEncoder(w).Encode(airplanes)
+	if err != nil {
+		log.Printf("error encoding airplanes as JSON: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func GetAirplanesFromAirlineName(w http.ResponseWriter, r *http.Request) {
+	// Open a database connection and defer its closure
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	query := r.URL.Query()
+	airline_name := query.Get("airline_name")
+
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Get the list of airplaneName from the database.
+	airplane, err := db.GetAirplanesFromAirlineName(airline_name)
+
+	if err != nil {
+		log.Printf("error getting airline from database: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Write the list of airplaneName to the response
+	err = json.NewEncoder(w).Encode(airplane)
+	if err != nil {
+		log.Printf("error encoding airline as JSON: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func GetAirplanesFromAirlineCountry(w http.ResponseWriter, r *http.Request) {
+	// Open a database connection and defer its closure
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	query := r.URL.Query()
+	country_name := query.Get("country_name")
+
+	db, err := database.OpenDBConnection()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Get the list of countries from the database.
+	airplane, err := db.GetAirplanesFromAirlineCountry(country_name)
+
+	if err != nil {
+		log.Printf("error getting airplane from database: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Write the list of countries to the response
+	err = json.NewEncoder(w).Encode(airplane)
+	if err != nil {
+		log.Printf("error encoding airplane as JSON: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

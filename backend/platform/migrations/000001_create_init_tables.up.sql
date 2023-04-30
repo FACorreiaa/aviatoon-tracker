@@ -66,6 +66,7 @@ CREATE TABLE airplane (id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                         plane_status varchar(255),
                         production_line varchar(255),
                         registration_date TIMESTAMP,
+                        rollout_date TIMESTAMP,
                         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
                         updated_at TIMESTAMP NULL);
 
