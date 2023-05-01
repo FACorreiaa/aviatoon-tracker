@@ -1,18 +1,21 @@
 package models
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Airport struct {
 	ID           string      `json:"id"`
-	GMT          string      `json:"gmt"`
-	AirportId    string      `json:"airport_id"`
+	GMT          int         `json:"gmt"`
+	AirportId    int         `json:"airport_id"`
 	IataCode     string      `json:"iata_code"`
 	CityIataCode string      `json:"city_iata_code"`
 	IcaoCode     string      `json:"icao_code"`
 	CountryIso2  string      `json:"country_iso2"`
-	GeonameId    string      `json:"geoname_id"`
-	Latitude     string      `json:"latitude"`
-	Longitude    string      `json:"longitude"`
+	GeonameId    int         `json:"geoname_id"`
+	Latitude     float64     `json:"latitude"`
+	Longitude    float64     `json:"longitude"`
 	AirportName  string      `json:"airport_name"`
 	CountryName  string      `json:"country_name"`
 	PhoneNumber  interface{} `json:"phone_number"`
@@ -22,16 +25,16 @@ type Airport struct {
 }
 
 type AirportInfo struct {
-	ID           string      `json:"id"`
-	GMT          string      `json:"gmt"`
-	AirportId    string      `json:"airport_id"`
+	ID           uuid.UUID   `json:"id"`
+	GMT          int         `json:"gmt"`
+	AirportId    int         `json:"airport_id"`
 	IataCode     string      `json:"iata_code"`
 	CityIataCode string      `json:"city_iata_code"`
 	IcaoCode     string      `json:"icao_code"`
 	CountryIso2  string      `json:"country_iso2"`
-	GeonameId    string      `json:"geoname_id"`
-	Latitude     string      `json:"latitude"`
-	Longitude    string      `json:"longitude"`
+	GeonameId    int         `json:"geoname_id"`
+	Latitude     float64     `json:"latitude"`
+	Longitude    float64     `json:"longitude"`
 	AirportName  string      `json:"airport_name"`
 	CountryName  string      `json:"country_name"`
 	PhoneNumber  interface{} `json:"phone_number"`

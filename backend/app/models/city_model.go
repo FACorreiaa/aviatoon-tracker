@@ -1,16 +1,19 @@
 package models
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type City struct {
-	ID          string     `json:"id"`
-	GMT         string     `json:"gmt"`
-	CityId      string     `json:"city_id"`
+	ID          uuid.UUID  `json:"id"`
+	GMT         int        `json:"gmt"`
+	CityId      int        `json:"city_id"`
 	IataCode    string     `json:"iata_code"`
 	CountryIso2 string     `json:"country_iso2"`
-	GeonameId   string     `json:"geoname_id"`
-	Latitude    string     `json:"latitude"`
-	Longitude   string     `json:"longitude"`
+	GeonameId   int        `json:"geoname_id"`
+	Latitude    float64    `json:"latitude"`
+	Longitude   float64    `json:"longitude"`
 	CityName    string     `json:"city_name"`
 	Timezone    string     `json:"timezone"`
 	CreatedAt   time.Time  `db:"created_at" json:"created_at"`
@@ -18,7 +21,7 @@ type City struct {
 }
 
 type CityInfo struct {
-	ID           string
+	ID           uuid.UUID
 	CityName     string
 	Population   int
 	CountryName  string

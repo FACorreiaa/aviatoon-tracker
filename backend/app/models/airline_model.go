@@ -1,21 +1,24 @@
 package models
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Airline struct {
-	ID                   string     `json:"id"`
-	FleetAverageAge      string     `json:"fleet_average_age"`
-	AirlineId            string     `json:"airline_id"`
+	ID                   uuid.UUID  `json:"id"`
+	FleetAverageAge      float64    `json:"fleet_average_age"`
+	AirlineId            int        `json:"airline_id"`
 	Callsign             string     `json:"callsign"`
 	HubCode              string     `json:"hub_code"`
 	IataCode             string     `json:"iata_code"`
 	IcaoCode             string     `json:"icao_code"`
 	CountryIso2          string     `json:"country_iso2"`
-	DateFounded          string     `json:"date_founded"`
-	IataPrefixAccounting string     `json:"iata_prefix_accounting"`
+	DateFounded          int        `json:"date_founded"`
+	IataPrefixAccounting int        `json:"iata_prefix_accounting"`
 	AirlineName          string     `json:"airline_name"`
 	CountryName          string     `json:"country_name"`
-	FleetSize            string     `json:"fleet_size"`
+	FleetSize            int        `json:"fleet_size"`
 	Status               string     `json:"status"`
 	Type                 string     `json:"type"`
 	CreatedAt            time.Time  `db:"created_at" json:"created_at"`
@@ -23,26 +26,26 @@ type Airline struct {
 }
 
 type AirlineInfo struct {
-	AirlineId            string     `json:"id"`
+	AirlineId            int        `json:"id"`
 	AirlineName          string     `json:"airline_name"`
 	CallSign             string     `json:"call_sign"`
 	HubCode              string     `json:"hub_code"`
-	DataFounded          string     `json:"data_founded"`
+	DataFounded          int        `json:"data_founded"`
 	Status               string     `json:"status"`
 	Type                 string     `json:"type"`
 	IataCode             string     `json:"iata_code"`
 	IcaoCode             string     `json:"icao_code"`
 	CountryIso2          string     `json:"country_iso_2"`
-	IataPrefixAccounting string     `json:"iata_prefix_accounting"`
+	IataPrefixAccounting int        `json:"iata_prefix_accounting"`
 	CityName             string     `json:"city_name"`
-	GMT                  string     `json:"gmt"`
-	CityId               string     `json:"city_id"`
+	GMT                  int        `json:"gmt"`
+	CityId               int        `json:"city_id"`
 	Timezone             string     `json:"timezone"`
-	Latitude             string     `json:"latitude"`
-	Longitude            string     `json:"longitude"`
-	CountryId            string     `json:"country_id"`
+	Latitude             float64    `json:"latitude"`
+	Longitude            float64    `json:"longitude"`
+	CountryId            int        `json:"country_id"`
 	Population           string     `json:"population"`
-	CountryName          string     `json:"country_name"`
+	CountryName          int        `json:"country_name"`
 	Capital              string     `json:"capital"`
 	CurrencyName         string     `json:"currency_name"`
 	CurrencyCode         string     `json:"currency_code"`

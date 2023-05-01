@@ -1,12 +1,15 @@
 package models
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Aircraft struct {
-	ID           string     `json:"id"`
+	ID           uuid.UUID  `json:"id"`
 	IataCode     string     `json:"iata_code"`
 	AircraftName string     `json:"aircraft_name"`
-	PlaneTypeId  string     `json:"plane_type_id"`
+	PlaneTypeId  int        `json:"plane_type_id"`
 	CreatedAt    time.Time  `db:"created_at" json:"created_at"`
 	UpdatedAt    *time.Time `db:"updated_at" json:"updated_at"`
 }

@@ -4,7 +4,7 @@ import "time"
 
 type Tax struct {
 	ID        string     `json:"id"`
-	TaxId     string     `json:"tax_id"`
+	TaxId     int        `json:"tax_id"`
 	TaxName   string     `json:"tax_name"`
 	IataCode  string     `json:"iata_code"`
 	CreatedAt time.Time  `db:"created_at" json:"created_at"`
@@ -12,7 +12,7 @@ type Tax struct {
 }
 
 type TaxPerCityInfo struct {
-	TaxId        string
+	TaxId        int
 	TaxName      string
 	Capital      string
 	CityName     string
