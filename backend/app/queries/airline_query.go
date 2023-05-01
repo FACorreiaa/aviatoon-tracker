@@ -407,7 +407,7 @@ func (q *AirlineQueries) GetAirlinesFromCountryName(countryName string) ([]model
 	return airlines, nil
 }
 
-func (q *AirlineQueries) GetAirlinesFromCityName(cityName string) ([]models.AirlineInfo, error) {
+func (q *AirlineQueries) GetAirlineFromCityName(cityName string) ([]models.AirlineInfo, error) {
 	var airlines []models.AirlineInfo
 
 	tx, err := q.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})

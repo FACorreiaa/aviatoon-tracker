@@ -257,8 +257,8 @@ func GetAirlineFromCountryName(w http.ResponseWriter, r *http.Request) {
 	// Open a database connection and defer its closure
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	query := r.URL.Query()
-	country := query.Get("country")
+
+	country := chi.URLParam(r, "country_name")
 
 	db, err := database.OpenDBConnection()
 	if err != nil {
@@ -288,8 +288,7 @@ func GetAirlineFromCityName(w http.ResponseWriter, r *http.Request) {
 	// Open a database connection and defer its closure
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	query := r.URL.Query()
-	city := query.Get("city")
+	city := chi.URLParam(r, "city_name")
 
 	db, err := database.OpenDBConnection()
 	if err != nil {
@@ -298,7 +297,7 @@ func GetAirlineFromCityName(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the list of countries from the database.
-	airline, err := db.GetAirlinesFromCountryName(city)
+	airline, err := db.GetAirlineFromCityName(city)
 
 	if err != nil {
 		log.Printf("error getting airline from database: %v", err)
@@ -319,9 +318,8 @@ func GetAirlineFromCountryAndCityName(w http.ResponseWriter, r *http.Request) {
 	// Open a database connection and defer its closure
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	query := r.URL.Query()
-	city := query.Get("city")
-	country := query.Get("country")
+	city := chi.URLParam(r, "cityName")
+	country := chi.URLParam(r, "countryName")
 
 	db, err := database.OpenDBConnection()
 	if err != nil {

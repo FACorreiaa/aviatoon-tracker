@@ -61,10 +61,9 @@ func PublicRoutes(router *chi.Mux) {
 	router.Get("/api/v1/airlines", controllers.GetAirlines)
 	router.Get("/api/v1/airlines/count", controllers.GetNumberOfAirlines)
 	router.Get("/api/v1/airlines/city/country", controllers.GetAirlineFromCountry)
-	router.Get("/api/v1/airlines?city_name={city_name}", controllers.GetAirlineFromCityName)
-	router.Get("/api/v1/airlines?country_name={country_name}", controllers.GetAirlineFromCountryName)
-	router.Get("/api/v1/airlines?city_name={city_name}", controllers.GetAirlineFromCityName)
-	router.Get("/api/v1/airlines?country_name={country_name}&city_name={city_name}", controllers.GetAirlineFromCountryAndCityName)
+	router.Get("/api/v1/airlines/country={country_name}", controllers.GetAirlineFromCountryName)
+	router.Get("/api/v1/airlines/city={city_name}", controllers.GetAirlineFromCityName)
+	router.Get("/api/v1/airlines/country-name={countryName}/city-name={cityName}", controllers.GetAirlineFromCountryAndCityName)
 
 	router.Route("/api/v1/airlines/{id}", func(r chi.Router) {
 		r.Get("/", controllers.GetAirlineByID)
@@ -83,8 +82,8 @@ func PublicRoutes(router *chi.Mux) {
 		r.Put("/", controllers.UpdateAirplaneByID)
 	})
 	router.Get("/api/v1/airplanes/airlines", controllers.GetAirplanesFromAirline)
-	router.Get("/api/v1/airplanes/airlines?airline_name={airline_name}", controllers.GetAirplanesFromAirlineName)
-	router.Get("/api/v1/airplanes/airlines?country_name={country_name}", controllers.GetAirplanesFromAirlineCountry)
+	router.Get("/api/v1/airplanes/airlines/airline-name={airlineName}", controllers.GetAirplanesFromAirlineName)
+	router.Get("/api/v1/airplanes/airlines/country-name={countryName}", controllers.GetAirplanesFromAirlineCountry)
 
 	//Airports
 	router.Get("/api/v1/airports", controllers.GetAirports)
@@ -95,7 +94,14 @@ func PublicRoutes(router *chi.Mux) {
 		r.Put("/", controllers.UpdateAirportByID)
 	})
 	router.Get("/api/v1/airports/city", controllers.GetAirportCities)
-	router.Get("/api/v1/airports/city?city_name={city_name}", controllers.GetAirportsByCityName)
-	router.Get("/api/v1/airports/city?country_name={country_name}", controllers.GetAirportsByCountryName)
+	router.Get("/api/v1/airports/city/city_name/{city_name}", controllers.GetAirportsByCityName)
+
+	//refactor later
+	router.Get("/api/v1/airports/city2/city_name/{city_name}", controllers.GetAirportsByCityNameV2)
+
+	router.Get("/api/v1/airports/city/{iata_code}", controllers.GetAirportsByIataCode)
+	//refactor later
+	//router.Get("/api/v1/airports/city2/{iata_code}", controllers.GetAirportsByIataCodeV2)
+	router.Get("/api/v1/airports/country/{country_name}", controllers.GetAirportsByCountryName)
 
 }

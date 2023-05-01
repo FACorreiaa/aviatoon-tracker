@@ -227,8 +227,7 @@ func GetAirplanesFromAirlineName(w http.ResponseWriter, r *http.Request) {
 	// Open a database connection and defer its closure
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	query := r.URL.Query()
-	airline_name := query.Get("airline_name")
+	param := chi.URLParam(r, "airlineName")
 
 	db, err := database.OpenDBConnection()
 	if err != nil {
@@ -237,7 +236,7 @@ func GetAirplanesFromAirlineName(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the list of airplaneName from the database.
-	airplane, err := db.GetAirplanesFromAirlineName(airline_name)
+	airplane, err := db.GetAirplanesFromAirlineName(param)
 
 	if err != nil {
 		log.Printf("error getting airline from database: %v", err)
@@ -258,8 +257,7 @@ func GetAirplanesFromAirlineCountry(w http.ResponseWriter, r *http.Request) {
 	// Open a database connection and defer its closure
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	query := r.URL.Query()
-	country_name := query.Get("country_name")
+	param := chi.URLParam(r, "countryName")
 
 	db, err := database.OpenDBConnection()
 	if err != nil {
@@ -268,7 +266,7 @@ func GetAirplanesFromAirlineCountry(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the list of countries from the database.
-	airplane, err := db.GetAirplanesFromAirlineCountry(country_name)
+	airplane, err := db.GetAirplanesFromAirlineCountry(param)
 
 	if err != nil {
 		log.Printf("error getting airplane from database: %v", err)

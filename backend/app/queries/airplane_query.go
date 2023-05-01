@@ -287,12 +287,7 @@ func (q *AirplaneQueries) GetAirplanesFromAirline() ([]models.AirplaneInfo, erro
 	defer tx.Rollback()
 
 	rows, err := tx.QueryContext(context.Background(), `
-        SELECT ap.id, ap.iata_type, ap.airplane_id, ap.airline_iata_code, ap.iata_code_long,
-				ap.iata_code_short, ap.airline_icao_code, ap.construction_number, ap.delivery_date,
-				ap.engines_type, ap.first_flight_date, ap.icao_code_hex, ap.line_number, ap.model_code,
-				ap.registration_number, ap.test_registration_number, ap.plane_age, ap.plane_class,
-				ap.model_name, ap.plane_owner, ap.plane_series, ap.plane_status, ap.production_line,
-				ap.registration_date, ap.rollout_date, ap.created_at, ap.updated_at,
+        SELECT ap.*,
 					al.airline_name, al.country_name,
               	 	al.country_iso_2, al.fleet_size, al.status,
                		al.type, al.hub_code, al.call_sign
@@ -393,12 +388,7 @@ func (q *AirplaneQueries) GetAirplanesFromAirlineCountry(country_name string) ([
 	defer tx.Rollback()
 
 	rows, err := tx.QueryContext(context.Background(), `
-        SELECT ap.id, ap.iata_type, ap.airplane_id, ap.airline_iata_code, ap.iata_code_long,
-				ap.iata_code_short, ap.airline_icao_code, ap.construction_number, ap.delivery_date,
-				ap.engines_type, ap.first_flight_date, ap.icao_code_hex, ap.line_number, ap.model_code,
-				ap.registration_number, ap.test_registration_number, ap.plane_age, ap.plane_class,
-				ap.model_name, ap.plane_owner, ap.plane_series, ap.plane_status, ap.production_line,
-				ap.registration_date, ap.rollout_date, ap.created_at, ap.updated_at,
+        SELECT ap.*,
 					al.airline_name, al.country_name,
               	 	al.country_iso_2, al.fleet_size, al.status,
                		al.type, al.hub_code, al.call_sign
