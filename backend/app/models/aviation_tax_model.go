@@ -5,12 +5,12 @@ import (
 )
 
 type Tax struct {
-	ID        string     `json:"id"`
-	TaxId     string     `json:"tax_id"`
+	ID        string     `json:"id" pg:"default:gen_random_uuid()"`
+	TaxId     int        `json:"tax_id,string"`
 	TaxName   string     `json:"tax_name"`
 	IataCode  string     `json:"iata_code"`
-	CreatedAt time.Time  `db:"created_at" json:"created_at"`
-	UpdatedAt *time.Time `db:"updated_at" json:"updated_at"`
+	CreatedAt time.Time  `db:"created_at" json:"created_at,string"`
+	UpdatedAt *time.Time `db:"updated_at" json:"updated_at,string"`
 }
 
 type TaxPerCityInfo struct {

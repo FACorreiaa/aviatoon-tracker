@@ -37,15 +37,10 @@ func (q *CountryQueries) CreateAviationTax(t *models.Tax) error {
 		}
 	}()
 
-	taxId, err := StringToInt(t.TaxId)
-	if err != nil {
-		return fmt.Errorf("error converting tax to int: %w", err)
-	}
-
 	if _, err := tx.ExecContext(context.Background(),
 		`INSERT INTO tax VALUES ($1, $2, $3, $4, $5, $6)`,
 		t.ID,
-		taxId,
+		t.TaxId,
 		t.TaxName,
 		t.IataCode,
 		t.CreatedAt,

@@ -36,7 +36,6 @@ func (q *AircraftTypeQueries) CreateAircraftType(c *models.Aircraft) error {
 		}
 	}()
 
-	planeTypeId, err := StringToInt(c.PlaneTypeId)
 	if err != nil {
 		return fmt.Errorf("error converting plane type id to int: %w", err)
 	}
@@ -46,7 +45,7 @@ func (q *AircraftTypeQueries) CreateAircraftType(c *models.Aircraft) error {
 		c.ID,
 		c.IataCode,
 		c.AircraftName,
-		planeTypeId,
+		c.PlaneTypeId,
 		c.CreatedAt,
 		c.UpdatedAt,
 	); err != nil {

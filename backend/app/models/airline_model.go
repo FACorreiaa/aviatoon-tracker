@@ -5,23 +5,23 @@ import (
 )
 
 type Airline struct {
-	ID                   string     `json:"id"`
-	FleetAverageAge      string     `json:"fleet_average_age"`
-	AirlineId            string     `json:"airline_id"`
+	ID                   string     `json:"id" pg:"default:gen_random_uuid()"`
+	FleetAverageAge      float64    `json:"fleet_average_age,string"`
+	AirlineId            int        `json:"airline_id,string"`
 	Callsign             string     `json:"callsign"`
 	HubCode              string     `json:"hub_code"`
 	IataCode             string     `json:"iata_code"`
 	IcaoCode             string     `json:"icao_code"`
 	CountryIso2          string     `json:"country_iso2"`
-	DateFounded          string     `json:"date_founded"`
-	IataPrefixAccounting string     `json:"iata_prefix_accounting"`
+	DateFounded          int        `json:"date_founded,string"`
+	IataPrefixAccounting int        `json:"iata_prefix_accounting,string"`
 	AirlineName          string     `json:"airline_name"`
 	CountryName          string     `json:"country_name"`
-	FleetSize            string     `json:"fleet_size"`
+	FleetSize            int        `json:"fleet_size,string"`
 	Status               string     `json:"status"`
 	Type                 string     `json:"type"`
-	CreatedAt            time.Time  `db:"created_at" json:"created_at"`
-	UpdatedAt            *time.Time `db:"updated_at" json:"updated_at"`
+	CreatedAt            time.Time  `db:"created_at" json:"created_at,string"`
+	UpdatedAt            *time.Time `db:"updated_at" json:"updated_at,string"`
 }
 
 type AirlineInfo struct {

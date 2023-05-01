@@ -27,20 +27,6 @@ func (q *CountryQueries) CreateCountry(c *models.Country) error {
 		}
 	}()
 
-	population, err := StringToInt(c.Population)
-	if err != nil {
-		return fmt.Errorf("error converting population to int: %w", err)
-	}
-
-	countryIsoNumeric, err := StringToInt(c.CountryIsoNumeric)
-	if err != nil {
-		return fmt.Errorf("error converting country_iso_numeric to int: %w", err)
-	}
-
-	if err != nil {
-		return fmt.Errorf("error converting population to int: %w", err)
-	}
-
 	if _, err := tx.ExecContext(context.Background(),
 		`INSERT INTO country VALUES ($1, $2, $3, $4, COALESCE($5, 0), COALESCE($6, 0), $7,  $8, $9, $10, $11, $12, $13, $14)`,
 
@@ -48,8 +34,8 @@ func (q *CountryQueries) CreateCountry(c *models.Country) error {
 		c.CountryName,
 		c.CountryIso2,
 		c.CountryIso3,
-		countryIsoNumeric,
-		population,
+		c.CountryIsoNumeric,
+		c.Population,
 		c.Capital,
 		c.Continent,
 		c.CurrencyName,

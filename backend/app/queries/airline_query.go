@@ -36,45 +36,21 @@ func (q *AirlineQueries) CreateAirline(a *models.Airline) error {
 		}
 	}()
 
-	fleetAverageAge, err := StringToFloat(a.FleetAverageAge)
-	if err != nil {
-		return fmt.Errorf("error converting plane fleet average to float: %w", err)
-	}
-
-	airlineId, err := StringToInt(a.AirlineId)
-	if err != nil {
-		return fmt.Errorf("error converting airlineId to int: %w", err)
-	}
-
-	dateFounded, err := StringToInt(a.DateFounded)
-	if err != nil {
-		return fmt.Errorf("error converting dateFounded to int: %w", err)
-	}
-
-	iataPrefixAccounting, err := StringToInt(a.IataPrefixAccounting)
-	if err != nil {
-		return fmt.Errorf("error converting iataPrefixAccounting to int: %w", err)
-	}
-
-	fleetSize, err := StringToInt(a.FleetSize)
-	if err != nil {
-		return fmt.Errorf("error converting fleetSize to int: %w", err)
-	}
 	if _, err := tx.ExecContext(context.Background(),
 		`INSERT INTO airline VALUES ($1, $2::float, $3::int, $4, $5, $6, $7, $8, $9::int, $10::int, $11, $12, $13::int, $14, $15, $16, $17)`,
 		a.ID,
-		fleetAverageAge,
-		airlineId,
+		a.FleetAverageAge,
+		a.AirlineId,
 		a.Callsign,
 		a.HubCode,
 		a.IataCode,
 		a.IcaoCode,
 		a.CountryIso2,
-		dateFounded,
-		iataPrefixAccounting,
+		a.DateFounded,
+		a.IataPrefixAccounting,
 		a.AirlineName,
 		a.CountryName,
-		fleetSize,
+		a.FleetSize,
 		a.Status,
 		a.Type,
 		a.CreatedAt,

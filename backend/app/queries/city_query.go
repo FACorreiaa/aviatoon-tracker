@@ -36,43 +36,18 @@ func (q *CountryQueries) CreateCity(c *models.City) error {
 		}
 	}()
 
-	latitude, err := StringToFloat(c.Latitude)
-	if err != nil {
-		return fmt.Errorf("error converting latitude to float: %w", err)
-	}
-
-	longitude, err := StringToFloat(c.Longitude)
-	if err != nil {
-		return fmt.Errorf("error converting longitude to float: %w", err)
-	}
-
-	GMT, err := StringToFloat(c.GMT)
-	if err != nil {
-		return fmt.Errorf("error converting gmt to float: %w", err)
-	}
-
-	CityId, err := StringToFloat(c.GMT)
-	if err != nil {
-		return fmt.Errorf("error converting CityId to int: %w", err)
-	}
-
-	GeonameId, err := StringToFloat(c.GeonameId)
-	if err != nil {
-		return fmt.Errorf("error converting CityId to int: %w", err)
-	}
-
 	if _, err := tx.ExecContext(context.Background(),
 		`INSERT INTO city VALUES ($1, $2::float8, $3::int, $4, $5,
                          				$6::int, $7::float8, $8::float8,
                          				$9, $10, $11, $12)`,
 		c.ID,
-		GMT,
-		CityId,
+		c.GMT,
+		c.CityId,
 		c.IataCode,
 		c.CountryIso2,
-		GeonameId,
-		latitude,
-		longitude,
+		c.GeonameId,
+		c.Latitude,
+		c.Longitude,
 		c.CityName,
 		c.Timezone,
 		c.CreatedAt,

@@ -1,4 +1,4 @@
-package queries
+package helpers
 
 import (
 	"fmt"

@@ -36,16 +36,6 @@ func (q *AirplaneQueries) CreateAirplane(a *models.Airplane) error {
 		}
 	}()
 
-	enginesCount, err := StringToFloat(a.EnginesCount)
-	if err != nil {
-		return fmt.Errorf("error converting plane fleet average to float: %w", err)
-	}
-
-	planeAge, err := StringToInt(a.PlaneAge)
-	if err != nil {
-		return fmt.Errorf("error converting airlineId to int: %w", err)
-	}
-
 	if _, err := tx.ExecContext(context.Background(),
 		`INSERT INTO airplane VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::int,
                              				$11, $12, $13, $14, $15, $16, $17, $18::int,
@@ -60,7 +50,7 @@ func (q *AirplaneQueries) CreateAirplane(a *models.Airplane) error {
 		a.AirlineIcaoCode,
 		a.ConstructionNumber,
 		a.DeliveryDate,
-		enginesCount,
+		a.EnginesCount,
 		a.EnginesType,
 		a.FirstFlightDate,
 		a.IcaoCodeHex,
@@ -68,7 +58,7 @@ func (q *AirplaneQueries) CreateAirplane(a *models.Airplane) error {
 		a.ModelCode,
 		a.RegistrationNumber,
 		a.TestRegistrationNumber,
-		planeAge,
+		a.PlaneAge,
 		a.PlaneClass,
 		a.ModelName,
 		a.PlaneOwner,

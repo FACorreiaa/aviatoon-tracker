@@ -1,27 +1,26 @@
 package models
 
 import (
-	"github.com/google/uuid"
 	"time"
 )
 
 type City struct {
-	ID          string     `json:"id"`
-	GMT         string     `json:"gmt"`
-	CityId      string     `json:"city_id"`
+	ID          string     `json:"id" pg:"default:gen_random_uuid()"`
+	GMT         float64    `json:"gmt,string"`
+	CityId      int        `json:"city_id,string"`
 	IataCode    string     `json:"iata_code"`
 	CountryIso2 string     `json:"country_iso2"`
-	GeonameId   string     `json:"geoname_id"`
-	Latitude    string     `json:"latitude"`
-	Longitude   string     `json:"longitude"`
+	GeonameId   float64    `json:"geoname_id,string"`
+	Latitude    float64    `json:"latitude,string"`
+	Longitude   float64    `json:"longitude,string"`
 	CityName    string     `json:"city_name"`
 	Timezone    string     `json:"timezone"`
-	CreatedAt   time.Time  `db:"created_at" json:"created_at"`
-	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at"`
+	CreatedAt   time.Time  `db:"created_at" json:"created_at,string"`
+	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at,string"`
 }
 
 type CityInfo struct {
-	ID           uuid.UUID
+	ID           string
 	CityName     string
 	Population   int
 	CountryName  string

@@ -37,44 +37,19 @@ func (q *AirportQueries) CreateAirport(a *models.Airport) error {
 		}
 	}()
 
-	gmt, err := StringToFloat(a.GMT)
-	if err != nil {
-		return fmt.Errorf("error converting plane type gmt to int: %w", err)
-	}
-
-	airportId, err := StringToInt(a.AirportId)
-	if err != nil {
-		return fmt.Errorf("error formatting airport id to int: %w", err)
-	}
-
-	geonameId, err := StringToInt(a.GeonameId)
-	if err != nil {
-		return fmt.Errorf("error formatting geoname id to int: %w", err)
-	}
-
-	latitude, err := StringToFloat(a.Latitude)
-	if err != nil {
-		return fmt.Errorf("error formatting latitude to float: %w", err)
-	}
-
-	longitude, err := StringToFloat(a.Longitude)
-	if err != nil {
-		return fmt.Errorf("error formatting longitude to float: %w", err)
-	}
-
 	if _, err := tx.ExecContext(context.Background(),
 		`INSERT INTO airport VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
                              				$11, $12, $13, $14, $15, $16)`,
 		a.ID,
-		gmt,
-		airportId,
+		a.GMT,
+		a.AirportId,
 		a.IataCode,
 		a.CityIataCode,
 		a.IcaoCode,
 		a.CountryIso2,
-		geonameId,
-		latitude,
-		longitude,
+		a.GeonameId,
+		a.Latitude,
+		a.Longitude,
 		a.AirportName,
 		a.CountryName,
 		a.PhoneNumber,
@@ -92,6 +67,23 @@ func (q *AirportQueries) CreateAirport(a *models.Airport) error {
 	return nil
 }
 
+//func (q *AirportQueries) GetAirports() ([]models.Airport, error) {
+//	var airports []models.Airport
+//
+//	if err := q.Select(&airports, `
+//			EXPLAIN SELECT id, gmt, airport_id, iata_code,
+//			           		city_iata_code, icao_code, country_iso2,
+//			           		geoname_id, latitude, longitude, airport_name,
+//			           		country_name, phone_number, timezone,
+//			           		created_at, updated_at
+//			FROM airport
+//			ORDER BY airport_id`); err != nil {
+//		return nil, err
+//	}
+//
+//	return airports, nil
+//}
+
 func (q *AirportQueries) GetAirports() ([]models.Airport, error) {
 	var airports []models.Airport
 
@@ -102,7 +94,12 @@ func (q *AirportQueries) GetAirports() ([]models.Airport, error) {
 	defer tx.Rollback()
 
 	// Send query to database.
-	rows, err := tx.Query(`SELECT * FROM airport ORDER BY airport_id`)
+	rows, err := tx.Query(`SELECT id, gmt, airport_id, iata_code,
+		           		city_iata_code, icao_code, country_iso2,
+			           	geoname_id, latitude, longitude, airport_name,
+		           		country_name, phone_number, timezone,
+		           		created_at, updated_at
+       FROM airport ORDER BY airport_id`)
 	if err != nil {
 		return nil, err
 	}
