@@ -36,21 +36,45 @@ func (q *AirlineQueries) CreateAirline(a *models.Airline) error {
 		}
 	}()
 
+	fleetAverageAge, err := StringToFloat(a.FleetAverageAge)
+	if err != nil {
+		return fmt.Errorf("error converting plane fleet average to float: %w", err)
+	}
+
+	airlineId, err := StringToInt(a.AirlineId)
+	if err != nil {
+		return fmt.Errorf("error converting airlineId to int: %w", err)
+	}
+
+	dateFounded, err := StringToInt(a.DateFounded)
+	if err != nil {
+		return fmt.Errorf("error converting dateFounded to int: %w", err)
+	}
+
+	iataPrefixAccounting, err := StringToInt(a.IataPrefixAccounting)
+	if err != nil {
+		return fmt.Errorf("error converting iataPrefixAccounting to int: %w", err)
+	}
+
+	fleetSize, err := StringToInt(a.FleetSize)
+	if err != nil {
+		return fmt.Errorf("error converting fleetSize to int: %w", err)
+	}
 	if _, err := tx.ExecContext(context.Background(),
-		`INSERT INTO airline VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)`,
+		`INSERT INTO airline VALUES ($1, $2::float, $3::int, $4, $5, $6, $7, $8, $9::int, $10::int, $11, $12, $13::int, $14, $15, $16, $17)`,
 		a.ID,
-		a.FleetAverageAge,
-		a.AirlineId,
+		fleetAverageAge,
+		airlineId,
 		a.Callsign,
 		a.HubCode,
 		a.IataCode,
 		a.IcaoCode,
 		a.CountryIso2,
-		a.DateFounded,
-		a.IataPrefixAccounting,
+		dateFounded,
+		iataPrefixAccounting,
 		a.AirlineName,
 		a.CountryName,
-		a.FleetSize,
+		fleetSize,
 		a.Status,
 		a.Type,
 		a.CreatedAt,
@@ -76,7 +100,7 @@ func (q *AirlineQueries) GetAirlines() ([]models.Airline, error) {
 	defer tx.Rollback()
 
 	// Send query to database.
-	rows, err := tx.Query(`SELECT * FROM airline`)
+	rows, err := tx.Query(`SELECT * FROM airline ORDER BY airline_id`)
 	if err != nil {
 		return nil, err
 	}

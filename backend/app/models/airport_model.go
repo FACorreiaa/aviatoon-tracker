@@ -7,15 +7,15 @@ import (
 
 type Airport struct {
 	ID           string      `json:"id"`
-	GMT          int         `json:"gmt"`
-	AirportId    int         `json:"airport_id"`
+	GMT          string      `json:"gmt"`
+	AirportId    string      `json:"airport_id"`
 	IataCode     string      `json:"iata_code"`
 	CityIataCode string      `json:"city_iata_code"`
 	IcaoCode     string      `json:"icao_code"`
 	CountryIso2  string      `json:"country_iso2"`
-	GeonameId    int         `json:"geoname_id"`
-	Latitude     float64     `json:"latitude"`
-	Longitude    float64     `json:"longitude"`
+	GeonameId    string      `json:"geoname_id"`
+	Latitude     string      `json:"latitude"`
+	Longitude    string      `json:"longitude"`
 	AirportName  string      `json:"airport_name"`
 	CountryName  string      `json:"country_name"`
 	PhoneNumber  interface{} `json:"phone_number"`

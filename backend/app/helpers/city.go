@@ -3,6 +3,7 @@ package helpers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/create-go-app/net_http-go-template/app/api"
 	"github.com/create-go-app/net_http-go-template/app/models"
 	"github.com/create-go-app/net_http-go-template/platform/database"
@@ -17,7 +18,7 @@ import (
 //	return 0, fmt.Errorf("CreateOrder: %v", err)
 //}
 
-func fetchCitiesFromAPI(w http.ResponseWriter, r *http.Request) (models.CityListResponse, error) {
+func fetchCitiesFromAPI(w http.ResponseWriter, r *http.Request) ([]models.City, error) {
 	body, err := api.GetAPIData("http://localhost:3000/data")
 	if err != nil {
 		log.Printf("error getting countries from API: %v", err)
@@ -25,6 +26,7 @@ func fetchCitiesFromAPI(w http.ResponseWriter, r *http.Request) (models.CityList
 	}
 
 	var cityResponse models.CityListResponse
+
 	err = json.Unmarshal(body, &cityResponse)
 	if err != nil {
 		log.Printf("error unmarshaling API response: %v", err)
@@ -60,6 +62,24 @@ func InsertCitiesIntoDB(db *database.Queries, w http.ResponseWriter, r *http.Req
 
 	// Insert the countries into the database within the transaction.
 	for _, c := range cityResponse {
+		//GMT, err := queries.StringToFloat(c.GMT)
+		//if err != nil {
+		//	return fmt.Errorf("error converting gmt to int: %w", err)
+		//}
+		//
+		//CityId, err := queries.StringToInt(c.CityId)
+		//if err != nil {
+		//	return fmt.Errorf("error converting cityId to int: %w", err)
+		//}
+		//
+		//GeonameId, err := queries.StringToInt(c.GeonameId)
+		//if err != nil {
+		//	return fmt.Errorf("error converting geonameId to int: %w", err)
+		//}
+
+		if err != nil {
+			return fmt.Errorf("error converting geonameId to int: %w", err)
+		}
 		err := db.CreateCity(&models.City{
 			ID:          uuid.NewString(),
 			GMT:         c.GMT,

@@ -1,10 +1,12 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Tax struct {
 	ID        string     `json:"id"`
-	TaxId     int        `json:"tax_id"`
+	TaxId     string     `json:"tax_id"`
 	TaxName   string     `json:"tax_name"`
 	IataCode  string     `json:"iata_code"`
 	CreatedAt time.Time  `db:"created_at" json:"created_at"`

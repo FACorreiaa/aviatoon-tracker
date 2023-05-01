@@ -1,24 +1,23 @@
 package models
 
 import (
-	"github.com/google/uuid"
 	"time"
 )
 
 type Airline struct {
-	ID                   uuid.UUID  `json:"id"`
-	FleetAverageAge      float64    `json:"fleet_average_age"`
-	AirlineId            int        `json:"airline_id"`
+	ID                   string     `json:"id"`
+	FleetAverageAge      string     `json:"fleet_average_age"`
+	AirlineId            string     `json:"airline_id"`
 	Callsign             string     `json:"callsign"`
 	HubCode              string     `json:"hub_code"`
 	IataCode             string     `json:"iata_code"`
 	IcaoCode             string     `json:"icao_code"`
 	CountryIso2          string     `json:"country_iso2"`
-	DateFounded          int        `json:"date_founded"`
-	IataPrefixAccounting int        `json:"iata_prefix_accounting"`
+	DateFounded          string     `json:"date_founded"`
+	IataPrefixAccounting string     `json:"iata_prefix_accounting"`
 	AirlineName          string     `json:"airline_name"`
 	CountryName          string     `json:"country_name"`
-	FleetSize            int        `json:"fleet_size"`
+	FleetSize            string     `json:"fleet_size"`
 	Status               string     `json:"status"`
 	Type                 string     `json:"type"`
 	CreatedAt            time.Time  `db:"created_at" json:"created_at"`

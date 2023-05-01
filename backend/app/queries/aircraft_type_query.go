@@ -36,12 +36,17 @@ func (q *AircraftTypeQueries) CreateAircraftType(c *models.Aircraft) error {
 		}
 	}()
 
+	planeTypeId, err := StringToInt(c.PlaneTypeId)
+	if err != nil {
+		return fmt.Errorf("error converting plane type id to int: %w", err)
+	}
+
 	if _, err := tx.ExecContext(context.Background(),
 		`INSERT INTO aircraft VALUES ($1, $2, $3, $4, $5, $6)`,
 		c.ID,
 		c.IataCode,
 		c.AircraftName,
-		c.PlaneTypeId,
+		planeTypeId,
 		c.CreatedAt,
 		c.UpdatedAt,
 	); err != nil {
@@ -65,7 +70,7 @@ func (q *AircraftTypeQueries) GetAircraftType() ([]models.Aircraft, error) {
 	defer tx.Rollback()
 
 	// Send query to database.
-	rows, err := tx.Query(`SELECT * FROM aircraft`)
+	rows, err := tx.Query(`SELECT * FROM aircraft ORDER BY iata_code`)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +120,7 @@ func (q *AircraftTypeQueries) GetAircraftTypeID(id string) (models.Aircraft, err
 			created_at,
 			updated_at
 		FROM aircraft
-		WHERE id = $1 LIMIT 1`, id)
+		WHERE id = $1 LIMIT 1 `, id)
 	err = row.Scan(
 		&aircraft.ID,
 		&aircraft.AircraftName,

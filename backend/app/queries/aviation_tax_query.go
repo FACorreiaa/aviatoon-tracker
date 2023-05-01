@@ -37,10 +37,15 @@ func (q *CountryQueries) CreateAviationTax(t *models.Tax) error {
 		}
 	}()
 
+	taxId, err := StringToInt(t.TaxId)
+	if err != nil {
+		return fmt.Errorf("error converting tax to int: %w", err)
+	}
+
 	if _, err := tx.ExecContext(context.Background(),
 		`INSERT INTO tax VALUES ($1, $2, $3, $4, $5, $6)`,
 		t.ID,
-		t.TaxId,
+		taxId,
 		t.TaxName,
 		t.IataCode,
 		t.CreatedAt,
@@ -65,7 +70,7 @@ func (q *CountryQueries) GetAviationTax() ([]models.Tax, error) {
 	defer tx.Rollback()
 
 	// Send query to database.
-	rows, err := tx.Query(`SELECT * FROM tax`)
+	rows, err := tx.Query(`SELECT * FROM tax ORDER BY tax_id`)
 	if err != nil {
 		return nil, err
 	}

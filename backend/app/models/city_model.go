@@ -6,14 +6,14 @@ import (
 )
 
 type City struct {
-	ID          uuid.UUID  `json:"id"`
-	GMT         int        `json:"gmt"`
-	CityId      int        `json:"city_id"`
+	ID          string     `json:"id"`
+	GMT         string     `json:"gmt"`
+	CityId      string     `json:"city_id"`
 	IataCode    string     `json:"iata_code"`
 	CountryIso2 string     `json:"country_iso2"`
-	GeonameId   int        `json:"geoname_id"`
-	Latitude    float64    `json:"latitude"`
-	Longitude   float64    `json:"longitude"`
+	GeonameId   string     `json:"geoname_id"`
+	Latitude    string     `json:"latitude"`
+	Longitude   string     `json:"longitude"`
 	CityName    string     `json:"city_name"`
 	Timezone    string     `json:"timezone"`
 	CreatedAt   time.Time  `db:"created_at" json:"created_at"`

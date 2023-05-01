@@ -3,9 +3,11 @@ package helpers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/create-go-app/net_http-go-template/app/api"
 	"github.com/create-go-app/net_http-go-template/app/models"
 	"github.com/create-go-app/net_http-go-template/platform/database"
+	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"time"
@@ -24,13 +26,16 @@ func fetchCountriesFromAPI(w http.ResponseWriter, r *http.Request) (models.Count
 	}
 
 	var countryResponse models.CountryListResponse
+
 	err = json.Unmarshal(body, &countryResponse)
 	if err != nil {
 		log.Printf("error unmarshaling API response: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 
 	}
-
+	if err != nil {
+		return nil, fmt.Errorf("error converting gmt to int: %w", err)
+	}
 	return countryResponse, err
 }
 
@@ -58,7 +63,7 @@ func InsertCountriesIntoDB(db *database.Queries, w http.ResponseWriter, r *http.
 	// Insert the countries into the database within the transaction.
 	for _, c := range countryResponse {
 		err := db.CreateCountry(&models.Country{
-			ID:                c.ID,
+			ID:                uuid.NewString(),
 			CountryName:       c.CountryName,
 			CountryIso2:       c.CountryIso2,
 			CountryIso3:       c.CountryIso3,

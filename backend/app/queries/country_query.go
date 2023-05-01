@@ -27,14 +27,29 @@ func (q *CountryQueries) CreateCountry(c *models.Country) error {
 		}
 	}()
 
+	population, err := StringToInt(c.Population)
+	if err != nil {
+		return fmt.Errorf("error converting population to int: %w", err)
+	}
+
+	countryIsoNumeric, err := StringToInt(c.CountryIsoNumeric)
+	if err != nil {
+		return fmt.Errorf("error converting country_iso_numeric to int: %w", err)
+	}
+
+	if err != nil {
+		return fmt.Errorf("error converting population to int: %w", err)
+	}
+
 	if _, err := tx.ExecContext(context.Background(),
-		`INSERT INTO country VALUES ($1, $2, $3, $4, $5, $6, $7,  $8, $9, $10, $11, $12, $13, $14)`,
+		`INSERT INTO country VALUES ($1, $2, $3, $4, COALESCE($5, 0), COALESCE($6, 0), $7,  $8, $9, $10, $11, $12, $13, $14)`,
+
 		c.ID,
 		c.CountryName,
 		c.CountryIso2,
 		c.CountryIso3,
-		c.CountryIsoNumeric,
-		c.Population,
+		countryIsoNumeric,
+		population,
 		c.Capital,
 		c.Continent,
 		c.CurrencyName,
@@ -64,7 +79,7 @@ func (q *CountryQueries) GetCountries() ([]models.Country, error) {
 	defer tx.Rollback()
 
 	// Send query to database.
-	rows, err := tx.Query(`SELECT * FROM country`)
+	rows, err := tx.Query(`SELECT * FROM country ORDER BY country_iso_2`)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +255,8 @@ func (q *CountryQueries) GetCitiesFromCountry() ([]models.CityInfo, error) {
                country.currency_name, country.currency_code, country.continent,
                country.phone_prefix
         FROM country
-        INNER JOIN city ON city.country_iso2 = country.country_iso_2`)
+        INNER JOIN city ON city.country_iso2 = country.country_iso_2
+        ORDER BY city.country_iso2`)
 	if err != nil {
 		return cities, fmt.Errorf("failed to execute query: %w", err)
 	}
@@ -282,6 +298,7 @@ func (q *CountryQueries) GetCitiesFromCountryByID(id string) ([]models.CityInfo,
         FROM country
         INNER JOIN city ON city.country_iso2 = country.country_iso_2
         WHERE country.id = $1
+        ORDER BY city.country_iso2
         `, id)
 	if err != nil {
 		return cities, fmt.Errorf("failed to execute query: %w", err)

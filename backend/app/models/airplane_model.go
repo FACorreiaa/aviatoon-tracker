@@ -1,12 +1,11 @@
 package models
 
 import (
-	"github.com/google/uuid"
 	"time"
 )
 
 type Airplane struct {
-	ID                     uuid.UUID   `json:"id"`
+	ID                     string      `json:"id"`
 	IataType               string      `json:"iata_type"`
 	AirplaneId             string      `json:"airplane_id"`
 	AirlineIataCode        string      `json:"airline_iata_code"`
@@ -15,7 +14,7 @@ type Airplane struct {
 	AirlineIcaoCode        interface{} `json:"airline_icao_code"`
 	ConstructionNumber     string      `json:"construction_number"`
 	DeliveryDate           time.Time   `db:"delivery_date" json:"delivery_date"`
-	EnginesCount           int         `json:"engines_count"`
+	EnginesCount           string      `json:"engines_count"`
 	EnginesType            string      `json:"engines_type"`
 	FirstFlightDate        time.Time   `db:"first_flight_date" json:"first_flight_date"`
 	IcaoCodeHex            string      `json:"icao_code_hex"`
@@ -23,7 +22,7 @@ type Airplane struct {
 	ModelCode              string      `json:"model_code"`
 	RegistrationNumber     string      `json:"registration_number"`
 	TestRegistrationNumber interface{} `json:"test_registration_number"`
-	PlaneAge               int         `json:"plane_age"`
+	PlaneAge               string      `json:"plane_age"`
 	PlaneClass             interface{} `json:"plane_class"`
 	ModelName              string      `json:"model_name"`
 	PlaneOwner             interface{} `json:"plane_owner"`
