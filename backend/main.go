@@ -1,10 +1,11 @@
 package main
 
 import (
+	"github.com/create-go-app/net_http-go-template/app/routes"
+	"github.com/create-go-app/net_http-go-template/docs"
 	_ "github.com/create-go-app/net_http-go-template/docs" // load Swagger docs
-	"github.com/create-go-app/net_http-go-template/pkg/configs"
-	"github.com/create-go-app/net_http-go-template/pkg/routes"
-	"github.com/create-go-app/net_http-go-template/pkg/utils"
+	"github.com/create-go-app/net_http-go-template/platform/configs"
+	"github.com/create-go-app/net_http-go-template/platform/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	_ "github.com/joho/godotenv/autoload"
@@ -30,7 +31,7 @@ func main() {
 	// List of app routes:
 	routes.PublicRoutes(r)
 	routes.PrivateRoutes(r)
-	routes.SwaggerRoutes(r)
+	docs.SwaggerRoutes(r)
 
 	// Register middleware.
 	//r.Use(mux.CORSMethodMiddleware(r)) // enable CORS

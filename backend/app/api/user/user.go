@@ -1,21 +1,52 @@
-package controllers
+package user
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"github.com/create-go-app/net_http-go-template/platform/utils"
+	"github.com/pkg/errors"
 	"net/http"
 	"time"
 
-	"github.com/create-go-app/net_http-go-template/app/models"
 	"github.com/create-go-app/net_http-go-template/app/validators"
-	"github.com/create-go-app/net_http-go-template/pkg/utils"
 	"github.com/create-go-app/net_http-go-template/platform/database"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 )
 
-func Index(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("welcome"))
+// User struct describe user object.
+type User struct {
+	ID         uuid.UUID `db:"id" json:"id" validate:"required,id"`
+	CreatedAt  time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
+	Email      string    `db:"email" json:"email" validate:"required,email"`
+	UserStatus int       `db:"user_status" json:"user_status"`
+	UserAttrs  UserAttrs `db:"user_attrs" json:"user_attrs"`
+}
 
+// UserAttrs struct describe user attributes.
+type UserAttrs struct {
+	Picture   string `json:"picture"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	About     string `json:"about"`
+}
+
+// Value make the UserAttrs struct implement the driver.Valuer interface.
+// This method simply returns the JSON-encoded representation of the struct.
+func (u UserAttrs) Value() (driver.Value, error) {
+	return json.Marshal(u)
+}
+
+// Scan make the UserAttrs struct implement the sql.Scanner interface.
+// This method simply decodes a JSON-encoded value into the struct fields.
+func (u *UserAttrs) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+
+	return json.Unmarshal(b, &u)
 }
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
@@ -151,7 +182,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	credential := claims["user:create"].(bool)
 
 	// Create a new user struct.
-	user := &models.User{}
+	user := &User{}
 
 	// Checking received data from JSON body.
 	if err := r.ParseForm(); err != nil {
@@ -197,7 +228,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		user.CreatedAt = time.Now()
 		user.UpdatedAt = time.Time{}
 		user.UserStatus = 1 // 0 == blocked, 1 == active
-		user.UserAttrs = models.UserAttrs{}
+		user.UserAttrs = UserAttrs{}
 
 		// Create a new user with validated data.
 		if err := db.CreateUser(user); err != nil {
@@ -260,7 +291,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	credential := claims["user:update"].(bool)
 
 	// Create a new user struct.
-	user := &models.User{}
+	user := &User{}
 
 	// Checking received data from JSON body.
 	if err := r.ParseForm(); err != nil {
@@ -374,7 +405,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	credential := claims["user:delete"].(bool)
 
 	// Create new User struct
-	user := &models.User{}
+	user := &User{}
 
 	// Check, if received JSON data is valid.
 	if err := r.ParseForm(); err != nil {

@@ -1,11 +1,11 @@
 package routes
 
 import (
+	"github.com/create-go-app/net_http-go-template/app/api/user"
+	"github.com/create-go-app/net_http-go-template/platform/configs"
 	"net/http"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
-	"github.com/create-go-app/net_http-go-template/app/controllers"
-	"github.com/create-go-app/net_http-go-template/pkg/configs"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -15,9 +15,9 @@ func PrivateRoutes(router *chi.Mux) {
 	jwtProtected := jwtmiddleware.New(configs.JWTConfig())
 
 	// Define JWT protected routes.
-	createUser := jwtProtected.Handler(http.HandlerFunc(controllers.CreateUser))
-	updateUser := jwtProtected.Handler(http.HandlerFunc(controllers.UpdateUser))
-	deleteUser := jwtProtected.Handler(http.HandlerFunc(controllers.DeleteUser))
+	createUser := jwtProtected.Handler(http.HandlerFunc(user.CreateUser))
+	updateUser := jwtProtected.Handler(http.HandlerFunc(user.UpdateUser))
+	deleteUser := jwtProtected.Handler(http.HandlerFunc(user.DeleteUser))
 
 	// Routes for POST method:
 	router.Post("/api/v1/user", createUser.(http.HandlerFunc))

@@ -1,12 +1,12 @@
 package configs
 
 import (
+	"github.com/create-go-app/net_http-go-template/platform/utils"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/create-go-app/net_http-go-template/pkg/utils"
 	"github.com/go-chi/chi/v5"
 )
 

@@ -2,11 +2,11 @@ package database
 
 import (
 	"fmt"
+	"github.com/create-go-app/net_http-go-template/platform/utils"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/create-go-app/net_http-go-template/pkg/utils"
 	"github.com/jmoiron/sqlx"
 
 	_ "github.com/jackc/pgx/v5/stdlib" // load pgx driver for PostgreSQL

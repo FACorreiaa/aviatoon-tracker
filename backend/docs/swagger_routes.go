@@ -1,7 +1,7 @@
-package routes
+package docs
 
 import (
-	"github.com/create-go-app/net_http-go-template/pkg/utils"
+	"github.com/create-go-app/net_http-go-template/platform/utils"
 	"github.com/go-chi/chi/v5"
 
 	httpSwagger "github.com/swaggo/http-swagger"
