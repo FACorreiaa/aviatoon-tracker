@@ -33,7 +33,21 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 	airlineHandler := airlines.NewHandler(s)
 	airplaneHandler := airlines.NewHandler(s)
 
+	//protected routes
+	//jwtProtected := jwtmiddleware.New(configs.JWTConfig())
 	docs.SwaggerRoutes(router)
+
+	// Define JWT protected routes.
+	//createUser := jwtProtected.Handler(http.HandlerFunc(authHandler.CreateUser))
+	//updateUser := jwtProtected.Handler(http.HandlerFunc(queries.UpdateUser))
+	//deleteUser := jwtProtected.Handler(http.HandlerFunc(queries.DeleteUser))
+
+	//router.Route("/api/v1/user", func(r chi.Router) {
+	//	r.Post("/", createUser.(http.HandlerFunc))
+	//	r.Put("/", updateUser.(http.HandlerFunc))
+	//	r.Delete("/", deleteUser.(http.HandlerFunc))
+	//
+	//})
 
 	//Users
 	router.Route("/api/v1/user", func(r chi.Router) {
