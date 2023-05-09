@@ -19,3 +19,4 @@ hosts.ini
 *.out
 **/data/
 ./backend/data/
+./backend/.idea/
