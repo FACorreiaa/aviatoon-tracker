@@ -17,3 +17,5 @@ tmp/
 # Files
 hosts.ini
 *.out
+**/data/
+./backend/data/
