@@ -1,23 +1,25 @@
-FROM golang:1.17-alpine AS builder
+FROM golang:1.20.4-alpine AS builder
+LABEL stage=build
 
-# Move to working directory (/build).
+ENV CGO_ENABLED 0
+
+ENV GOOS linux
+RUN apk update --no-cache
 WORKDIR /build
 
-# Copy and download dependency using go mod.
-COPY go.mod go.sum ./
+ADD go.mod .
+ADD go.sum .
+
 RUN go mod download
 
-# Copy the code into the container.
 COPY . .
 
-# Set necessary environmet variables needed for our image and build the API server.
-ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-RUN go build -ldflags="-s -w" -o apiserver .
+RUN go build -o /app/main ./cmd/main.go
 
-FROM scratch
+FROM alpine
 
-# Copy binary and config files from /build to root folder of scratch container.
-COPY --from=builder ["/build/apiserver", "/build/.env", "/"]
+WORKDIR /app
 
-# Command to run when starting the container.
-ENTRYPOINT ["/apiserver"]
+COPY --from=builder /app/main /app/main
+
+CMD ["./main"]
