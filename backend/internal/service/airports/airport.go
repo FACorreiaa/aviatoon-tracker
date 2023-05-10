@@ -26,15 +26,15 @@ func (s *Service) GetAirports(ctx context.Context) ([]structs.Airport, error) {
 	return s.repo.Airport.GetAirports(ctx)
 }
 
-func (s *Service) GetAirport(ctx context.Context, id string) (structs.Airport, error) {
+func (s *Service) GetAirport(ctx context.Context, id uuid.UUID) (structs.Airport, error) {
 	return s.repo.Airport.GetAirport(ctx, id)
 }
 
-func (s *Service) DeleteAirport(ctx context.Context, id string) error {
+func (s *Service) DeleteAirport(ctx context.Context, id uuid.UUID) error {
 	return s.repo.Airport.DeleteAirport(ctx, id)
 }
 
-func (s *Service) UpdateAirport(ctx context.Context, id string, updates map[string]interface{}) error {
+func (s *Service) UpdateAirport(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	return s.repo.Airport.UpdateAirport(ctx, id, updates)
 }
 

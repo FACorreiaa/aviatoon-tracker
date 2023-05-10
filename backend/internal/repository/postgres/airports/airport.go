@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pkg/errors"
@@ -103,7 +104,7 @@ func (q *Repository) GetAirports(ctx context.Context) ([]structs.Airport, error)
 	return airport, nil
 }
 
-func (q *Repository) GetAirport(ctx context.Context, id string) (structs.Airport, error) {
+func (q *Repository) GetAirport(ctx context.Context, id uuid.UUID) (structs.Airport, error) {
 	var airport structs.Airport
 
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
@@ -147,7 +148,7 @@ func (q *Repository) GetAirport(ctx context.Context, id string) (structs.Airport
 	return airport, nil
 }
 
-func (q *Repository) DeleteAirport(ctx context.Context, id string) error {
+func (q *Repository) DeleteAirport(ctx context.Context, id uuid.UUID) error {
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -166,7 +167,7 @@ func (q *Repository) DeleteAirport(ctx context.Context, id string) error {
 	return nil
 }
 
-func (q *Repository) UpdateAirport(ctx context.Context, id string, updates map[string]interface{}) error {
+func (q *Repository) UpdateAirport(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)

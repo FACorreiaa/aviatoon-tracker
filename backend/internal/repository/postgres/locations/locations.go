@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pkg/errors"
@@ -105,7 +106,7 @@ func (r *Repository) GetCountries(ctx context.Context) ([]structs.Country, error
 	return countries, nil
 }
 
-func (r *Repository) GetCountry(ctx context.Context, id string) (structs.Country, error) {
+func (r *Repository) GetCountry(ctx context.Context, id uuid.UUID) (structs.Country, error) {
 	var country structs.Country
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
@@ -162,7 +163,7 @@ func (r *Repository) GetCountry(ctx context.Context, id string) (structs.Country
 	return country, nil
 }
 
-func (r *Repository) DeleteCountry(ctx context.Context, id string) error {
+func (r *Repository) DeleteCountry(ctx context.Context, id uuid.UUID) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -181,7 +182,7 @@ func (r *Repository) DeleteCountry(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *Repository) UpdateCountry(ctx context.Context, id string, updates map[string]interface{}) error {
+func (r *Repository) UpdateCountry(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -274,7 +275,7 @@ func (r *Repository) GetCitiesFromCountry(ctx context.Context) ([]structs.CityIn
 	return cities, nil
 }
 
-func (r *Repository) GetCityFromCountry(ctx context.Context, id string) ([]structs.CityInfo, error) {
+func (r *Repository) GetCityFromCountry(ctx context.Context, id uuid.UUID) ([]structs.CityInfo, error) {
 	var cities []structs.CityInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -408,7 +409,7 @@ func (r *Repository) GetCities(ctx context.Context) ([]structs.City, error) {
 	return cities, nil
 }
 
-func (r *Repository) GetCity(ctx context.Context, id string) (structs.City, error) {
+func (r *Repository) GetCity(ctx context.Context, id uuid.UUID) (structs.City, error) {
 	var city structs.City
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
@@ -461,7 +462,7 @@ func (r *Repository) GetCity(ctx context.Context, id string) (structs.City, erro
 	return city, nil
 }
 
-func (q *Repository) DeleteCity(ctx context.Context, id string) error {
+func (q *Repository) DeleteCity(ctx context.Context, id uuid.UUID) error {
 	tx, err := q.db.BeginTx(context.Background(), pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -480,7 +481,7 @@ func (q *Repository) DeleteCity(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *Repository) UpdateCity(ctx context.Context, id string, updates map[string]interface{}) error {
+func (r *Repository) UpdateCity(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
+	"github.com/google/uuid"
 )
 
 type Service struct {
@@ -27,15 +28,15 @@ func (s *Service) GetTaxs(ctx context.Context) ([]structs.Tax, error) {
 	return s.repo.Tax.GetTaxs(ctx)
 }
 
-func (s *Service) GetTax(ctx context.Context, id string) (structs.Tax, error) {
+func (s *Service) GetTax(ctx context.Context, id uuid.UUID) (structs.Tax, error) {
 	return s.repo.Tax.GetTax(ctx, id)
 }
 
-func (s *Service) DeleteTax(ctx context.Context, id string) error {
+func (s *Service) DeleteTax(ctx context.Context, id uuid.UUID) error {
 	return s.repo.Tax.DeleteTax(ctx, id)
 }
 
-func (s *Service) UpdateTax(ctx context.Context, id string, updates map[string]interface{}) error {
+func (s *Service) UpdateTax(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	return s.repo.Tax.UpdateTax(ctx, id, updates)
 }
 
@@ -56,15 +57,15 @@ func (s *Service) GetAircrafts(ctx context.Context) ([]structs.Aircraft, error) 
 	return s.repo.Aircraft.GetAircrafts(ctx)
 }
 
-func (s *Service) GetAircraft(ctx context.Context, id string) (structs.Aircraft, error) {
+func (s *Service) GetAircraft(ctx context.Context, id uuid.UUID) (structs.Aircraft, error) {
 	return s.repo.Aircraft.GetAircraft(ctx, id)
 }
 
-func (s *Service) DeleteAircraft(ctx context.Context, id string) error {
+func (s *Service) DeleteAircraft(ctx context.Context, id uuid.UUID) error {
 	return s.repo.Aircraft.DeleteAircraft(ctx, id)
 }
 
-func (s *Service) UpdateAircraft(ctx context.Context, id string, updates map[string]interface{}) error {
+func (s *Service) UpdateAircraft(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	return s.repo.Aircraft.UpdateAircraft(ctx, id, updates)
 }
 
@@ -84,15 +85,15 @@ func (s *Service) GetAirlines(ctx context.Context) ([]structs.Airline, error) {
 	return s.repo.Airline.GetAirlines(ctx)
 }
 
-func (s *Service) GetAirline(ctx context.Context, id string) (structs.Airline, error) {
+func (s *Service) GetAirline(ctx context.Context, id uuid.UUID) (structs.Airline, error) {
 	return s.repo.Airline.GetAirline(ctx, id)
 }
 
-func (s *Service) UpdateAirline(ctx context.Context, id string, updates map[string]interface{}) error {
+func (s *Service) UpdateAirline(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	return s.repo.Airline.UpdateAirline(ctx, id, updates)
 }
 
-func (s *Service) DeleteAirline(ctx context.Context, id string) error {
+func (s *Service) DeleteAirline(ctx context.Context, id uuid.UUID) error {
 	return s.repo.Airline.DeleteAirline(ctx, id)
 }
 
@@ -104,7 +105,7 @@ func (s *Service) GetAirlinesCountry(ctx context.Context) ([]structs.AirlineInfo
 	return s.repo.Airline.GetAirlinesCountry(ctx)
 }
 
-func (s *Service) GetAirlineCountry(ctx context.Context, id string) ([]structs.AirlineInfo, error) {
+func (s *Service) GetAirlineCountry(ctx context.Context, id uuid.UUID) ([]structs.AirlineInfo, error) {
 	return s.repo.Airline.GetAirlineCountry(ctx, id)
 }
 
@@ -130,15 +131,15 @@ func (s *Service) GetAirplanes(ctx context.Context) ([]structs.Airplane, error) 
 	return s.repo.Airplane.GetAirplanes(ctx)
 }
 
-func (s *Service) GetAirplane(ctx context.Context, id string) (structs.Airplane, error) {
+func (s *Service) GetAirplane(ctx context.Context, id uuid.UUID) (structs.Airplane, error) {
 	return s.repo.Airplane.GetAirplane(ctx, id)
 }
 
-func (s *Service) UpdateAirplane(ctx context.Context, id string, updates map[string]interface{}) error {
+func (s *Service) UpdateAirplane(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	return s.repo.Airplane.UpdateAirplane(ctx, id, updates)
 }
 
-func (s *Service) DeleteAirplane(ctx context.Context, id string) error {
+func (s *Service) DeleteAirplane(ctx context.Context, id uuid.UUID) error {
 	return s.repo.Airplane.DeleteAirplane(ctx, id)
 }
 

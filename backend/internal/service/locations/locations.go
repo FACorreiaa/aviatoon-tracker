@@ -31,15 +31,15 @@ func (s *Service) GetCountries(ctx context.Context) ([]structs.Country, error) {
 	return s.repo.Country.GetCountries(ctx)
 }
 
-func (s *Service) GetCountry(ctx context.Context, id string) (structs.Country, error) {
+func (s *Service) GetCountry(ctx context.Context, id uuid.UUID) (structs.Country, error) {
 	return s.repo.Country.GetCountry(ctx, id)
 }
 
-func (s *Service) DeleteCountry(ctx context.Context, id string) error {
+func (s *Service) DeleteCountry(ctx context.Context, id uuid.UUID) error {
 	return s.repo.Country.DeleteCountry(ctx, id)
 }
 
-func (s *Service) UpdateCountry(ctx context.Context, id string, updates map[string]interface{}) error {
+func (s *Service) UpdateCountry(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	return s.repo.Country.UpdateCountry(ctx, id, updates)
 }
 
@@ -60,15 +60,15 @@ func (s *Service) GetCities(ctx context.Context) ([]structs.City, error) {
 	return s.repo.City.GetCities(ctx)
 }
 
-func (s *Service) GetCity(ctx context.Context, id string) (structs.City, error) {
+func (s *Service) GetCity(ctx context.Context, id uuid.UUID) (structs.City, error) {
 	return s.repo.City.GetCity(ctx, id)
 }
 
-func (s *Service) DeleteCity(ctx context.Context, id string) error {
+func (s *Service) DeleteCity(ctx context.Context, id uuid.UUID) error {
 	return s.repo.City.DeleteCity(ctx, id)
 }
 
-func (s *Service) UpdateCity(ctx context.Context, id string, updates map[string]interface{}) error {
+func (s *Service) UpdateCity(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	return s.repo.City.UpdateCity(ctx, id, updates)
 }
 
@@ -76,6 +76,6 @@ func (s *Service) GetCitiesFromCountry(ctx context.Context) ([]structs.CityInfo,
 	return s.repo.City.GetCitiesFromCountry(ctx)
 }
 
-func (s *Service) GetCityFromCountry(ctx context.Context, id string) ([]structs.CityInfo, error) {
+func (s *Service) GetCityFromCountry(ctx context.Context, id uuid.UUID) ([]structs.CityInfo, error) {
 	return s.repo.City.GetCityFromCountry(ctx, id)
 }

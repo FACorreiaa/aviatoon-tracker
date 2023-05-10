@@ -1,9 +1,12 @@
 package structs
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Tax struct {
-	ID        string     `json:"id" pg:"default:gen_random_uuid()"`
+	ID        uuid.UUID  `json:"id" pg:"default:gen_random_uuid()"`
 	TaxId     int        `json:"tax_id,string"`
 	TaxName   string     `json:"tax_name"`
 	IataCode  string     `json:"iata_code"`

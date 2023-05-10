@@ -6,6 +6,7 @@ import (
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"time"
@@ -63,7 +64,14 @@ func (h *Handler) GetCountries(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetCountry(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		// Handle the error for invalid UUID format
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid aircraft ID"))
+		return
+	}
+
 	country, err := h.service.Country.GetCountry(h.ctx, id)
 	if err != nil {
 		log.Printf("Error fetching country data: %v", err)
@@ -101,8 +109,15 @@ func (h *Handler) GetCountryCount(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBytes)
 }
 func (h *Handler) DeleteCountry(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	err := h.service.Airport.DeleteAirport(h.ctx, id)
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		// Handle the error for invalid UUID format
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid aircraft ID"))
+		return
+	}
+
+	err = h.service.Airport.DeleteAirport(h.ctx, id)
 	if err != nil {
 		log.Printf("Error fetching countries data: %v", err)
 
@@ -120,7 +135,14 @@ func (h *Handler) DeleteCountry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateCountry(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		// Handle the error for invalid UUID format
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid aircraft ID"))
+		return
+	}
+
 	var updates map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -183,7 +205,14 @@ func (h *Handler) GetCities(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetCity(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		// Handle the error for invalid UUID format
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid aircraft ID"))
+		return
+	}
+
 	city, err := h.service.City.GetCity(h.ctx, id)
 	if err != nil {
 		log.Printf("Error fetching country data: %v", err)
@@ -221,8 +250,15 @@ func (h *Handler) GetCityCount(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBytes)
 }
 func (h *Handler) DeleteCity(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	err := h.service.City.DeleteCity(h.ctx, id)
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		// Handle the error for invalid UUID format
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid aircraft ID"))
+		return
+	}
+
+	err = h.service.City.DeleteCity(h.ctx, id)
 	if err != nil {
 		log.Printf("Error fetching countries data: %v", err)
 
@@ -240,7 +276,14 @@ func (h *Handler) DeleteCity(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateCity(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		// Handle the error for invalid UUID format
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid aircraft ID"))
+		return
+	}
+
 	var updates map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -279,7 +322,13 @@ func (h *Handler) GetCitiesFromCountry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetCityFromCountry(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		// Handle the error for invalid UUID format
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid aircraft ID"))
+		return
+	}
 
 	city, err := h.service.City.GetCityFromCountry(h.ctx, id)
 	if err != nil {

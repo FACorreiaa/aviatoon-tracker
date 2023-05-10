@@ -6,6 +6,7 @@ import (
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"time"
@@ -59,7 +60,14 @@ func (h *Handler) GetAirports(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAirport(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		// Handle the error for invalid UUID format
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid aircraft ID"))
+		return
+	}
+
 	airplane, err := h.service.Airport.GetAirport(h.ctx, id)
 	if err != nil {
 		log.Printf("Error fetching airlines data: %v", err)
@@ -95,8 +103,15 @@ func (h *Handler) GetAirportCount(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBytes)
 }
 func (h *Handler) DeleteAirport(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	err := h.service.Airport.DeleteAirport(h.ctx, id)
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		// Handle the error for invalid UUID format
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid aircraft ID"))
+		return
+	}
+
+	err = h.service.Airport.DeleteAirport(h.ctx, id)
 	if err != nil {
 		log.Printf("Error fetching airlines data: %v", err)
 
@@ -112,7 +127,14 @@ func (h *Handler) DeleteAirport(w http.ResponseWriter, r *http.Request) {
 	//json.NewEncoder(w).Encode(taxs)
 }
 func (h *Handler) UpdateAirport(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		// Handle the error for invalid UUID format
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Invalid aircraft ID"))
+		return
+	}
+
 	var updates map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

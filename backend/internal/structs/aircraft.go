@@ -1,9 +1,12 @@
 package structs
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Aircraft struct {
-	ID           string     `json:"id" pg:"default:gen_random_uuid()"`
+	ID           uuid.UUID  `json:"id" pg:"default:gen_random_uuid()"`
 	IataCode     string     `json:"iata_code"`
 	AircraftName string     `json:"aircraft_name"`
 	PlaneTypeId  int        `json:"plane_type_id,string"`

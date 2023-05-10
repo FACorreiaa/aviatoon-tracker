@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pkg/errors"
@@ -60,7 +61,7 @@ func (q *Repository) GetTaxs(ctx context.Context) ([]structs.Tax, error) {
 	defer tx.Rollback(ctx)
 
 	// Send query to database.
-	rows, err := tx.Query(ctx, `SELECT * FROM tax ORDER BY tax_id`)
+	rows, err := tx.Query(ctx, `SELECT id, tax_id, tax_name, iata_code, created_at, updated_at FROM tax ORDER BY id`)
 	if err != nil {
 		return nil, err
 	}
@@ -93,10 +94,10 @@ func (q *Repository) GetTaxs(ctx context.Context) ([]structs.Tax, error) {
 	return tax, nil
 }
 
-func (q *Repository) GetTax(ctx context.Context, id string) (structs.Tax, error) {
+func (q *Repository) GetTax(ctx context.Context, id uuid.UUID) (structs.Tax, error) {
 	var tax structs.Tax
 
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return tax, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -110,7 +111,7 @@ func (q *Repository) GetTax(ctx context.Context, id string) (structs.Tax, error)
 			created_at,
 			updated_at
 		FROM tax
-		WHERE tax_id = $1 LIMIT 1`, id).Scan(&tax.ID,
+		WHERE id = $1 LIMIT 1`, id).Scan(&tax.ID,
 		&tax.TaxId,
 		&tax.TaxName,
 		&tax.IataCode,
@@ -131,7 +132,7 @@ func (q *Repository) GetTax(ctx context.Context, id string) (structs.Tax, error)
 	return tax, nil
 }
 
-func (q *Repository) DeleteTax(ctx context.Context, id string) error {
+func (q *Repository) DeleteTax(ctx context.Context, id uuid.UUID) error {
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -150,7 +151,7 @@ func (q *Repository) DeleteTax(ctx context.Context, id string) error {
 	return nil
 }
 
-func (q *Repository) UpdateTax(ctx context.Context, id string, updates map[string]interface{}) error {
+func (q *Repository) UpdateTax(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -180,7 +181,7 @@ func (q *Repository) UpdateTax(ctx context.Context, id string, updates map[strin
 }
 
 func (q *Repository) GetTaxCount(ctx context.Context) (int, error) {
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return 0, err
 	}
@@ -250,7 +251,7 @@ func (r *Repository) GetAircrafts(ctx context.Context) ([]structs.Aircraft, erro
 	defer tx.Rollback(ctx)
 
 	// Send query to database.
-	rows, err := tx.Query(ctx, `SELECT * FROM aircraft ORDER BY iata_code`)
+	rows, err := tx.Query(ctx, `SELECT id, iata_code, aircraft_name, plane_type_id, created_at, updated_at FROM aircraft ORDER BY iata_code`)
 	if err != nil {
 		return nil, err
 	}
@@ -283,10 +284,10 @@ func (r *Repository) GetAircrafts(ctx context.Context) ([]structs.Aircraft, erro
 	return aircraftTypes, nil
 }
 
-func (r *Repository) GetAircraft(ctx context.Context, id string) (structs.Aircraft, error) {
+func (r *Repository) GetAircraft(ctx context.Context, id uuid.UUID) (structs.Aircraft, error) {
 	var aircraft structs.Aircraft
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return aircraft, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -303,9 +304,10 @@ func (r *Repository) GetAircraft(ctx context.Context, id string) (structs.Aircra
 		WHERE id = $1 LIMIT 1 `, id)
 	err = row.Scan(
 		&aircraft.ID,
+		&aircraft.IataCode,
+
 		&aircraft.AircraftName,
 		&aircraft.PlaneTypeId,
-		&aircraft.IataCode,
 		&aircraft.CreatedAt,
 		&aircraft.UpdatedAt,
 	)
@@ -324,7 +326,7 @@ func (r *Repository) GetAircraft(ctx context.Context, id string) (structs.Aircra
 	return aircraft, nil
 }
 
-func (r *Repository) DeleteAircraft(ctx context.Context, id string) error {
+func (r *Repository) DeleteAircraft(ctx context.Context, id uuid.UUID) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -343,7 +345,7 @@ func (r *Repository) DeleteAircraft(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *Repository) UpdateAircraft(ctx context.Context, id string, updates map[string]interface{}) error {
+func (r *Repository) UpdateAircraft(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -373,7 +375,7 @@ func (r *Repository) UpdateAircraft(ctx context.Context, id string, updates map[
 }
 
 func (r *Repository) GetAircraftCount(ctx context.Context) (int, error) {
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return 0, err
 	}
@@ -494,7 +496,7 @@ func (r *Repository) GetAirlines(ctx context.Context) ([]structs.Airline, error)
 	return airlines, nil
 }
 
-func (r *Repository) GetAirline(ctx context.Context, id string) (structs.Airline, error) {
+func (r *Repository) GetAirline(ctx context.Context, id uuid.UUID) (structs.Airline, error) {
 	var airline structs.Airline
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
@@ -556,7 +558,7 @@ func (r *Repository) GetAirline(ctx context.Context, id string) (structs.Airline
 	return airline, nil
 }
 
-func (r *Repository) DeleteAirline(ctx context.Context, id string) error {
+func (r *Repository) DeleteAirline(ctx context.Context, id uuid.UUID) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -575,7 +577,7 @@ func (r *Repository) DeleteAirline(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *Repository) UpdateAirline(ctx context.Context, id string, updates map[string]interface{}) error {
+func (r *Repository) UpdateAirline(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -678,7 +680,7 @@ func (r *Repository) GetAirlinesCountry(ctx context.Context) ([]structs.AirlineI
 	return airlines, nil
 }
 
-func (r *Repository) GetAirlineCountry(ctx context.Context, id string) ([]structs.AirlineInfo, error) {
+func (r *Repository) GetAirlineCountry(ctx context.Context, id uuid.UUID) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -1009,7 +1011,7 @@ func (r *Repository) GetAirplanes(ctx context.Context) ([]structs.Airplane, erro
 	return airplanes, nil
 }
 
-func (r *Repository) GetAirplane(ctx context.Context, id string) (structs.Airplane, error) {
+func (r *Repository) GetAirplane(ctx context.Context, id uuid.UUID) (structs.Airplane, error) {
 	var airplane structs.Airplane
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
@@ -1071,7 +1073,7 @@ func (r *Repository) GetAirplane(ctx context.Context, id string) (structs.Airpla
 	return airplane, nil
 }
 
-func (r *Repository) DeleteAirplane(ctx context.Context, id string) error {
+func (r *Repository) DeleteAirplane(ctx context.Context, id uuid.UUID) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -1090,7 +1092,7 @@ func (r *Repository) DeleteAirplane(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *Repository) UpdateAirplane(ctx context.Context, id string, updates map[string]interface{}) error {
+func (r *Repository) UpdateAirplane(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
