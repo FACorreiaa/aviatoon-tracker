@@ -51,7 +51,7 @@ func (q *Repository) CreateTax(ctx context.Context, t *structs.Tax) error {
 	return nil
 }
 
-func (q *Repository) GetTaxs(ctx context.Context) ([]structs.Tax, error) {
+func (q *Repository) GetTaxess(ctx context.Context) ([]structs.Tax, error) {
 	var tax []structs.Tax
 
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -94,7 +94,7 @@ func (q *Repository) GetTaxs(ctx context.Context) ([]structs.Tax, error) {
 	return tax, nil
 }
 
-func (q *Repository) GetTax(ctx context.Context, id uuid.UUID) (structs.Tax, error) {
+func (q *Repository) GetTaxes(ctx context.Context, id uuid.UUID) (structs.Tax, error) {
 	var tax structs.Tax
 
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -180,7 +180,7 @@ func (q *Repository) UpdateTax(ctx context.Context, id uuid.UUID, updates map[st
 	return nil
 }
 
-func (q *Repository) GetTaxCount(ctx context.Context) (int, error) {
+func (q *Repository) GetTaxesCount(ctx context.Context) (int, error) {
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return 0, err

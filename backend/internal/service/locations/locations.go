@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
+	"github.com/google/uuid"
 )
 
 type Service struct {

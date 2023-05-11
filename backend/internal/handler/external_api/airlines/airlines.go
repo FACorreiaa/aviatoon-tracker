@@ -162,8 +162,8 @@ func (h *Handler) GetAircraftCount(w http.ResponseWriter, r *http.Request) {
 **	AIRLINE TAX **
 ******************/
 
-func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
-	taxs, err := h.service.Tax.GetTaxs(h.ctx)
+func (h *Handler) GetTaxess(w http.ResponseWriter, r *http.Request) {
+	taxs, err := h.service.Tax.GetTaxess(h.ctx)
 	if err != nil {
 		log.Printf("Error fetching airlines data: %v", err)
 
@@ -179,7 +179,7 @@ func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(taxs)
 }
 
-func (h *Handler) GetTax(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetTaxes(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		// Handle the error for invalid UUID format
@@ -188,7 +188,7 @@ func (h *Handler) GetTax(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taxs, err := h.service.Tax.GetTax(h.ctx, id)
+	taxs, err := h.service.Tax.GetTaxes(h.ctx, id)
 	if err != nil {
 		log.Printf("Error fetching airlines data: %v", err)
 
@@ -256,8 +256,8 @@ func (h *Handler) UpdateTax(w http.ResponseWriter, r *http.Request) {
 	//json.NewEncoder(w).Encode(taxs)
 }
 
-func (h *Handler) GetTaxCount(w http.ResponseWriter, r *http.Request) {
-	count, err := h.service.Tax.GetTaxCount(h.ctx)
+func (h *Handler) GetTaxesCount(w http.ResponseWriter, r *http.Request) {
+	count, err := h.service.Tax.GetTaxesCount(h.ctx)
 	if err != nil {
 		http.Error(w, "Failed to get number of taxes", http.StatusInternalServerError)
 		return

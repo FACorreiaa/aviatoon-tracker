@@ -29,11 +29,11 @@ type User interface {
 
 type Tax interface {
 	CreateTax(ctx context.Context, t *structs.Tax) error
-	GetTaxs(ctx context.Context) ([]structs.Tax, error)
-	GetTax(ctx context.Context, id uuid.UUID) (structs.Tax, error)
+	GetTaxess(ctx context.Context) ([]structs.Tax, error)
+	GetTaxes(ctx context.Context, id uuid.UUID) (structs.Tax, error)
 	UpdateTax(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error
 	DeleteTax(ctx context.Context, id uuid.UUID) error
-	GetTaxCount(ctx context.Context) (int, error)
+	GetTaxesCount(ctx context.Context) (int, error)
 }
 
 type Airport interface {

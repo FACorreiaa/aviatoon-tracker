@@ -56,11 +56,11 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 	})
 
 	//Tax
-	router.Get("/api/v1/tax", taxHandler.GetTaxs)
-	router.Get("/api/v1/tax/count", taxHandler.GetTaxCount)
+	router.Get("/api/v1/tax", taxHandler.GetTaxess)
+	router.Get("/api/v1/tax/count", taxHandler.GetTaxesCount)
 
 	router.Route("/api/v1/tax/{id}", func(r chi.Router) {
-		r.Get("/", taxHandler.GetTax)
+		r.Get("/", taxHandler.GetTaxes)
 		r.Delete("/", taxHandler.DeleteTax)
 		r.Put("/", taxHandler.UpdateTax)
 	})

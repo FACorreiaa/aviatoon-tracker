@@ -3,6 +3,7 @@ package utils
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"github.com/google/uuid"
 	"os"
 	"time"
 

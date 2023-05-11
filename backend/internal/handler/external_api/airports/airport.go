@@ -29,7 +29,7 @@ func (h *Handler) CreateAirport(w http.ResponseWriter, r *http.Request) {
 	airport := &structs.Airport{} // create a pointer to the Airport struct
 	err := h.service.Airport.CreateAirport(h.ctx, airport)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airport data: %v", err)
 
 		// Write an error response to the client
 		w.WriteHeader(http.StatusInternalServerError)
@@ -45,7 +45,7 @@ func (h *Handler) CreateAirport(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetAirports(w http.ResponseWriter, r *http.Request) {
 	airport, err := h.service.Airport.GetAirports(h.ctx)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airports data: %v", err)
 
 		// Write an error response to the client
 		w.WriteHeader(http.StatusInternalServerError)
@@ -64,11 +64,11 @@ func (h *Handler) GetAirport(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Handle the error for invalid UUID format
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid aircraft ID"))
+		w.Write([]byte("Invalid airport ID"))
 		return
 	}
 
-	airplane, err := h.service.Airport.GetAirport(h.ctx, id)
+	airport, err := h.service.Airport.GetAirport(h.ctx, id)
 	if err != nil {
 		log.Printf("Error fetching airlines data: %v", err)
 
@@ -81,7 +81,7 @@ func (h *Handler) GetAirport(w http.ResponseWriter, r *http.Request) {
 	// Serialize the response as JSON and write to the response writer
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(airplane)
+	json.NewEncoder(w).Encode(airport)
 }
 
 func (h *Handler) GetAirportCount(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +113,7 @@ func (h *Handler) DeleteAirport(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.Airport.DeleteAirport(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airport data: %v", err)
 
 		// Write an error response to the client
 		w.WriteHeader(http.StatusInternalServerError)
@@ -154,7 +154,7 @@ func (h *Handler) UpdateAirport(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetCitiesAirport(w http.ResponseWriter, r *http.Request) {
 	airportInfo, err := h.service.Airport.GetCitiesAirports(h.ctx)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airport data: %v", err)
 
 		// Write an error response to the client
 		w.WriteHeader(http.StatusInternalServerError)
@@ -172,7 +172,7 @@ func (h *Handler) GetCityNameAirport(w http.ResponseWriter, r *http.Request) {
 
 	airportInfo, err := h.service.Airport.GetCityNameAirport(h.ctx, cityName)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airport data: %v", err)
 
 		// Write an error response to the client
 		w.WriteHeader(http.StatusInternalServerError)
@@ -190,7 +190,7 @@ func (h *Handler) GetCountryNameAirport(w http.ResponseWriter, r *http.Request) 
 
 	airportInfo, err := h.service.Airport.GetCountryNameAirport(h.ctx, countryName)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airport data: %v", err)
 
 		// Write an error response to the client
 		w.WriteHeader(http.StatusInternalServerError)
@@ -209,7 +209,7 @@ func (h *Handler) GetCityNameAirportAlternative(w http.ResponseWriter, r *http.R
 
 	airportInfo, err := h.service.Airport.GetCityNameAirportAlternative(h.ctx, cityName)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airport data: %v", err)
 
 		// Write an error response to the client
 		w.WriteHeader(http.StatusInternalServerError)

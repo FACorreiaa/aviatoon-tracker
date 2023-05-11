@@ -20,8 +20,8 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
-func (q *Repository) CreateAirport(ctx context.Context, a *structs.Airport) error {
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+func (r *Repository) CreateAirport(ctx context.Context, a *structs.Airport) error {
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("error starting transaction: %w", err)
 	}
@@ -61,17 +61,22 @@ func (q *Repository) CreateAirport(ctx context.Context, a *structs.Airport) erro
 	return nil
 }
 
-func (q *Repository) GetAirports(ctx context.Context) ([]structs.Airport, error) {
+func (r *Repository) GetAirports(ctx context.Context) ([]structs.Airport, error) {
 	var airport []structs.Airport
 
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return nil, err
 	}
 	defer tx.Rollback(ctx)
 
 	// Send query to database.
-	rows, err := tx.Query(ctx, `SELECT * FROM airport ORDER BY airport_id`)
+	rows, err := tx.Query(ctx, `SELECT id, gmt, airport_id, iata_code,
+       										city_iata_code, icao_code, country_iso2,
+       										geoname_id, latitude, longitude, airport_name,
+       										country_name, phone_number, timezone,
+       										created_at, updated_at
+       								FROM airport ORDER BY id`)
 	if err != nil {
 		return nil, err
 	}
@@ -104,19 +109,23 @@ func (q *Repository) GetAirports(ctx context.Context) ([]structs.Airport, error)
 	return airport, nil
 }
 
-func (q *Repository) GetAirport(ctx context.Context, id uuid.UUID) (structs.Airport, error) {
+func (r *Repository) GetAirport(ctx context.Context, id uuid.UUID) (structs.Airport, error) {
 	var airport structs.Airport
 
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airport, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback(ctx)
 
-	row := tx.QueryRow(context.Background(), `
-		SELECT * FROM airport
-		WHERE id = $1 LIMIT 1`, id)
-	err = row.Scan(
+	_ = tx.QueryRow(context.Background(), `
+		SELECT id, gmt, airport_id, iata_code,
+       			city_iata_code, icao_code, country_iso2,
+       			geoname_id, latitude, longitude, airport_name,
+       			country_name, phone_number, timezone,
+       			created_at, updated_at
+		FROM airport
+		WHERE id = $1 LIMIT 1`, id).Scan(
 		airport.ID,
 		airport.GMT,
 		airport.AirportId,
@@ -148,8 +157,8 @@ func (q *Repository) GetAirport(ctx context.Context, id uuid.UUID) (structs.Airp
 	return airport, nil
 }
 
-func (q *Repository) DeleteAirport(ctx context.Context, id uuid.UUID) error {
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+func (r *Repository) DeleteAirport(ctx context.Context, id uuid.UUID) error {
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -167,8 +176,8 @@ func (q *Repository) DeleteAirport(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (q *Repository) UpdateAirport(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+func (r *Repository) UpdateAirport(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -196,8 +205,8 @@ func (q *Repository) UpdateAirport(ctx context.Context, id uuid.UUID, updates ma
 	return nil
 }
 
-func (q *Repository) GetAirportCount(ctx context.Context) (int, error) {
-	tx, err := q.db.BeginTx(context.TODO(), pgx.TxOptions{})
+func (r *Repository) GetAirportCount(ctx context.Context) (int, error) {
+	tx, err := r.db.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
 		return 0, err
 	}
@@ -219,9 +228,9 @@ func (q *Repository) GetAirportCount(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-func (q *Repository) GetCitiesAirports(ctx context.Context) ([]structs.AirportInfo, error) {
+func (r *Repository) GetCitiesAirports(ctx context.Context) ([]structs.AirportInfo, error) {
 	var airportsInfo []structs.AirportInfo
-	tx, err := q.db.BeginTx(context.Background(), pgx.TxOptions{})
+	tx, err := r.db.BeginTx(context.Background(), pgx.TxOptions{})
 	if err != nil {
 		return airportsInfo, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -272,9 +281,9 @@ func (q *Repository) GetCitiesAirports(ctx context.Context) ([]structs.AirportIn
 	return airportsInfo, nil
 }
 
-func (q *Repository) GetCityNameAirport(ctx context.Context, cityName string) ([]structs.AirportInfo, error) {
+func (r *Repository) GetCityNameAirport(ctx context.Context, cityName string) ([]structs.AirportInfo, error) {
 	var airportsInfo []structs.AirportInfo
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return airportsInfo, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -326,12 +335,12 @@ func (q *Repository) GetCityNameAirport(ctx context.Context, cityName string) ([
 	return airportsInfo, nil
 }
 
-func (q *Repository) GetCityNameAirportAlternative(ctx context.Context, cityName string) ([]structs.AirportInfo, error) {
+func (r *Repository) GetCityNameAirportAlternative(ctx context.Context, cityName string) ([]structs.AirportInfo, error) {
 	var airportsInfo []structs.AirportInfo
 
 	// create a map of city IATA codes to city names
 	cityMap := make(map[string]string)
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return airportsInfo, fmt.Errorf("failed to query city names: %w", err)
 	}
@@ -393,9 +402,9 @@ func (q *Repository) GetCityNameAirportAlternative(ctx context.Context, cityName
 	return airportsInfo, nil
 }
 
-func (q *Repository) GetCountryNameAirport(ctx context.Context, countryName string) ([]structs.AirportInfo, error) {
+func (r *Repository) GetCountryNameAirport(ctx context.Context, countryName string) ([]structs.AirportInfo, error) {
 	var airportsInfo []structs.AirportInfo
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return airportsInfo, fmt.Errorf("failed to begin transaction: %w", err)
 	}

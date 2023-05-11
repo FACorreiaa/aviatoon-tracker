@@ -29,7 +29,7 @@ func (h *Handler) CreateCountry(w http.ResponseWriter, r *http.Request) {
 	country := &structs.Country{} // create a pointer to the Airport struct
 	err := h.service.Country.CreateCountry(h.ctx, country)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching country data: %v", err)
 
 		// Write an error response to the client
 		w.WriteHeader(http.StatusInternalServerError)
@@ -163,9 +163,9 @@ func (h *Handler) UpdateCountry(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-*
-Cities
+City
 */
+
 func (h *Handler) CreateCity(w http.ResponseWriter, r *http.Request) {
 	city := &structs.City{} // create a pointer to the Airport struct
 	err := h.service.City.CreateCity(h.ctx, city)
@@ -186,7 +186,7 @@ func (h *Handler) CreateCity(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetCities(w http.ResponseWriter, r *http.Request) {
-	countries, err := h.service.City.GetCities(h.ctx)
+	cities, err := h.service.City.GetCities(h.ctx)
 	if err != nil {
 		log.Printf("Error fetching city data: %v", err)
 
@@ -201,7 +201,7 @@ func (h *Handler) GetCities(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(countries)
+	json.NewEncoder(w).Encode(cities)
 }
 
 func (h *Handler) GetCity(w http.ResponseWriter, r *http.Request) {
