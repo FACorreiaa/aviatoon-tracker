@@ -105,7 +105,7 @@ func (s *Service) GetAirlinesCountry(ctx context.Context) ([]structs.AirlineInfo
 	return s.repo.Airline.GetAirlinesCountry(ctx)
 }
 
-func (s *Service) GetAirlineCountry(ctx context.Context, id uuid.UUID) ([]structs.AirlineInfo, error) {
+func (s *Service) GetAirlineCountry(ctx context.Context, id int) ([]structs.AirlineInfo, error) {
 	return s.repo.Airline.GetAirlineCountry(ctx, id)
 }
 

@@ -100,10 +100,10 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 	})
 
 	//Aircraft
-	router.Get("/api/v1/aircraft", aircraftHandler.GetAircrafts)
-	router.Get("/api/v1/aircraft/count", aircraftHandler.GetAircraftCount)
+	router.Get("/api/v1/aircrafts", aircraftHandler.GetAircrafts)
+	router.Get("/api/v1/aircrafts/count", aircraftHandler.GetAircraftCount)
 
-	router.Route("/api/v1/aircraft/{id}", func(r chi.Router) {
+	router.Route("/api/v1/aircrafts/{id}", func(r chi.Router) {
 		r.Get("/", aircraftHandler.GetAircraft)
 		r.Delete("/", aircraftHandler.DeleteAircraft)
 		r.Put("/", aircraftHandler.UpdateAircraft)
@@ -115,7 +115,7 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 	//router.Get("/api/v1/airlines/city/country", airlineHandler.GetAirlineCountry)
 	router.Get("/api/v1/airlines/country={country_name}", airlineHandler.GetAirlineCountryName)
 	router.Get("/api/v1/airlines/city={city_name}", airlineHandler.GetAirlineCityName)
-	router.Get("/api/v1/airlines/country-name={countryName}/city-name={cityName}", airlineHandler.GetAirlineCountryCityName)
+	router.Get("/api/v1/airlines/country={country_name}/city={city_name}", airlineHandler.GetAirlineCountryCityName)
 
 	router.Route("/api/v1/airlines/{id}", func(r chi.Router) {
 		r.Get("/", airlineHandler.GetAirline)
@@ -125,6 +125,7 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 		r.Put("/", airlineHandler.UpdateAirline)
 	})
 
+	//Here
 	//Airplanes
 	router.Get("/api/v1/airplanes", airplaneHandler.GetAirplanes)
 	router.Get("/api/v1/airplanes/count", airplaneHandler.GetAirplaneCount)
@@ -134,8 +135,8 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 		r.Put("/", airplaneHandler.UpdateAirplane)
 	})
 	router.Get("/api/v1/airplanes/airlines", airplaneHandler.GetAirplaneAirline)
-	router.Get("/api/v1/airplanes/airlines/airline-name={airlineName}", airplaneHandler.GetAirplanesFromAirlineName)
-	router.Get("/api/v1/airplanes/airlines/country-name={countryName}", airplaneHandler.GetAirplanesFromAirlineCountry)
+	router.Get("/api/v1/airplanes/airlines/airline={airline_name}", airplaneHandler.GetAirplanesFromAirlineName)
+	router.Get("/api/v1/airplanes/airlines/country={country_name}", airplaneHandler.GetAirplanesFromAirlineCountry)
 
 	return router
 }

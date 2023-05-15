@@ -26,7 +26,7 @@ type Airline struct {
 }
 
 type AirlineInfo struct {
-	AirlineId            int        `json:"id"`
+	AirlineId            int        `json:"airline_id"`
 	AirlineName          string     `json:"airline_name"`
 	CallSign             string     `json:"call_sign"`
 	HubCode              string     `json:"hub_code"`
@@ -43,9 +43,9 @@ type AirlineInfo struct {
 	Timezone             string     `json:"timezone"`
 	Latitude             float64    `json:"latitude"`
 	Longitude            float64    `json:"longitude"`
-	CountryId            int        `json:"country_id"`
-	Population           string     `json:"population"`
-	CountryName          int        `json:"country_name"`
+	CountryId            uuid.UUID  `json:"country_id" pg:"default:gen_random_uuid()"`
+	Population           int        `json:"population"`
+	CountryName          string     `json:"country_name"`
 	Capital              string     `json:"capital"`
 	CurrencyName         string     `json:"currency_name"`
 	CurrencyCode         string     `json:"currency_code"`

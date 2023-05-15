@@ -87,7 +87,7 @@ type Airline interface {
 	DeleteAirline(ctx context.Context, id uuid.UUID) error
 	GetAirlineCount(ctx context.Context) (int, error)
 	GetAirlinesCountry(ctx context.Context) ([]structs.AirlineInfo, error)
-	GetAirlineCountry(ctx context.Context, id uuid.UUID) ([]structs.AirlineInfo, error)
+	GetAirlineCountry(ctx context.Context, id int) ([]structs.AirlineInfo, error)
 	GetAirlineCountryName(ctx context.Context, countryName string) ([]structs.AirlineInfo, error)
 	GetAirlineCityName(ctx context.Context, cityName string) ([]structs.AirlineInfo, error)
 	GetAirlineCountryCityName(ctx context.Context, coutryName string, cityName string) ([]structs.AirlineInfo, error)

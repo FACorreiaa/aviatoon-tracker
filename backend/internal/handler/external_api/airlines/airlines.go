@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -425,7 +426,7 @@ func (h *Handler) GetAirlinesCountry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAirlineCountry(w http.ResponseWriter, r *http.Request) {
-	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	param, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		// Handle the error for invalid UUID format
 		w.WriteHeader(http.StatusBadRequest)
@@ -433,7 +434,7 @@ func (h *Handler) GetAirlineCountry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	airlines, err := h.service.Airline.GetAirlineCountry(h.ctx, id)
+	airlines, err := h.service.Airline.GetAirlineCountry(h.ctx, param)
 	if err != nil {
 		log.Printf("Error fetching airlines data: %v", err)
 

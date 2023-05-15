@@ -680,7 +680,7 @@ func (r *Repository) GetAirlinesCountry(ctx context.Context) ([]structs.AirlineI
 	return airlines, nil
 }
 
-func (r *Repository) GetAirlineCountry(ctx context.Context, id uuid.UUID) ([]structs.AirlineInfo, error) {
+func (r *Repository) GetAirlineCountry(ctx context.Context, id int) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -693,7 +693,7 @@ func (r *Repository) GetAirlineCountry(ctx context.Context, id uuid.UUID) ([]str
                a.data_founded, a.status, a.type, a.iata_code, a.icao_code, a.country_iso_2,
                a.iata_prefix_accounting,
                ct.city_name, ct.gmt, ct.city_id, ct.timezone, ct.latitude, ct.longitude,
-               c.id, c.population, c.country_name, c.capital, c.currency_name, c.currency_code, c.continent,
+               c.id as country_id, c.population, c.country_name, c.capital, c.currency_name, c.currency_code, c.continent,
                c.phone_prefix, a.created_at, a.updated_at
         FROM airline a
         INNER JOIN city ct ON ct.country_iso2 = a.country_iso_2
@@ -743,8 +743,7 @@ func (r *Repository) GetAirlineCountryName(ctx context.Context, countryName stri
 	rows, err := tx.Query(ctx, `
         SELECT DISTINCT a.airline_id, a.airline_name, a.call_sign, a.hub_code,
                a.data_founded, a.status, a.type, a.iata_code, a.icao_code, a.country_iso_2,
-               a.iata_prefix_accounting,
-               ct.city_name, ct.gmt, ct.city_id, ct.timezone, ct.latitude, ct.longitude,
+               a.iata_prefix_accounting, ct.city_name, ct.gmt, ct.city_id, ct.timezone, ct.latitude, ct.longitude,
                c.id, c.population, c.country_name, c.capital, c.currency_name, c.currency_code, c.continent,
                c.phone_prefix, a.created_at, a.updated_at
         FROM airline a
