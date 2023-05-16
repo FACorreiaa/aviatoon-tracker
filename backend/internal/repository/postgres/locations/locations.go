@@ -20,6 +20,10 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
+/*
+	Country
+*/
+
 func (r *Repository) CreateCountry(ctx context.Context, c *structs.Country) error {
 	// Start a transaction.
 
@@ -64,7 +68,7 @@ func (r *Repository) CreateCountry(ctx context.Context, c *structs.Country) erro
 func (r *Repository) GetCountries(ctx context.Context) ([]structs.Country, error) {
 	var countries []structs.Country
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +113,7 @@ func (r *Repository) GetCountries(ctx context.Context) ([]structs.Country, error
 func (r *Repository) GetCountry(ctx context.Context, id uuid.UUID) (structs.Country, error) {
 	var country structs.Country
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return country, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -236,7 +240,7 @@ func (r *Repository) GetCountryCount(ctx context.Context) (int, error) {
 
 func (r *Repository) GetCitiesFromCountry(ctx context.Context) ([]structs.CityInfo, error) {
 	var cities []structs.CityInfo
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return cities, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -277,7 +281,7 @@ func (r *Repository) GetCitiesFromCountry(ctx context.Context) ([]structs.CityIn
 
 func (r *Repository) GetCityFromCountry(ctx context.Context, id uuid.UUID) ([]structs.CityInfo, error) {
 	var cities []structs.CityInfo
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return cities, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -363,7 +367,7 @@ func (r *Repository) CreateCity(ctx context.Context, c *structs.City) error {
 func (r *Repository) GetCities(ctx context.Context) ([]structs.City, error) {
 	var cities []structs.City
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return nil, err
 	}
@@ -412,7 +416,7 @@ func (r *Repository) GetCities(ctx context.Context) ([]structs.City, error) {
 func (r *Repository) GetCity(ctx context.Context, id uuid.UUID) (structs.City, error) {
 	var city structs.City
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return city, fmt.Errorf("failed to begin transaction: %w", err)
 	}

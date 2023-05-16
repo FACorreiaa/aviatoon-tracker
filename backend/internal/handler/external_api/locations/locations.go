@@ -23,7 +23,7 @@ func NewHandler(s *service.Service) *Handler {
 
 /**
 Countries
-*/
+**/
 
 func (h *Handler) CreateCountry(w http.ResponseWriter, r *http.Request) {
 	country := &structs.Country{} // create a pointer to the Airport struct
