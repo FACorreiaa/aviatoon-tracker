@@ -56,11 +56,11 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 	})
 
 	//Tax
-	router.Get("/api/v1/tax", taxHandler.GetTaxess)
+	router.Get("/api/v1/tax", taxHandler.GetTaxs)
 	router.Get("/api/v1/tax/count", taxHandler.GetTaxesCount)
 
 	router.Route("/api/v1/tax/{id}", func(r chi.Router) {
-		r.Get("/", taxHandler.GetTaxes)
+		r.Get("/", taxHandler.GetTax)
 		r.Delete("/", taxHandler.DeleteTax)
 		r.Put("/", taxHandler.UpdateTax)
 	})
@@ -69,9 +69,10 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 	router.Get("/api/v1/airports", airportHandler.GetAirports)
 	router.Get("/api/v1/airports/count", airportHandler.GetAirportCount)
 	router.Get("/api/v1/airports/city", airportHandler.GetCitiesAirport)
-	router.Get("/api/v1/airports/city/city_name/{city_name}", airportHandler.GetCityNameAirport)
-	router.Get("/api/v1/airports/city/country_name/{country_name}", airportHandler.GetCountryNameAirport)
-	router.Get("/api/v1/airports/city/city_name/alternative/{city_name}", airportHandler.GetCityNameAirportAlternative)
+	router.Get("/api/v1/airports/city={city_name}", airportHandler.GetCityNameAirport)
+	router.Get("/api/v1/airports/country={country_name}", airportHandler.GetCountryNameAirport)
+	router.Get("/api/v1/airports/city={city_name}/alternative", airportHandler.GetCityNameAirportAlternative)
+	router.Get("/api/v1/airports/iata={iata_code}", airportHandler.GetCityIataCodeAirport)
 
 	router.Route("/api/v1/airports/{id}", func(r chi.Router) {
 		r.Get("/", airportHandler.GetAirport)
@@ -125,7 +126,6 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 		r.Put("/", airlineHandler.UpdateAirline)
 	})
 
-	//Here
 	//Airplanes
 	router.Get("/api/v1/airplanes", airplaneHandler.GetAirplanes)
 	router.Get("/api/v1/airplanes/count", airplaneHandler.GetAirplaneCount)

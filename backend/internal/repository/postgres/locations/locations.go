@@ -363,7 +363,7 @@ func (r *Repository) CreateCity(ctx context.Context, c *structs.City) error {
 func (r *Repository) GetCities(ctx context.Context) ([]structs.City, error) {
 	var cities []structs.City
 
-	tx, err := r.db.BeginTx(context.Background(), pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return nil, err
 	}

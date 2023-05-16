@@ -51,7 +51,7 @@ func (q *Repository) CreateTax(ctx context.Context, t *structs.Tax) error {
 	return nil
 }
 
-func (q *Repository) GetTaxess(ctx context.Context) ([]structs.Tax, error) {
+func (q *Repository) GetTaxs(ctx context.Context) ([]structs.Tax, error) {
 	var tax []structs.Tax
 
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -94,7 +94,7 @@ func (q *Repository) GetTaxess(ctx context.Context) ([]structs.Tax, error) {
 	return tax, nil
 }
 
-func (q *Repository) GetTaxes(ctx context.Context, id uuid.UUID) (structs.Tax, error) {
+func (q *Repository) GetTax(ctx context.Context, id uuid.UUID) (structs.Tax, error) {
 	var tax structs.Tax
 
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -445,7 +445,7 @@ func (r *Repository) CreateAirline(ctx context.Context, a *structs.Airline) erro
 func (r *Repository) GetAirlines(ctx context.Context) ([]structs.Airline, error) {
 	var airlines []structs.Airline
 
-	tx, err := r.db.BeginTx(context.Background(), pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return nil, err
 	}
@@ -499,7 +499,7 @@ func (r *Repository) GetAirlines(ctx context.Context) ([]structs.Airline, error)
 func (r *Repository) GetAirline(ctx context.Context, id uuid.UUID) (structs.Airline, error) {
 	var airline structs.Airline
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airline, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -631,7 +631,7 @@ func (r *Repository) GetAirlineCount(ctx context.Context) (int, error) {
 
 func (r *Repository) GetAirlinesCountry(ctx context.Context) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airlines, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -682,7 +682,7 @@ func (r *Repository) GetAirlinesCountry(ctx context.Context) ([]structs.AirlineI
 
 func (r *Repository) GetAirlineCountry(ctx context.Context, id int) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airlines, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -734,7 +734,7 @@ func (r *Repository) GetAirlineCountry(ctx context.Context, id int) ([]structs.A
 func (r *Repository) GetAirlineCountryName(ctx context.Context, countryName string) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airlines, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -785,7 +785,7 @@ func (r *Repository) GetAirlineCountryName(ctx context.Context, countryName stri
 func (r *Repository) GetAirlineCityName(ctx context.Context, cityName string) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airlines, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -837,7 +837,7 @@ func (r *Repository) GetAirlineCityName(ctx context.Context, cityName string) ([
 func (r *Repository) GetAirlineCountryCityName(ctx context.Context, countryName string, cityName string) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airlines, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -948,7 +948,7 @@ func (r *Repository) CreateAirplane(ctx context.Context, a *structs.Airplane) er
 func (r *Repository) GetAirplanes(ctx context.Context) ([]structs.Airplane, error) {
 	var airplanes []structs.Airplane
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return nil, err
 	}
@@ -1013,15 +1013,15 @@ func (r *Repository) GetAirplanes(ctx context.Context) ([]structs.Airplane, erro
 func (r *Repository) GetAirplane(ctx context.Context, id uuid.UUID) (structs.Airplane, error) {
 	var airplane structs.Airplane
 
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airplane, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback(ctx)
 
-	row := tx.QueryRow(context.Background(), `SELECT
+	row := tx.QueryRow(ctx, `SELECT
 			id, iata_type, airplane_id, airline_iata_code, iata_code_long,
-			iata_code_short, airline_icao_code, construction_number, delivery_date,
+			iata_code_short, airline_icao_code, construction_number, delivery_date, engines_count,
 			engines_type, first_flight_date, icao_code_hex, line_number, model_code,
 			registration_number, test_registration_number, plane_age, plane_class,
 			model_name, plane_owner, plane_series, plane_status, production_line,
@@ -1029,34 +1029,14 @@ func (r *Repository) GetAirplane(ctx context.Context, id uuid.UUID) (structs.Air
 		FROM airplane
 		WHERE id = $1 LIMIT 1`, id)
 	err = row.Scan(
-		airplane.ID,
-		airplane.IataType,
-		airplane.AirplaneId,
-		airplane.AirlineIataCode,
-		airplane.IataCodeLong,
-		airplane.IataCodeShort,
-		airplane.AirlineIcaoCode,
-		airplane.ConstructionNumber,
-		airplane.DeliveryDate,
-		airplane.EnginesCount,
-		airplane.EnginesType,
-		airplane.FirstFlightDate,
-		airplane.IcaoCodeHex,
-		airplane.LineNumber,
-		airplane.ModelCode,
-		airplane.RegistrationNumber,
-		airplane.TestRegistrationNumber,
-		airplane.PlaneAge,
-		airplane.PlaneClass,
-		airplane.ModelName,
-		airplane.PlaneOwner,
-		airplane.PlaneSeries,
-		airplane.PlaneStatus,
-		airplane.ProductionLine,
-		airplane.RegistrationDate,
-		airplane.RolloutDate,
-		airplane.CreatedAt,
-		airplane.UpdatedAt)
+		&airplane.ID, &airplane.IataType, &airplane.AirplaneId, &airplane.AirlineIataCode,
+		&airplane.IataCodeLong, &airplane.IataCodeShort, &airplane.AirlineIcaoCode,
+		&airplane.ConstructionNumber, &airplane.DeliveryDate, &airplane.EnginesCount, &airplane.EnginesType,
+		&airplane.FirstFlightDate, &airplane.IcaoCodeHex, &airplane.LineNumber, &airplane.ModelCode,
+		&airplane.RegistrationNumber, &airplane.TestRegistrationNumber, &airplane.PlaneAge, &airplane.PlaneClass,
+		&airplane.ModelName, &airplane.PlaneOwner, &airplane.PlaneSeries, &airplane.PlaneStatus,
+		&airplane.ProductionLine, &airplane.RegistrationDate, &airplane.RolloutDate, &airplane.CreatedAt,
+		&airplane.UpdatedAt)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -1145,7 +1125,7 @@ func (r *Repository) GetAirplaneCount(ctx context.Context) (int, error) {
 
 func (r *Repository) GetAirplaneAirline(ctx context.Context) ([]structs.AirplaneInfo, error) {
 	var airplanesInfo []structs.AirplaneInfo
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airplanesInfo, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -1194,9 +1174,9 @@ func (r *Repository) GetAirplaneAirline(ctx context.Context) ([]structs.Airplane
 	return airplanesInfo, nil
 }
 
-func (r *Repository) GetAirplanesFromAirlineName(ctx context.Context, airline_name string) ([]structs.AirplaneInfo, error) {
+func (r *Repository) GetAirplanesFromAirlineName(ctx context.Context, airlineName string) ([]structs.AirplaneInfo, error) {
 	var airplanesInfo []structs.AirplaneInfo
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airplanesInfo, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -1209,7 +1189,7 @@ func (r *Repository) GetAirplanesFromAirlineName(ctx context.Context, airline_na
         FROM airplane ap
         INNER JOIN airline al ON ap.airline_iata_code = al.iata_code
         WHERE al.airline_name = $1
-        ORDER BY ap.airplane_id`, airline_name)
+        ORDER BY ap.airplane_id`, airlineName)
 	if err != nil {
 		return airplanesInfo, fmt.Errorf("failed to execute query: %w", err)
 	}
@@ -1245,9 +1225,9 @@ func (r *Repository) GetAirplanesFromAirlineName(ctx context.Context, airline_na
 	return airplanesInfo, nil
 }
 
-func (r *Repository) GetAirplanesFromAirlineCountry(ctx context.Context, country_name string) ([]structs.AirplaneInfo, error) {
+func (r *Repository) GetAirplanesFromAirlineCountry(ctx context.Context, countryName string) ([]structs.AirplaneInfo, error) {
 	var airplanesInfo []structs.AirplaneInfo
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return airplanesInfo, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -1261,7 +1241,7 @@ func (r *Repository) GetAirplanesFromAirlineCountry(ctx context.Context, country
         FROM airplane ap
         INNER JOIN airline al ON ap.airline_iata_code = al.iata_code
         WHERE al.country_name = $1
-        ORDER BY ap.airplane_id`, country_name)
+        ORDER BY ap.airplane_id`, countryName)
 	if err != nil {
 		return airplanesInfo, fmt.Errorf("failed to execute query: %w", err)
 	}

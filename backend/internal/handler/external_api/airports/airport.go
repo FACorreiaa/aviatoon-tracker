@@ -222,3 +222,21 @@ func (h *Handler) GetCityNameAirportAlternative(w http.ResponseWriter, r *http.R
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(airportInfo)
 }
+
+func (h *Handler) GetCityIataCodeAirport(w http.ResponseWriter, r *http.Request) {
+	iata := chi.URLParam(r, "iata_code")
+	airplane, err := h.service.Airport.GetCityIataCodeAirport(h.ctx, iata)
+	if err != nil {
+		log.Printf("Error fetching airplanes data: %v", err)
+
+		// Write an error response to the client
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Internal server error"))
+		return
+	}
+
+	// Serialize the response as JSON and write to the response writer
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(airplane)
+}

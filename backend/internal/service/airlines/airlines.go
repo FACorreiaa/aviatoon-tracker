@@ -24,12 +24,12 @@ func (s *Service) CreateTax(ctx context.Context, tax *structs.Tax) error {
 
 }
 
-func (s *Service) GetTaxess(ctx context.Context) ([]structs.Tax, error) {
-	return s.repo.Tax.GetTaxess(ctx)
+func (s *Service) GetTaxs(ctx context.Context) ([]structs.Tax, error) {
+	return s.repo.Tax.GetTaxs(ctx)
 }
 
-func (s *Service) GetTaxes(ctx context.Context, id uuid.UUID) (structs.Tax, error) {
-	return s.repo.Tax.GetTaxes(ctx, id)
+func (s *Service) GetTax(ctx context.Context, id uuid.UUID) (structs.Tax, error) {
+	return s.repo.Tax.GetTax(ctx, id)
 }
 
 func (s *Service) DeleteTax(ctx context.Context, id uuid.UUID) error {

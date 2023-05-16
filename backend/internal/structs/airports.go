@@ -26,7 +26,7 @@ type Airport struct {
 
 type AirportInfo struct {
 	ID           uuid.UUID   `json:"id"`
-	GMT          int         `json:"gmt"`
+	GMT          float64     `json:"gmt"`
 	AirportId    int         `json:"airport_id"`
 	IataCode     string      `json:"iata_code"`
 	CityIataCode string      `json:"city_iata_code"`

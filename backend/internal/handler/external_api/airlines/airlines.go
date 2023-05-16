@@ -163,8 +163,8 @@ func (h *Handler) GetAircraftCount(w http.ResponseWriter, r *http.Request) {
 **	AIRLINE TAX **
 ******************/
 
-func (h *Handler) GetTaxess(w http.ResponseWriter, r *http.Request) {
-	taxs, err := h.service.Tax.GetTaxess(h.ctx)
+func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
+	taxs, err := h.service.Tax.GetTaxs(h.ctx)
 	if err != nil {
 		log.Printf("Error fetching airlines data: %v", err)
 
@@ -180,7 +180,7 @@ func (h *Handler) GetTaxess(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(taxs)
 }
 
-func (h *Handler) GetTaxes(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetTax(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		// Handle the error for invalid UUID format
@@ -189,7 +189,7 @@ func (h *Handler) GetTaxes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taxs, err := h.service.Tax.GetTaxes(h.ctx, id)
+	taxs, err := h.service.Tax.GetTax(h.ctx, id)
 	if err != nil {
 		log.Printf("Error fetching airlines data: %v", err)
 
@@ -426,7 +426,7 @@ func (h *Handler) GetAirlinesCountry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAirlineCountry(w http.ResponseWriter, r *http.Request) {
-	param, err := strconv.Atoi(chi.URLParam(r, "id"))
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		// Handle the error for invalid UUID format
 		w.WriteHeader(http.StatusBadRequest)
@@ -434,7 +434,7 @@ func (h *Handler) GetAirlineCountry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	airlines, err := h.service.Airline.GetAirlineCountry(h.ctx, param)
+	airlines, err := h.service.Airline.GetAirlineCountry(h.ctx, id)
 	if err != nil {
 		log.Printf("Error fetching airlines data: %v", err)
 
@@ -546,7 +546,7 @@ func (h *Handler) GetAirplane(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Handle the error for invalid UUID format
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid aircraft ID"))
+		w.Write([]byte("Invalid airplane ID"))
 		return
 	}
 
@@ -571,7 +571,7 @@ func (h *Handler) DeleteAirplane(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Handle the error for invalid UUID format
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid aircraft ID"))
+		w.Write([]byte("Invalid airplane ID"))
 		return
 	}
 
@@ -596,7 +596,7 @@ func (h *Handler) UpdateAirplane(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Handle the error for invalid UUID format
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Invalid aircraft ID"))
+		w.Write([]byte("Invalid airplane ID"))
 		return
 	}
 
@@ -621,7 +621,7 @@ func (h *Handler) UpdateAirplane(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetAirplaneCount(w http.ResponseWriter, r *http.Request) {
 	count, err := h.service.Airplane.GetAirplaneCount(h.ctx)
 	if err != nil {
-		http.Error(w, "Failed to get number of taxes", http.StatusInternalServerError)
+		http.Error(w, "Failed to get number of airplanes", http.StatusInternalServerError)
 		return
 	}
 	response := struct {
