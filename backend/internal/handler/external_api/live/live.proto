@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package live;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+service FlightService {
+  rpc GetLiveFlights (GetLiveFlightsRequest) returns (LiveFlightResults);
+}
+
+option go_package = "github.com/FACorreiaa/aviatoon-tracker/flightpb";
+
+
+message LiveFlight {
+  message Departure {
+    string airport = 1;
+    string timezone = 2;
+    string iata = 3;
+    string icao = 4;
+    string terminal = 5;
+    google.protobuf.Any gate = 6;
+    google.protobuf.Any delay = 7;
+    google.protobuf.Timestamp scheduled = 8;
+    google.protobuf.Timestamp estimated = 9;
+    google.protobuf.Any actual = 10;
+    google.protobuf.Any estimated_runway = 11;
+    google.protobuf.Any actual_runway = 12;
+  }
+
+  message Arrival {
+    string airport = 1;
+    string timezone = 2;
+    string iata = 3;
+    string icao = 4;
+    google.protobuf.Any terminal = 5;
+    google.protobuf.Any gate = 6;
+    google.protobuf.Any baggage = 7;
+    google.protobuf.Any delay = 8;
+    google.protobuf.Timestamp scheduled = 9;
+    google.protobuf.Timestamp estimated = 10;
+    google.protobuf.Any actual = 11;
+    google.protobuf.Any estimated_runway = 12;
+    google.protobuf.Any actual_runway = 13;
+  }
+
+  message Airline {
+    string name = 1;
+    string iata = 2;
+    string icao = 3;
+  }
+
+  message Flight {
+    string number = 1;
+    string iata = 2;
+    string icao = 3;
+
+    message Codeshared {
+      string airline_name = 1;
+      string airline_iata = 2;
+      string airline_icao = 3;
+      string flight_number = 4;
+      string flight_iata = 5;
+      string flight_icao = 6;
+    }
+
+    Codeshared codeshared = 4;
+  }
+
+  string flight_date = 1;
+  string flight_status = 2;
+  Departure departure = 3;
+  Arrival arrival = 4;
+  Airline airline = 5;
+  Flight flight = 6;
+  google.protobuf.Any aircraft = 7;
+  google.protobuf.Any live = 8;
+}
+
+message GetLiveFlightsRequest {
+  string airport_code = 1;
+  string date = 2;
+}
+
+message LiveFlightResults {
+  repeated LiveFlight live_flight_list = 1;
+}
+
+

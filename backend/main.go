@@ -6,6 +6,8 @@ import (
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/pprof"
+	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/prometheus"
+
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
@@ -65,6 +67,12 @@ func main() {
 				config.Handlers.Pprof.KeyFile,
 				config.Handlers.Pprof.CertFile,
 				config.Handlers.Pprof.EnableTLS,
+			),
+			prometheus.NewConfig(
+				config.Handlers.Prometheus.Port,
+				config.Handlers.Prometheus.KeyFile,
+				config.Handlers.Prometheus.CertFile,
+				config.Handlers.Prometheus.EnableTLS,
 			),
 		),
 		services,

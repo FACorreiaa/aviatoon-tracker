@@ -17,6 +17,11 @@ handlers:
     certFile: './data/localhost.crt'
     keyFile: './data/localhost.key'
     enableTLS: true
+  prometheus:
+    port: '8084'
+    certFile: './data/localhost.crt'
+    keyFile: './data/localhost.key'
+    enableTLS: true
 
 services:
   auth:

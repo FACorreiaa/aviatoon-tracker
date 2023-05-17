@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/pprof"
+	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/prometheus"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
 	"github.com/FACorreiaa/aviatoon-tracker/pkg/logs"
 	"os"
@@ -19,15 +20,18 @@ type handler interface {
 type Config struct {
 	externalApiConfig external_api.Config
 	pprofConfig       pprof.Config
+	prometheusConfig  prometheus.Config
 }
 
 func NewConfig(
 	apiConfig external_api.Config,
 	pprofConfig pprof.Config,
+	prometheusConfig prometheus.Config,
 ) Config {
 	return Config{
 		externalApiConfig: apiConfig,
 		pprofConfig:       pprofConfig,
+		prometheusConfig:  prometheusConfig,
 	}
 }
 
@@ -38,6 +42,7 @@ type Handler struct {
 
 	externalApi handler
 	pprof       handler
+	prometheus  handler
 }
 
 func NewHandler(
@@ -53,6 +58,7 @@ func NewHandler(
 func (h *Handler) Handle(exitSignal *os.Signal) {
 	h.externalApi = external_api.New(h.config.externalApiConfig, h.service, h.ctx)
 	h.pprof = pprof.New(h.config.pprofConfig)
+	h.prometheus = prometheus.New(h.config.prometheusConfig)
 	go func() {
 		if err := h.pprof.Run(); err != nil && exitSignal == nil {
 			logs.DefaultLogger.WithError(err).Fatal("Pprof server was closed unexpectedly")
@@ -62,6 +68,12 @@ func (h *Handler) Handle(exitSignal *os.Signal) {
 	go func() {
 		if err := h.externalApi.Run(); err != nil && exitSignal == nil {
 			logs.DefaultLogger.WithError(err).Fatal("REST API Server was closed unexpectedly")
+			syscall.Kill(syscall.Getpid(), syscall.SIGQUIT)
+		}
+	}()
+	go func() {
+		if err := h.prometheus.Run(); err != nil && exitSignal == nil {
+			logs.DefaultLogger.WithError(err).Fatal("Prometheus was closed unexpectedly")
 			syscall.Kill(syscall.Getpid(), syscall.SIGQUIT)
 		}
 	}()
@@ -78,6 +90,12 @@ func (h *Handler) Shutdown(ctx context.Context) {
 	}()
 	go func() {
 		if err := h.pprof.Shutdown(ctx); err != nil {
+			logs.DefaultLogger.WithError(err).Fatal("Error on pprof shutdown")
+		}
+		wg.Done()
+	}()
+	go func() {
+		if err := h.prometheus.Shutdown(ctx); err != nil {
 			logs.DefaultLogger.WithError(err).Fatal("Error on pprof shutdown")
 		}
 		wg.Done()

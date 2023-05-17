@@ -20,6 +20,12 @@ type Config struct {
 			KeyFile   string `mapstructure:"keyFile"`
 			EnableTLS bool   `mapstructure:"enableTLS"`
 		}
+		Prometheus struct {
+			Port      string `mapstructure:"port"`
+			CertFile  string `mapstructure:"certFile"`
+			KeyFile   string `mapstructure:"keyFile"`
+			EnableTLS bool   `mapstructure:"enableTLS"`
+		}
 	} `mapstructure:"handlers"`
 	Repositories struct {
 		Postgres struct {
