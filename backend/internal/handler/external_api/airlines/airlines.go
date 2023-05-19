@@ -163,6 +163,23 @@ func (h *Handler) GetAircraftCount(w http.ResponseWriter, r *http.Request) {
 **	AIRLINE TAX **
 ******************/
 
+func (h *Handler) CreateTax(w http.ResponseWriter, r *http.Request) {
+	tax := &structs.Tax{} // create a pointer to the Airport struct
+	err := h.service.Tax.CreateTax(h.ctx, tax)
+	if err != nil {
+		log.Printf("Error fetching aircraft data: %v", err)
+
+		// Write an error response to the client
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Internal server error"))
+		return
+	}
+
+	// Serialize the response as JSON and write to the response writer
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}
+
 func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
 	taxs, err := h.service.Tax.GetTaxs(h.ctx)
 	if err != nil {
