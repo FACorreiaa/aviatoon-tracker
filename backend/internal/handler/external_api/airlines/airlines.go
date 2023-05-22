@@ -3,6 +3,7 @@ package airlines
 import (
 	"context"
 	"encoding/json"
+	internal_api "github.com/FACorreiaa/aviatoon-tracker/internal/handler/internalApi"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/go-chi/chi/v5"
@@ -163,6 +164,39 @@ func (h *Handler) GetAircraftCount(w http.ResponseWriter, r *http.Request) {
 **	AIRLINE TAX **
 ******************/
 
+func (h *Handler) InsertTax(w http.ResponseWriter, r *http.Request) error {
+	apiResponse, err, _ := internal_api.GetAviationStackData("tax")
+	if err != nil {
+		log.Printf("error getting data: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	var response []structs.Tax
+	err = json.Unmarshal(apiResponse, &response)
+	if err != nil {
+		log.Printf("error unmarshaling API response: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+	}
+
+	for _, t := range response {
+		err := h.service.Tax.CreateTax(h.ctx, &structs.Tax{
+			ID:        uuid.UUID{},
+			TaxId:     t.TaxId,
+			TaxName:   t.TaxName,
+			IataCode:  t.IataCode,
+			CreatedAt: time.Now(),
+			UpdatedAt: nil,
+		})
+		if err != nil {
+			log.Printf("error creating tax in database: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return err
+		}
+	}
+	return nil
+}
+
 func (h *Handler) CreateTax(w http.ResponseWriter, r *http.Request) {
 	tax := &structs.Tax{} // create a pointer to the Airport struct
 	err := h.service.Tax.CreateTax(h.ctx, tax)
@@ -182,6 +216,28 @@ func (h *Handler) CreateTax(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
 	taxs, err := h.service.Tax.GetTaxs(h.ctx)
+	if len(taxs) == 0 {
+		err := h.InsertTax(w, r)
+		// Insert the countries into the database
+
+		//Refresh the countries from the database after inserting them
+		taxs, err := h.service.Tax.GetTaxs(h.ctx)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Invalid tax"))
+			return
+		}
+		// Write the list of countries to the response
+		err = json.NewEncoder(w).Encode(taxs)
+		if err != nil {
+			log.Printf("error encoding tax as JSON: %v", err)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Error encoding json"))
+			return
+		}
+
+	}
 	if err != nil {
 		log.Printf("Error fetching airlines data: %v", err)
 
