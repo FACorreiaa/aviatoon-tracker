@@ -146,10 +146,8 @@ type AirplaneInfo struct {
 
 type AirplaneResponse []Airplane
 
-//tax
-
 type Tax struct {
-	ID        uuid.UUID  `json:"id" pg:"default:gen_random_uuid()"`
+	ID        string     `json:"id" pg:"default:gen_random_uuid()"`
 	TaxId     int        `json:"tax_id,string"`
 	TaxName   string     `json:"tax_name"`
 	IataCode  string     `json:"iata_code"`
@@ -171,3 +169,7 @@ type TaxPerCityInfo struct {
 }
 
 type TaxListResponse []Tax
+
+type TaxResponse struct {
+	Data []Tax `json:"data"`
+}

@@ -3,6 +3,7 @@ package airlines
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	internal_api "github.com/FACorreiaa/aviatoon-tracker/internal/handler/internalApi"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
@@ -165,13 +166,15 @@ func (h *Handler) GetAircraftCount(w http.ResponseWriter, r *http.Request) {
 ******************/
 
 func (h *Handler) InsertTax(w http.ResponseWriter, r *http.Request) error {
-	apiResponse, err, _ := internal_api.GetAviationStackData("tax")
+	apiResponse, err, _ := internal_api.GetAviationStackData("taxes")
+	fmt.Println(string(apiResponse))
+
 	if err != nil {
 		log.Printf("error getting data: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	var response []structs.Tax
+	var response structs.TaxResponse
 	err = json.Unmarshal(apiResponse, &response)
 	if err != nil {
 		log.Printf("error unmarshaling API response: %v", err)
@@ -179,9 +182,9 @@ func (h *Handler) InsertTax(w http.ResponseWriter, r *http.Request) error {
 
 	}
 
-	for _, t := range response {
+	for _, t := range response.Data {
 		err := h.service.Tax.CreateTax(h.ctx, &structs.Tax{
-			ID:        uuid.UUID{},
+			ID:        uuid.NewString(),
 			TaxId:     t.TaxId,
 			TaxName:   t.TaxName,
 			IataCode:  t.IataCode,

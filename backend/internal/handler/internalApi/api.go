@@ -19,7 +19,7 @@ func GetAviationStackData(endpoint string, queryParams ...string) ([]byte, error
 		return nil, fmt.Errorf("missing API access key"), false
 	}
 
-	url := fmt.Sprintf("https://api.aviationstack.com/v1/%s?access_key=%s", endpoint, accessKey)
+	url := fmt.Sprintf("http://api.aviationstack.com/v1/%s?access_key=%s", endpoint, accessKey)
 	if len(queryParams) > 0 {
 		query := strings.Join(queryParams, "&")
 		url = fmt.Sprintf("%s&%s", url, query)
