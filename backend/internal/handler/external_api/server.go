@@ -30,13 +30,6 @@ func (s *server) Run() error {
 
 	fmt.Printf("Server starting on port%+v\n", s.httpServer.Addr)
 
-	//fmt.Printf("%+v\n", s.httpServer.Addr)
-	//fmt.Printf("%+v\n", s.httpServer.Handler)
-	//fmt.Printf("%+v\n", s.httpServer.TLSConfig)
-	//fmt.Printf("%+v\n", s.httpServer.ReadTimeout)
-	//fmt.Printf("%+v\n", s.httpServer.WriteTimeout)
-	//fmt.Printf("%+v\n", s.httpServer.MaxHeaderBytes)
-
 	if s.enableTls {
 		crt, _ := tls.LoadX509KeyPair(s.certFile, s.keyFile)
 		tlsConfig = tls.Config{Certificates: []tls.Certificate{crt}}

@@ -2,11 +2,12 @@ package internal_api
 
 import (
 	"fmt"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"io"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Repository struct {
@@ -44,7 +45,7 @@ func GetAviationStackData(endpoint string, queryParams ...string) ([]byte, error
 }
 
 //func (r *Repository) InsertAviationTaxIntoDB() error {
-//	taxResponse, err := GetAviationStackData(w, r)
+//	TaxApiData, err := GetAviationStackData(w, r)
 //	// Start a new transaction.
 //	tx, err := r.db.BeginTx(context.Background(), nil)
 //	if err != nil {
@@ -65,7 +66,7 @@ func GetAviationStackData(endpoint string, queryParams ...string) ([]byte, error
 //		}
 //	}()
 //	// Insert the countries into the database within the transaction.
-//	for _, t := range taxResponse {
+//	for _, t := range TaxApiData {
 //
 //		err := r.db.CreateAviationTax(&structs.Tax{
 //			ID:        uuid.NewString(),
@@ -141,12 +142,12 @@ func GetAviationStackData(endpoint string, queryParams ...string) ([]byte, error
 //}
 //
 //func InsertAviationTaxIntoDB(endpoint string, taxCreator TaxCreator) error {
-//	taxResponse, err, _ := GetAviationStackData(endpoint)
+//	TaxApiData, err, _ := GetAviationStackData(endpoint)
 //	if err != nil {
 //		return err
 //	}
 //
-//	for _, t := range taxResponse {
+//	for _, t := range TaxApiData {
 //		err := taxCreator.CreateTax(t)
 //		if err != nil {
 //			return err

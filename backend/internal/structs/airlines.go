@@ -1,14 +1,15 @@
 package structs
 
 import (
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 //airlines
 
 type Airline struct {
-	ID                   uuid.UUID  `json:"id" pg:"default:gen_random_uuid()"`
+	ID                   string     `json:"id" pg:"default:gen_random_uuid()"`
 	FleetAverageAge      float64    `json:"fleet_average_age,string"`
 	AirlineId            int        `json:"airline_id,string"`
 	Callsign             string     `json:"callsign"`
@@ -62,7 +63,7 @@ type AirlineResponse []Airline
 //aircrafts
 
 type Aircraft struct {
-	ID           uuid.UUID  `json:"id" pg:"default:gen_random_uuid()"`
+	ID           string     `json:"id" pg:"default:gen_random_uuid()"`
 	IataCode     string     `json:"iata_code"`
 	AircraftName string     `json:"aircraft_name"`
 	PlaneTypeId  int        `json:"plane_type_id,string"`
@@ -170,6 +171,14 @@ type TaxPerCityInfo struct {
 
 type TaxListResponse []Tax
 
-type TaxResponse struct {
+type TaxApiData struct {
 	Data []Tax `json:"data"`
+}
+
+type AircraftApiData struct {
+	Data []Aircraft `json:"data"`
+}
+
+type AirlineApiData struct {
+	Data []Airline `json:"data"`
 }
