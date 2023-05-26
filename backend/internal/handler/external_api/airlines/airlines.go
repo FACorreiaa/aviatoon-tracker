@@ -467,7 +467,7 @@ func (h *Handler) InsertAirlines(w http.ResponseWriter, r *http.Request) error {
 	apiResponse, err, _ := internal_api.GetAviationStackData("airlines")
 
 	if err != nil {
-		log.Printf("error getting data: %v", err)
+		log.Printf("error getting airline data: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
@@ -764,6 +764,63 @@ func (h *Handler) GetAirlineCountryCityName(w http.ResponseWriter, r *http.Reque
 
 //Airplane
 
+func (h *Handler) InsertAirplane(w http.ResponseWriter, r *http.Request) error {
+	apiResponse, err, _ := internal_api.GetAviationStackData("airplanes")
+
+	if err != nil {
+		log.Printf("error getting airplane data: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	var response structs.AirplaneApiData
+	err = json.Unmarshal(apiResponse, &response)
+	// Replace "0000-00-00" datetime values with zero value of time.Time
+	if err != nil {
+		log.Printf("error unmarshalling API response: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	for _, a := range response.Data {
+		err := h.service.Airplane.CreateAirplane(h.ctx, &structs.Airplane{
+			ID:                     uuid.NewString(),
+			IataType:               a.IataType,
+			AirplaneId:             a.AirplaneId,
+			AirlineIataCode:        a.AirlineIataCode,
+			IataCodeLong:           a.IataCodeLong,
+			IataCodeShort:          a.IataCodeShort,
+			AirlineIcaoCode:        a.AirlineIcaoCode,
+			ConstructionNumber:     a.ConstructionNumber,
+			DeliveryDate:           a.DeliveryDate,
+			EnginesCount:           a.EnginesCount,
+			EnginesType:            a.EnginesType,
+			FirstFlightDate:        a.FirstFlightDate,
+			IcaoCodeHex:            a.IcaoCodeHex,
+			LineNumber:             a.LineNumber,
+			ModelCode:              a.ModelCode,
+			RegistrationNumber:     a.RegistrationNumber,
+			TestRegistrationNumber: a.TestRegistrationNumber,
+			PlaneAge:               a.PlaneAge,
+			PlaneClass:             a.PlaneClass,
+			ModelName:              a.ModelName,
+			PlaneOwner:             a.PlaneOwner,
+			PlaneSeries:            a.PlaneSeries,
+			PlaneStatus:            a.PlaneStatus,
+			ProductionLine:         a.ProductionLine,
+			RegistrationDate:       a.RegistrationDate,
+			RolloutDate:            a.RolloutDate,
+			CreatedAt:              time.Now(),
+			UpdatedAt:              nil,
+		})
+
+		if err != nil {
+			log.Printf("error creating airplanes in database: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return err
+		}
+	}
+	return nil
+}
+
 func (h *Handler) CreateAirplane(w http.ResponseWriter, r *http.Request) {
 	airplane := &structs.Airplane{} // create a pointer to the Airport struct
 	err := h.service.Airplane.CreateAirplane(h.ctx, airplane)
@@ -782,7 +839,34 @@ func (h *Handler) CreateAirplane(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAirplanes(w http.ResponseWriter, r *http.Request) {
-	airplane, err := h.service.Airplane.GetAirplanes(h.ctx)
+	airplanes, err := h.service.Airplane.GetAirplanes(h.ctx)
+
+	if len(airplanes) == 0 {
+		err := h.InsertAirplane(w, r)
+		if err != nil {
+			log.Printf("Error inserting airplanes: %v", err)
+
+			// Write an error response to the client
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+
+		airplanes, err := h.service.Airplane.GetAirplanes(h.ctx)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Invalid tax"))
+			return
+		}
+		// Write the list of countries to the response
+		err = json.NewEncoder(w).Encode(airplanes)
+		if err != nil {
+			log.Printf("error encoding tax as JSON: %v", err)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Error encoding json"))
+			return
+		}
+	}
 	if err != nil {
 		log.Printf("Error fetching airplanes data: %v", err)
 
@@ -795,7 +879,7 @@ func (h *Handler) GetAirplanes(w http.ResponseWriter, r *http.Request) {
 	// Serialize the response as JSON and write to the response writer
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(airplane)
+	json.NewEncoder(w).Encode(airplanes)
 }
 
 func (h *Handler) GetAirplane(w http.ResponseWriter, r *http.Request) {

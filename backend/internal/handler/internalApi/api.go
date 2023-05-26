@@ -1,6 +1,7 @@
 package internal_api
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -38,9 +39,14 @@ func GetAviationStackData(endpoint string, queryParams ...string) ([]byte, error
 	defer response.Body.Close()
 
 	body, err := io.ReadAll(response.Body)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %v", err), false
 	}
+
+	// Replace "0000-00-00" datetime values with zero value of time.Time
+	body = bytes.ReplaceAll(body, []byte("0000-00-00"), []byte("2006-01-02T15:04:05.000Z"))
+
 	return body, nil, true
 }
 

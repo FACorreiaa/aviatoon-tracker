@@ -76,7 +76,7 @@ type AircraftResponse []Aircraft
 //airplanes
 
 type Airplane struct {
-	ID                     uuid.UUID   `json:"id" pg:"default:gen_random_uuid()"`
+	ID                     string      `json:"id" pg:"default:gen_random_uuid()"`
 	IataType               string      `json:"iata_type"`
 	AirplaneId             int         `json:"airplane_id,string"`
 	AirlineIataCode        string      `json:"airline_iata_code"`
@@ -181,4 +181,8 @@ type AircraftApiData struct {
 
 type AirlineApiData struct {
 	Data []Airline `json:"data"`
+}
+
+type AirplaneApiData struct {
+	Data []Airplane `json:"data"`
 }
