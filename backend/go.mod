@@ -18,6 +18,21 @@ require (
 )
 
 require (
+	github.com/bep/godartsass v0.16.0 // indirect
+	github.com/bep/golibsass v1.1.0 // indirect
+	github.com/cli/safeexec v1.0.0 // indirect
+	github.com/cosmtrek/air v1.43.0 // indirect
+	github.com/creack/pty v1.1.18 // indirect
+	github.com/fatih/color v1.14.1 // indirect
+	github.com/gohugoio/hugo v0.111.3 // indirect
+	github.com/imdario/mergo v0.3.13 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/pelletier/go-toml v1.9.5 // indirect
+	github.com/tdewolff/parse/v2 v2.6.5 // indirect
+)
+
+require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect

@@ -27,7 +27,7 @@ func NewHandler(s *service.Service) *Handler {
 //Aircraft
 
 func (h *Handler) InsertAircraft(w http.ResponseWriter, r *http.Request) error {
-	apiResponse, err, _ := internal_api.GetAviationStackData("aircraft_types")
+	apiResponse, err, _ := internal_api.FetchAviationStackData("aircraft_types")
 
 	if err != nil {
 		log.Printf("error getting data: %v", err)
@@ -238,7 +238,7 @@ func (h *Handler) GetAircraftCount(w http.ResponseWriter, r *http.Request) {
 ******************/
 
 func (h *Handler) InsertTax(w http.ResponseWriter, r *http.Request) error {
-	apiResponse, err, _ := internal_api.GetAviationStackData("taxes")
+	apiResponse, err, _ := internal_api.FetchAviationStackData("taxes")
 
 	if err != nil {
 		log.Printf("error getting data: %v", err)
@@ -331,6 +331,32 @@ func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(taxs)
 }
+
+// func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
+// 	updateChan := make(chan []Tax)
+
+// 	go func() {
+// 			for {
+// 					taxs, err := h.service.Tax.GetTaxs(h.ctx)
+// 					if err == nil && len(taxs) > 0 {
+// 							updateChan <- taxs
+// 					}
+// 					time.Sleep(time.Minute)
+// 			}
+// 	}()
+
+// 	taxs := <-updateChan
+
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.WriteHeader(http.StatusOK)
+// 	err := json.NewEncoder(w).Encode(taxs)
+// 	if err != nil {
+// 			log.Printf("error encoding tax as JSON: %v", err)
+// 			w.WriteHeader(http.StatusBadRequest)
+// 			w.Write([]byte("Error encoding json"))
+// 			return
+// 	}
+// }
 
 // func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
 // 	taxs, err := h.service.Tax.GetTaxs(h.ctx)
@@ -464,7 +490,7 @@ func (h *Handler) GetTaxesCount(w http.ResponseWriter, r *http.Request) {
 //Airline
 
 func (h *Handler) InsertAirlines(w http.ResponseWriter, r *http.Request) error {
-	apiResponse, err, _ := internal_api.GetAviationStackData("airlines")
+	apiResponse, err, _ := internal_api.FetchAviationStackData("airlines")
 
 	if err != nil {
 		log.Printf("error getting airline data: %v", err)
@@ -765,7 +791,7 @@ func (h *Handler) GetAirlineCountryCityName(w http.ResponseWriter, r *http.Reque
 //Airplane
 
 func (h *Handler) InsertAirplane(w http.ResponseWriter, r *http.Request) error {
-	apiResponse, err, _ := internal_api.GetAviationStackData("airplanes")
+	apiResponse, err, _ := internal_api.FetchAviationStackData("airplanes")
 
 	if err != nil {
 		log.Printf("error getting airplane data: %v", err)

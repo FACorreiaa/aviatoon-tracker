@@ -93,7 +93,7 @@ type Airplane struct {
 	ModelCode              string      `json:"model_code"`
 	RegistrationNumber     string      `json:"registration_number"`
 	TestRegistrationNumber interface{} `json:"test_registration_number"`
-	PlaneAge               int         `json:"plane_age,age"`
+	PlaneAge               int         `json:"plane_age,string"`
 	PlaneClass             interface{} `json:"plane_class"`
 	ModelName              string      `json:"model_name"`
 	PlaneOwner             interface{} `json:"plane_owner"`

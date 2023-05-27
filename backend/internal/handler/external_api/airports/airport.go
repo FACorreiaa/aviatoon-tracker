@@ -3,13 +3,15 @@ package airports
 import (
 	"context"
 	"encoding/json"
+	"log"
+	"net/http"
+	"time"
+
+	internal_api "github.com/FACorreiaa/aviatoon-tracker/internal/handler/internalApi"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"log"
-	"net/http"
-	"time"
 )
 
 type Handler struct {
@@ -24,6 +26,53 @@ func NewHandler(s *service.Service) *Handler {
 /*****************
 ** AIRLINE AIRPLANE **
 ******************/
+func (h *Handler) InsertAirport(w http.ResponseWriter, r *http.Request) error {
+	apiResponse, err, _ := internal_api.FetchAviationStackData("airports")
+
+	if err != nil {
+		log.Printf("error getting data: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	var response structs.AirportApiData
+	err = json.Unmarshal(apiResponse, &response)
+
+	if err != nil {
+		log.Printf("error unmarshalling API response: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	for _, a := range response.Data {
+		// airportID, err := strconv.Atoi(a.AirportId)
+		err := h.service.Airport.CreateAirport(h.ctx, &structs.Airport{
+			ID:           uuid.NewString(),
+			GMT:          a.GMT,
+			AirportId:    a.AirportId,
+			IataCode:     a.IataCode,
+			CityIataCode: a.CityIataCode,
+			IcaoCode:     a.IcaoCode,
+			CountryIso2:  a.CountryName,
+			GeonameId:    a.GeonameId,
+			Latitude:     a.Latitude,
+			Longitude:    a.Longitude,
+			AirportName:  a.AirportName,
+			CountryName:  a.CountryName,
+			PhoneNumber:  a.PhoneNumber,
+			Timezone:     a.Timezone,
+			CreatedAt:    a.CreatedAt,
+			UpdatedAt:    a.UpdatedAt,
+		})
+
+		if err != nil {
+			log.Printf("error creating Airport: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return err
+		}
+	}
+
+	return nil
+
+}
 
 func (h *Handler) CreateAirport(w http.ResponseWriter, r *http.Request) {
 	airport := &structs.Airport{} // create a pointer to the Airport struct
@@ -43,7 +92,34 @@ func (h *Handler) CreateAirport(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAirports(w http.ResponseWriter, r *http.Request) {
-	airport, err := h.service.Airport.GetAirports(h.ctx)
+	airports, err := h.service.Airport.GetAirports(h.ctx)
+
+	if len(airports) == 0 {
+		err := h.InsertAirport(w, r)
+		if err != nil {
+			log.Printf("Error inserting airports: %v", err)
+
+			// Write an error response to the client
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+		taxs, err := h.service.Tax.GetTaxs(h.ctx)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Invalid tax"))
+			return
+		}
+		err = json.NewEncoder(w).Encode(taxs)
+		if err != nil {
+			log.Printf("error encoding airports as JSON: %v", err)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Error encoding json"))
+			return
+		}
+	}
+
 	if err != nil {
 		log.Printf("Error fetching airports data: %v", err)
 
@@ -56,7 +132,7 @@ func (h *Handler) GetAirports(w http.ResponseWriter, r *http.Request) {
 	// Serialize the response as JSON and write to the response writer
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(airport)
+	json.NewEncoder(w).Encode(airports)
 }
 
 func (h *Handler) GetAirport(w http.ResponseWriter, r *http.Request) {

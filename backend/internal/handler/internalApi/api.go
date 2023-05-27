@@ -15,7 +15,8 @@ type Repository struct {
 	db *pgxpool.Pool
 }
 
-func GetAviationStackData(endpoint string, queryParams ...string) ([]byte, error, bool) {
+// don't use sprintf for building urls :pixel_prime:. Use url.URl & url.Values from net/url package
+func FetchAviationStackData(endpoint string, queryParams ...string) ([]byte, error, bool) {
 	accessKey := os.Getenv("AVIATION_STACK_API_KEY")
 	if accessKey == "" {
 		return nil, fmt.Errorf("missing API access key"), false
@@ -44,14 +45,13 @@ func GetAviationStackData(endpoint string, queryParams ...string) ([]byte, error
 		return nil, fmt.Errorf("failed to read response body: %v", err), false
 	}
 
-	// Replace "0000-00-00" datetime values with zero value of time.Time
 	body = bytes.ReplaceAll(body, []byte("0000-00-00"), []byte("2006-01-02T15:04:05.000Z"))
 
 	return body, nil, true
 }
 
 //func (r *Repository) InsertAviationTaxIntoDB() error {
-//	TaxApiData, err := GetAviationStackData(w, r)
+//	TaxApiData, err := FetchAviationStackData(w, r)
 //	// Start a new transaction.
 //	tx, err := r.db.BeginTx(context.Background(), nil)
 //	if err != nil {
@@ -148,7 +148,7 @@ func GetAviationStackData(endpoint string, queryParams ...string) ([]byte, error
 //}
 //
 //func InsertAviationTaxIntoDB(endpoint string, taxCreator TaxCreator) error {
-//	TaxApiData, err, _ := GetAviationStackData(endpoint)
+//	TaxApiData, err, _ := FetchAviationStackData(endpoint)
 //	if err != nil {
 //		return err
 //	}

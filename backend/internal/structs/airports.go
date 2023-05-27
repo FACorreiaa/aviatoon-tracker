@@ -1,14 +1,18 @@
 package structs
 
 import (
-	"github.com/google/uuid"
+	"encoding/json"
+	"strconv"
 	"time"
+
+	"github.com/google/uuid"
 )
 
+// create an intermediate type & then convert to a concrete one
 type Airport struct {
-	ID           uuid.UUID   `json:"id" pg:"default:gen_random_uuid()"`
+	ID           string      `json:"id,string" pg:"default:gen_random_uuid()"`
 	GMT          float64     `json:"gmt,string"`
-	AirportId    int         `json:"airport_id"`
+	AirportId    int64       `json:"-"`
 	IataCode     string      `json:"iata_code"`
 	CityIataCode string      `json:"city_iata_code"`
 	IcaoCode     string      `json:"icao_code"`
@@ -22,6 +26,34 @@ type Airport struct {
 	Timezone     string      ` json:"timezone"`
 	CreatedAt    time.Time   `db:"created_at" json:"created_at,string"`
 	UpdatedAt    *time.Time  `db:"updated_at" json:"updated_at,string"`
+}
+
+//create an intermediate type & then convert to a concrete one
+// type Deez struct {
+//   Data map[string]string `json:"data"`
+// }
+
+// func (d Deez) MyBeautifulWellFormattedStruct() (Airport, error) {...}
+
+// UnmarshalJSON implements the json.Unmarshaler interface for custom unmarshaling
+func (a *Airport) UnmarshalJSON(data []byte) error {
+	type Alias Airport
+	aux := &struct {
+		AirportId string `json:"airport_id"`
+		*Alias
+	}{
+		Alias: (*Alias)(a),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	airportId, err := strconv.ParseInt(aux.AirportId, 10, 64)
+	if err != nil {
+		return err
+	}
+	a.AirportId = airportId
+	return nil
 }
 
 type AirportInfo struct {
@@ -45,3 +77,7 @@ type AirportInfo struct {
 }
 
 type AirportResponse []Airport
+
+type AirportApiData struct {
+	Data []Airport `json:"data"`
+}
