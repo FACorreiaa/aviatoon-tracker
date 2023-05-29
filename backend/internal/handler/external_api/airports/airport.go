@@ -108,11 +108,11 @@ func (h *Handler) GetAirports(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Internal server error"))
 			return
 		}
-		taxs, err := h.service.Tax.GetTaxs(h.ctx)
+		taxs, err := h.service.Airport.GetAirports(h.ctx)
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Invalid tax"))
+			w.Write([]byte("Invalid airports"))
 			return
 		}
 		err = json.NewEncoder(w).Encode(taxs)

@@ -1,8 +1,19 @@
 package structs
 
+type FlightStatus string
+
+const (
+	Scheduled FlightStatus = "scheduled"
+	Active    FlightStatus = "active"
+	Landed    FlightStatus = "landed"
+	Cancelled FlightStatus = "cancelled"
+	Incident  FlightStatus = "incident"
+	Diverted  FlightStatus = "diverted"
+)
+
 type LiveFlights struct {
-	FlightDate   string `json:"flight_date"`
-	FlightStatus string `json:"flight_status"`
+	FlightDate   string       `json:"flight_date"`
+	FlightStatus FlightStatus `json:"flight_status"`
 	Departure    struct {
 		Airport         string      `json:"airports"`
 		Timezone        string      `json:"timezone"`

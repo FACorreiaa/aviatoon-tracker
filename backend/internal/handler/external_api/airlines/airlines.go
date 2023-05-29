@@ -298,50 +298,102 @@ func (h *Handler) CreateTax(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// test
 func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
-	taxs, err := h.service.Tax.GetTaxs(h.ctx)
-	if len(taxs) == 0 {
-		err := h.InsertTax(w, r)
-		if err != nil {
-			log.Printf("Error inserting tax: %v", err)
+	// Create a channel to receive updated tax data
+	updateChan := make(chan []structs.Tax)
 
-			// Write an error response to the client
+	// Start a Goroutine to periodically fetch tax data in the background
+	go func() {
+		for {
+			taxs, err := h.service.Tax.GetTaxs(h.ctx)
+			if err == nil && len(taxs) > 0 {
+				// Send the updated tax data to the channel
+				updateChan <- taxs
+			}
+			time.Sleep(time.Minute)
+			log.Println(time.Minute) // Wait for a minute before fetching data again
+		}
+	}()
+
+	// Check if there is already tax data available
+	select {
+	case taxs := <-updateChan:
+		// If there is updated tax data available, use it
+		writeTaxsResponse(w, taxs)
+	default:
+		// If there is no tax data available, fetch it manually
+		taxs, err := h.service.Tax.GetTaxs(h.ctx)
+		if err != nil {
+			log.Printf("Error fetching tax data: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
 		}
-		taxs, err := h.service.Tax.GetTaxs(h.ctx)
-
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Invalid tax"))
-			return
-		}
-		// Write the list of countries to the response
-		err = json.NewEncoder(w).Encode(taxs)
-		if err != nil {
-			log.Printf("error encoding tax as JSON: %v", err)
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Error encoding json"))
-			return
-		}
-
+		writeTaxsResponse(w, taxs)
 	}
-	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
-
-		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
-		return
-	}
-
-	// Serialize the response as JSON and write to the response writer
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(taxs)
 }
 
+// Helper function to write tax data response
+func writeTaxsResponse(w http.ResponseWriter, taxs []structs.Tax) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err := json.NewEncoder(w).Encode(taxs)
+	if err != nil {
+		log.Printf("Error encoding tax data as JSON: %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Error encoding json"))
+
+		return
+	}
+}
+
+// func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
+// 	taxs, err := h.service.Tax.GetTaxs(h.ctx)
+
+// 	if len(taxs) == 0 {
+// 		err := h.InsertTax(w, r)
+// 		if err != nil {
+// 			log.Printf("Error inserting tax: %v", err)
+
+// 			// Write an error response to the client
+// 			w.WriteHeader(http.StatusInternalServerError)
+// 			w.Write([]byte("Internal server error"))
+// 			return
+// 		}
+// 		taxs, err := h.service.Tax.GetTaxs(h.ctx)
+
+// 		if err != nil {
+// 			w.WriteHeader(http.StatusBadRequest)
+// 			w.Write([]byte("Invalid tax"))
+// 			return
+// 		}
+// 		// Write the list of countries to the response
+// 		err = json.NewEncoder(w).Encode(taxs)
+// 		if err != nil {
+// 			log.Printf("error encoding tax as JSON: %v", err)
+// 			w.WriteHeader(http.StatusBadRequest)
+// 			w.Write([]byte("Error encoding json"))
+// 			return
+// 		}
+
+// 	}
+// 	if err != nil {
+// 		log.Printf("Error fetching airlines data: %v", err)
+
+// 		// Write an error response to the client
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		w.Write([]byte("Internal server error"))
+// 		return
+// 	}
+
+// 	// Serialize the response as JSON and write to the response writer
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.WriteHeader(http.StatusOK)
+// 	json.NewEncoder(w).Encode(taxs)
+// }
+
+//delete
 // func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
 // 	updateChan := make(chan []Tax)
 

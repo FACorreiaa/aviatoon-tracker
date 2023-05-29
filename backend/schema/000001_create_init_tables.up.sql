@@ -127,20 +127,29 @@ CREATE TABLE tax (
 );
 CREATE TABLE live_flights (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  flight_date varchar(255),
-  flight_status varchar(255),
-  departure_airport varchar(255),
+  flight_date TIMESTAMP,
+  flight_status varchar(255) CHECK (
+    flight_status IN (
+      'scheduled',
+      'active',
+      'landed',
+      'cancelled',
+      'incident',
+      'diverted'
+    )
+  ),
+  departure_airport varchar(255) REFERENCES airport(airport_name),
   departure_timezone varchar(255),
   departure_iata varchar(255),
   departure_icao varchar(255),
   departure_terminal varchar(255),
   departure_gate varchar(255),
   departure_delay varchar(255),
-  departure_scheduled timestamp,
-  departure_estimated timestamp,
-  departure_actual varchar(255),
-  departure_estimated_runway varchar(255),
-  departure_actual_runway varchar(255),
+  departure_scheduled TIMESTAMP,
+  departure_estimated TIMESTAMP,
+  departure_actual TIMESTAMP,
+  departure_estimated_runway TIMESTAMP,
+  departure_actual_runway TIMESTAMP,
   arrival_airport varchar(255),
   arrival_timezone varchar(255),
   arrival_iata varchar(255),
@@ -149,11 +158,11 @@ CREATE TABLE live_flights (
   arrival_gate varchar(255),
   arrival_baggage varchar(255),
   arrival_delay varchar(255),
-  arrival_scheduled timestamp,
-  arrival_estimated timestamp,
-  arrival_actual varchar(255),
-  arrival_estimated_runway varchar(255),
-  arrival_actual_runway varchar(255),
+  arrival_scheduled TIMESTAMP,
+  arrival_estimated TIMESTAMP,
+  arrival_actual TIMESTAMP,
+  arrival_estimated_runway TIMESTAMP,
+  arrival_actual_runway TIMESTAMP,
   airline_id UUID REFERENCES airline(id),
   flight_number varchar(255),
   flight_iata varchar(255),
@@ -169,5 +178,7 @@ CREATE TABLE live_flights (
   updated_at TIMESTAMP NULL
 );
 -- Add indexes
+CREATE INDEX idx_airpname ON live_flights (departure_airport);
+CREATE INDEX idx_code ON live_flights (iata_code, icao_code);
 CREATE INDEX active_users ON users (email)
 WHERE user_status = 1;
