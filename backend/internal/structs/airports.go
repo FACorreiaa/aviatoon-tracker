@@ -24,8 +24,8 @@ type Airport struct {
 	CountryName  string      ` json:"country_name"`
 	PhoneNumber  interface{} ` json:"phone_number"`
 	Timezone     string      ` json:"timezone"`
-	CreatedAt    time.Time   `db:"created_at" json:"created_at,string"`
-	UpdatedAt    *time.Time  `db:"updated_at" json:"updated_at,string"`
+	CreatedAt    CustomTime  `db:"created_at" json:"created_at"`
+	UpdatedAt    *time.Time  `db:"updated_at" json:"updated_at"`
 }
 
 //create an intermediate type & then convert to a concrete one
@@ -71,7 +71,7 @@ type AirportInfo struct {
 	CountryName  string      `json:"country_name"`
 	PhoneNumber  interface{} `json:"phone_number"`
 	Timezone     string      `json:"timezone"`
-	CreatedAt    time.Time   `db:"created_at" json:"created_at"`
+	CreatedAt    CustomTime  `db:"created_at" json:"created_at"`
 	UpdatedAt    *time.Time  `db:"updated_at" json:"updated_at"`
 	CityName     string      `json:"city_name"`
 }

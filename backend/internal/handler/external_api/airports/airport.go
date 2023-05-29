@@ -19,6 +19,10 @@ type Handler struct {
 	ctx     context.Context
 }
 
+func NewCustomTime(t time.Time) structs.CustomTime {
+	return structs.CustomTime{Time: t}
+}
+
 func NewHandler(s *service.Service) *Handler {
 	return &Handler{service: s, ctx: context.Background()}
 }
@@ -43,7 +47,8 @@ func (h *Handler) InsertAirport(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	for _, a := range response.Data {
-		// airportID, err := strconv.Atoi(a.AirportId)
+		createdTime := time.Now()
+		createdAt := NewCustomTime(createdTime)
 		err := h.service.Airport.CreateAirport(h.ctx, &structs.Airport{
 			ID:           uuid.NewString(),
 			GMT:          a.GMT,
@@ -59,7 +64,7 @@ func (h *Handler) InsertAirport(w http.ResponseWriter, r *http.Request) error {
 			CountryName:  a.CountryName,
 			PhoneNumber:  a.PhoneNumber,
 			Timezone:     a.Timezone,
-			CreatedAt:    a.CreatedAt,
+			CreatedAt:    createdAt,
 			UpdatedAt:    a.UpdatedAt,
 		})
 
@@ -71,7 +76,6 @@ func (h *Handler) InsertAirport(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	return nil
-
 }
 
 func (h *Handler) CreateAirport(w http.ResponseWriter, r *http.Request) {

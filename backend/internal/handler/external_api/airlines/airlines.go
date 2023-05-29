@@ -15,6 +15,10 @@ import (
 	"github.com/google/uuid"
 )
 
+func NewCustomTime(t time.Time) structs.CustomTime {
+	return structs.CustomTime{Time: t}
+}
+
 type Handler struct {
 	service *service.Service
 	ctx     context.Context
@@ -43,12 +47,15 @@ func (h *Handler) InsertAircraft(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	for _, a := range response.Data {
+		createdTime := time.Now()
+		createdAt := NewCustomTime(createdTime)
+
 		err := h.service.Aircraft.CreateAircraft(h.ctx, &structs.Aircraft{
 			ID:           uuid.NewString(),
 			IataCode:     a.IataCode,
 			AircraftName: a.AircraftName,
 			PlaneTypeId:  a.PlaneTypeId,
-			CreatedAt:    time.Now(),
+			CreatedAt:    createdAt,
 			UpdatedAt:    nil,
 		})
 		if err != nil {
@@ -254,12 +261,15 @@ func (h *Handler) InsertTax(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	for _, t := range response.Data {
+		createdTime := time.Now()
+		createdAt := NewCustomTime(createdTime)
+
 		err := h.service.Tax.CreateTax(h.ctx, &structs.Tax{
 			ID:        uuid.NewString(),
 			TaxId:     t.TaxId,
 			TaxName:   t.TaxName,
 			IataCode:  t.IataCode,
-			CreatedAt: time.Now(),
+			CreatedAt: createdAt,
 			UpdatedAt: nil,
 		})
 		if err != nil {
@@ -506,6 +516,9 @@ func (h *Handler) InsertAirlines(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	for _, a := range response.Data {
+		createdTime := time.Now()
+		createdAt := NewCustomTime(createdTime)
+
 		err := h.service.Airline.CreateAirline(h.ctx, &structs.Airline{
 			ID:                   uuid.NewString(),
 			FleetAverageAge:      a.FleetAverageAge,
@@ -522,7 +535,7 @@ func (h *Handler) InsertAirlines(w http.ResponseWriter, r *http.Request) error {
 			FleetSize:            a.FleetSize,
 			Status:               a.Status,
 			Type:                 a.Type,
-			CreatedAt:            time.Now(),
+			CreatedAt:            createdAt,
 			UpdatedAt:            nil,
 		})
 		if err != nil {
@@ -807,6 +820,9 @@ func (h *Handler) InsertAirplane(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	for _, a := range response.Data {
+		createdTime := time.Now()
+		createdAt := NewCustomTime(createdTime)
+
 		err := h.service.Airplane.CreateAirplane(h.ctx, &structs.Airplane{
 			ID:                     uuid.NewString(),
 			IataType:               a.IataType,
@@ -834,7 +850,7 @@ func (h *Handler) InsertAirplane(w http.ResponseWriter, r *http.Request) error {
 			ProductionLine:         a.ProductionLine,
 			RegistrationDate:       a.RegistrationDate,
 			RolloutDate:            a.RolloutDate,
-			CreatedAt:              time.Now(),
+			CreatedAt:              createdAt,
 			UpdatedAt:              nil,
 		})
 

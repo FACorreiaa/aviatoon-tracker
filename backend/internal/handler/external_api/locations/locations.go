@@ -14,6 +14,10 @@ import (
 	"github.com/google/uuid"
 )
 
+func NewCustomTime(t time.Time) structs.CustomTime {
+	return structs.CustomTime{Time: t}
+}
+
 type Handler struct {
 	service *service.Service
 	ctx     context.Context
@@ -44,6 +48,9 @@ func (h *Handler) InsertCountry(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	for _, c := range response.Data {
+		createdTime := time.Now()
+		createdAt := NewCustomTime(createdTime)
+
 		err := h.service.Country.CreateCountry(h.ctx, &structs.Country{
 			ID:                uuid.NewString(),
 			CountryName:       c.CountryName,
@@ -57,7 +64,7 @@ func (h *Handler) InsertCountry(w http.ResponseWriter, r *http.Request) error {
 			CurrencyCode:      c.CurrencyCode,
 			FipsCode:          c.FipsCode,
 			PhonePrefix:       c.PhonePrefix,
-			CreatedAt:         time.Now(),
+			CreatedAt:         createdAt,
 			UpdatedAt:         nil,
 		})
 		if err != nil {
@@ -255,6 +262,9 @@ func (h *Handler) InsertCity(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	for _, c := range response.Data {
+		createdTime := time.Now()
+		createdAt := NewCustomTime(createdTime)
+
 		err := h.service.City.CreateCity(h.ctx, &structs.City{
 			ID:          uuid.NewString(),
 			GMT:         c.GMT,
@@ -266,7 +276,7 @@ func (h *Handler) InsertCity(w http.ResponseWriter, r *http.Request) error {
 			Longitude:   c.Longitude,
 			CityName:    c.CityName,
 			Timezone:    c.Timezone,
-			CreatedAt:   time.Now(),
+			CreatedAt:   createdAt,
 			UpdatedAt:   nil,
 		})
 

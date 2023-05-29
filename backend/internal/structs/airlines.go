@@ -1,6 +1,9 @@
 package structs
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -24,8 +27,8 @@ type Airline struct {
 	FleetSize            int        `json:"fleet_size,string"`
 	Status               string     `json:"status"`
 	Type                 string     `json:"type"`
-	CreatedAt            time.Time  `db:"created_at" json:"created_at,string"`
-	UpdatedAt            *time.Time `db:"updated_at" json:"updated_at,string"`
+	CreatedAt            CustomTime `db:"created_at" json:"created_at"`
+	UpdatedAt            *time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type AirlineInfo struct {
@@ -54,7 +57,7 @@ type AirlineInfo struct {
 	CurrencyCode         string     `json:"currency_code"`
 	Continent            string     `json:"continent"`
 	PhonePrefix          string     `json:"phone_prefix"`
-	CreatedAt            time.Time  `db:"created_at" json:"created_at"`
+	CreatedAt            CustomTime `db:"created_at" json:"created_at"`
 	UpdatedAt            *time.Time `db:"updated_at" json:"updated_at"`
 }
 
@@ -67,8 +70,8 @@ type Aircraft struct {
 	IataCode     string     `json:"iata_code"`
 	AircraftName string     `json:"aircraft_name"`
 	PlaneTypeId  int        `json:"plane_type_id,string"`
-	CreatedAt    time.Time  `db:"created_at" json:"created_at,string"`
-	UpdatedAt    *time.Time `db:"updated_at" json:"updated_at,string"`
+	CreatedAt    CustomTime `db:"created_at" json:"created_at"`
+	UpdatedAt    *time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type AircraftResponse []Aircraft
@@ -84,10 +87,10 @@ type Airplane struct {
 	IataCodeShort          string      `json:"iata_code_short"`
 	AirlineIcaoCode        interface{} `json:"airline_icao_code"`
 	ConstructionNumber     string      `json:"construction_number"`
-	DeliveryDate           time.Time   `db:"delivery_date" json:"delivery_date,string"`
+	DeliveryDate           CustomTime  `json:"delivery_date"`
 	EnginesCount           int         `json:"engines_count,string"`
 	EnginesType            string      `json:"engines_type"`
-	FirstFlightDate        time.Time   `db:"first_flight_date" json:"first_flight_date,string"`
+	FirstFlightDate        CustomTime  `json:"first_flight_date"`
 	IcaoCodeHex            string      `json:"icao_code_hex"`
 	LineNumber             interface{} `json:"line_number"`
 	ModelCode              string      `json:"model_code"`
@@ -100,10 +103,10 @@ type Airplane struct {
 	PlaneSeries            string      `json:"plane_series"`
 	PlaneStatus            string      `json:"plane_status"`
 	ProductionLine         string      `json:"production_line"`
-	RegistrationDate       time.Time   `db:"registration_date" json:"registration_date,string"`
-	RolloutDate            time.Time   `db:"rollout_date" json:"rollout_date,string"`
-	CreatedAt              time.Time   `db:"created_at" json:"created_at,string"`
-	UpdatedAt              *time.Time  `db:"updated_at" json:"updated_at,string"`
+	RegistrationDate       CustomTime  `json:"registration_date"`
+	RolloutDate            CustomTime  `json:"rollout_date"`
+	CreatedAt              CustomTime  `json:"created_at"`
+	UpdatedAt              *time.Time  `json:"updated_at"`
 }
 
 type AirplaneInfo struct {
@@ -115,10 +118,10 @@ type AirplaneInfo struct {
 	IataCodeShort          string      `json:"iata_code_short"`
 	AirlineIcaoCode        interface{} `json:"airline_icao_code"`
 	ConstructionNumber     string      `json:"construction_number"`
-	DeliveryDate           time.Time   `db:"delivery_date" json:"delivery_date"`
+	DeliveryDate           CustomTime  `db:"delivery_date" json:"delivery_date"`
 	EnginesCount           int         `json:"engines_count"`
 	EnginesType            string      `json:"engines_type"`
-	FirstFlightDate        time.Time   `db:"first_flight_date" json:"first_flight_date"`
+	FirstFlightDate        CustomTime  `db:"first_flight_date" json:"first_flight_date"`
 	IcaoCodeHex            string      `json:"icao_code_hex"`
 	LineNumber             interface{} `json:"line_number"`
 	ModelCode              string      `json:"model_code"`
@@ -131,9 +134,9 @@ type AirplaneInfo struct {
 	PlaneSeries            string      `json:"plane_series"`
 	PlaneStatus            string      `json:"plane_status"`
 	ProductionLine         string      `json:"production_line"`
-	RegistrationDate       time.Time   `db:"registration_date" json:"registration_date"`
-	RolloutDate            time.Time   `db:"rollout_date" json:"rollout_date"`
-	CreatedAt              time.Time   `db:"created_at" json:"created_at"`
+	RegistrationDate       CustomTime  `db:"registration_date" json:"registration_date"`
+	RolloutDate            CustomTime  `db:"rollout_date" json:"rollout_date"`
+	CreatedAt              CustomTime  `db:"created_at" json:"created_at"`
 	UpdatedAt              *time.Time  `db:"updated_at" json:"updated_at"`
 	AirlineName            string      `json:"airline_name"`
 	CountryName            string      `json:"country_name"`
@@ -152,8 +155,8 @@ type Tax struct {
 	TaxId     int        `json:"tax_id,string"`
 	TaxName   string     `json:"tax_name"`
 	IataCode  string     `json:"iata_code"`
-	CreatedAt time.Time  `db:"created_at" json:"created_at,string"`
-	UpdatedAt *time.Time `db:"updated_at" json:"updated_at,string"`
+	CreatedAt CustomTime `db:"created_at" json:"created_at"`
+	UpdatedAt *time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type TaxPerCityInfo struct {
@@ -185,4 +188,74 @@ type AirlineApiData struct {
 
 type AirplaneApiData struct {
 	Data []Airplane `json:"data"`
+}
+
+type CustomTime struct {
+	time.Time
+}
+
+func (ct *CustomTime) UnmarshalJSON(data []byte) error {
+	var dateStr string
+	err := json.Unmarshal(data, &dateStr)
+	if err != nil {
+		return err
+	}
+
+	// Check if the date is "0000-00-00" and set it to a default value
+	if dateStr == "0000-00-00" {
+		ct.Time = time.Time{} // Assign zero value of CustomTime
+		return nil
+	}
+
+	// Check if the date string is empty and set it to a default value
+	if dateStr == "" {
+		ct.Time = time.Time{} // Assign zero value of CustomTime
+		return nil
+	}
+
+	// Parse the date using the predefined time layout
+	t, err := time.Parse(time.RFC3339, dateStr)
+	if err != nil {
+		return err
+	}
+
+	ct.Time = t
+	return nil
+}
+
+// Implement driver.Valuer interface
+func (ct CustomTime) Value() (driver.Value, error) {
+	// Return the underlying time value as a string in the format "2006-01-02"
+	return ct.Time.Format("2006-01-02"), nil
+}
+
+// Implement sql.Scanner interface
+func (ct *CustomTime) Scan(value interface{}) error {
+	if value == nil {
+		// Handle NULL values by setting the time to the zero value
+		ct.Time = time.Time{}
+		return nil
+	}
+
+	switch t := value.(type) {
+	case time.Time:
+		ct.Time = t
+		return nil
+	case []byte:
+		parsedTime, err := time.Parse("2006-01-02", string(t))
+		if err != nil {
+			return err
+		}
+		ct.Time = parsedTime
+		return nil
+	case string:
+		parsedTime, err := time.Parse("2006-01-02", t)
+		if err != nil {
+			return err
+		}
+		ct.Time = parsedTime
+		return nil
+	default:
+		return fmt.Errorf("unsupported Scan value for CustomTime: %T", value)
+	}
 }

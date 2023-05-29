@@ -1,7 +1,5 @@
 package structs
 
-import "time"
-
 type LiveFlights struct {
 	FlightDate   string `json:"flight_date"`
 	FlightStatus string `json:"flight_status"`
@@ -13,8 +11,8 @@ type LiveFlights struct {
 		Terminal        string      `json:"terminal"`
 		Gate            interface{} `json:"gate"`
 		Delay           interface{} `json:"delay"`
-		Scheduled       time.Time   `json:"scheduled"`
-		Estimated       time.Time   `json:"estimated"`
+		Scheduled       CustomTime  `json:"scheduled"`
+		Estimated       CustomTime  `json:"estimated"`
 		Actual          interface{} `json:"actual"`
 		EstimatedRunway interface{} `json:"estimated_runway"`
 		ActualRunway    interface{} `json:"actual_runway"`
@@ -28,8 +26,8 @@ type LiveFlights struct {
 		Gate            interface{} `json:"gate"`
 		Baggage         interface{} `json:"baggage"`
 		Delay           interface{} `json:"delay"`
-		Scheduled       time.Time   `json:"scheduled"`
-		Estimated       time.Time   `json:"estimated"`
+		Scheduled       CustomTime  `json:"scheduled"`
+		Estimated       CustomTime  `json:"estimated"`
 		Actual          interface{} `json:"actual"`
 		EstimatedRunway interface{} `json:"estimated_runway"`
 		ActualRunway    interface{} `json:"actual_runway"`

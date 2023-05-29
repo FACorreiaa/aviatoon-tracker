@@ -1,34 +1,52 @@
 package internal_api
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Repository struct {
-	db *pgxpool.Pool
-}
-
-// don't use sprintf for building urls :pixel_prime:. Use url.URl & url.Values from net/url package
 func FetchAviationStackData(endpoint string, queryParams ...string) ([]byte, error, bool) {
 	accessKey := os.Getenv("AVIATION_STACK_API_KEY")
 	if accessKey == "" {
 		return nil, fmt.Errorf("missing API access key"), false
 	}
 
-	url := fmt.Sprintf("http://api.aviationstack.com/v1/%s?access_key=%s", endpoint, accessKey)
-	if len(queryParams) > 0 {
-		query := strings.Join(queryParams, "&")
-		url = fmt.Sprintf("%s&%s", url, query)
+	baseURL := "http://api.aviationstack.com/v1/"
+
+	// Parse the base URL
+	parsedURL, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse URL: %v", err), false
 	}
 
-	response, err := http.Get(url)
+	// Set the endpoint path
+	parsedURL.Path += endpoint
+
+	// Create a new query parameters object
+	query := parsedURL.Query()
+
+	// Add the access key parameter
+	query.Set("access_key", accessKey)
+
+	// Add additional query parameters
+	if len(queryParams) > 0 {
+		for _, param := range queryParams {
+			parts := strings.SplitN(param, "=", 2)
+			if len(parts) == 2 {
+				query.Set(parts[0], parts[1])
+			}
+		}
+	}
+
+	parsedURL.RawQuery = query.Encode()
+
+	finalURL := parsedURL.String()
+
+	response, err := http.Get(finalURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to make GET request: %v", err), false
 	}
@@ -45,9 +63,8 @@ func FetchAviationStackData(endpoint string, queryParams ...string) ([]byte, err
 		return nil, fmt.Errorf("failed to read response body: %v", err), false
 	}
 
-	body = bytes.ReplaceAll(body, []byte("0000-00-00"), []byte("2006-01-02T15:04:05.000Z"))
-
 	return body, nil, true
+
 }
 
 //func (r *Repository) InsertAviationTaxIntoDB() error {

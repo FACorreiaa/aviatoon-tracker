@@ -3,7 +3,6 @@ package structs
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -11,13 +10,13 @@ import (
 
 // User struct describe user object.
 type User struct {
-	ID         uuid.UUID `db:"id" json:"id" validate:"required,id"`
-	CreatedAt  time.Time `db:"created_at" json:"created_at"`
-	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
-	Email      string    `db:"email" json:"email" validate:"required,email"`
-	UserStatus int       `db:"user_status" json:"user_status"`
-	UserAttrs  UserAttrs `db:"user_attrs" json:"user_attrs"`
-	UserName   string    `json:"user_name"`
+	ID         uuid.UUID  `db:"id" json:"id" validate:"required,id"`
+	CreatedAt  CustomTime `db:"created_at" json:"created_at"`
+	UpdatedAt  CustomTime `db:"updated_at" json:"updated_at"`
+	Email      string     `db:"email" json:"email" validate:"required,email"`
+	UserStatus int        `db:"user_status" json:"user_status"`
+	UserAttrs  UserAttrs  `db:"user_attrs" json:"user_attrs"`
+	UserName   string     `json:"user_name"`
 }
 
 // UserAttrs struct describe user attributes.
@@ -222,7 +221,7 @@ func (u *UserAttrs) Scan(value interface{}) error {
 //		// Set initialized default data for user:
 //		user.ID = uuid.New()
 //		user.CreatedAt = time.Now()
-//		user.UpdatedAt = time.Time{}
+//		user.UpdatedAt = CustomTime{}
 //		user.UserStatus = 1 // 0 == blocked, 1 == active
 //		user.UserAttrs = UserAttrs{}
 //

@@ -1,8 +1,6 @@
 package structs
 
-import (
-	"time"
-)
+import "time"
 
 //cities
 
@@ -17,8 +15,8 @@ type City struct {
 	Longitude   float64    `json:"longitude,string"`
 	CityName    string     `json:"city_name"`
 	Timezone    string     `json:"timezone"`
-	CreatedAt   time.Time  `db:"created_at" json:"created_at,string"`
-	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at,string"`
+	CreatedAt   CustomTime `db:"created_at" json:"created_at"`
+	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type CityInfo struct {
@@ -49,8 +47,8 @@ type Country struct {
 	CurrencyCode      string     `json:"currency_code"`
 	FipsCode          string     `json:"fips_code"`
 	PhonePrefix       string     `json:"phone_prefix"`
-	CreatedAt         time.Time  `db:"created_at" json:"created_at,string"`
-	UpdatedAt         *time.Time `db:"updated_at" json:"updated_at,string"`
+	CreatedAt         CustomTime `db:"created_at" json:"created_at"`
+	UpdatedAt         *time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type CountryListResponse []Country
