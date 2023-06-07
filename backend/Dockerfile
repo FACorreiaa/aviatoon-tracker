@@ -15,7 +15,7 @@ WORKDIR /app
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
 COPY .env.dev .
-COPY configs .
+#COPY configs .
 
 # Download all the dependencies
 RUN go get -d -v ./...
