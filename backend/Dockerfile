@@ -30,6 +30,8 @@ COPY go.* ./
 RUN go mod download
 
 # Copy local code to the container image.
+COPY config /app/server
+
 COPY . ./
 
 # Build the binary.
