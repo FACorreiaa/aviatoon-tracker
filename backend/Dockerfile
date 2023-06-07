@@ -1,25 +1,26 @@
-FROM golang:1.20.4-alpine AS builder
+# Stage 1: Build stage
+FROM golang:1.16.4-alpine AS builder
 LABEL stage=build
 
-ENV CGO_ENABLED 0
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
 
-ENV GOOS linux
-RUN apk update --no-cache
+RUN apk update --no-cache && apk add --no-cache git
+
 WORKDIR /build
 
-ADD go.mod .
-ADD go.sum .
-
+COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-
 RUN go build -o /app/main ./main.go
 
-FROM alpine
+# Stage 2: Production stage
+FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=builder /app/main /app/main
+COPY --from=builder /app/main .
 
 CMD ["./main"]
