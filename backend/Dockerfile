@@ -16,7 +16,7 @@ WORKDIR /app
 COPY . .
 #COPY /app/.env.dev .
 #COPY configs .
-COPY .env /app
+#COPY .env /app
 
 
 # Download all the dependencies
