@@ -14,7 +14,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /app/main ./cmd/main.go
+RUN go build -o /app/main ./main.go
 
 FROM alpine
 
