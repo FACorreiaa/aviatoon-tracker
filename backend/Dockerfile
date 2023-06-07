@@ -1,54 +1,30 @@
-# Copyright 2020 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Start from golang base image
+FROM golang:alpine
 
-# [START cloudrun_helloworld_dockerfile]
-# [START run_helloworld_dockerfile]
+# Add Maintainer info
+LABEL maintainer="Agus Wibawantara"
 
-# Use the offical golang image to create a binary.
-# This is based on Debian and sets the GOPATH to /go.
-# https://hub.docker.com/_/golang
-FROM golang:1.19-buster as builder
+# Install git.
+# Git is required for fetching the dependencies.
+RUN apk update && apk add --no-cache git && apk add --no-cache bash && apk add build-base
 
-# Create and change to the app directory.
+# Setup folders
+RUN mkdir /app
 WORKDIR /app
 
-# Retrieve application dependencies.
-# This allows the container build to reuse cached dependencies.
-# Expecting to copy go.mod and if present go.sum.
-COPY go.* ./
-RUN go mod download
-
-# Copy local code to the container image.
-
+# Copy the source from the current directory to the working Directory inside the container
 COPY . .
+#COPY /app/.env.dev .
+#COPY configs .
 
-# Build the binary.
-RUN go build -v -o server
+# Download all the dependencies
+RUN go get -d -v ./...
 
-# Use the official Debian slim image for a lean production container.
-# https://hub.docker.com/_/debian
-# https://docs.docker.com/develop/develop-images/multistage-build/#use-multi-stage-builds
-FROM debian:buster-slim
-RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-  ca-certificates && \
-  rm -rf /var/lib/apt/lists/*
+# Install the package
+RUN go install -v ./...
 
-# Copy the binary to the production image from the builder stage.
-COPY --from=builder /app/server /app/server
+#Setup hot-reload for dev stage
+RUN go get github.com/githubnemo/CompileDaemon
+RUN go get -v golang.org/x/tools/gopls
 
-# Run the web service on container startup.
-CMD ["/app/server"]
-
-# [END run_helloworld_dockerfile]
-# [END cloudrun_helloworld_dockerfile]
+CMD ["/app/main"]
