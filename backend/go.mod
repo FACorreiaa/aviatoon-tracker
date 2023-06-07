@@ -24,6 +24,7 @@ require (
 	github.com/cosmtrek/air v1.43.0 // indirect
 	github.com/creack/pty v1.1.18 // indirect
 	github.com/fatih/color v1.14.1 // indirect
+	github.com/githubnemo/CompileDaemon v1.4.0 // indirect
 	github.com/gohugoio/hugo v0.111.3 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
