@@ -2,21 +2,23 @@ package main
 
 import (
 	"context"
+
 	"github.com/FACorreiaa/aviatoon-tracker/configs"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/pprof"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/prometheus"
 
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
 	"github.com/FACorreiaa/aviatoon-tracker/pkg/logs"
 	"github.com/joho/godotenv"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 func main() {
@@ -93,19 +95,19 @@ func main() {
 	logs.DefaultLogger.Info("Handlers are shutdown")
 }
 
-//func getHandlerMode(mode string) handler.Mode {
-//	switch mode {
-//	case "prod":
-//		return handler.Production
-//	case "test":
-//		return handler.Test
-//	case "dev":
-//		return handler.Development
-//	default:
-//		logs.DefaultLogger.Fatal("Mode has no match")
-//		return ""
-//	}
-//}
+// func getHandlerMode(mode string) handler.Mode {
+// 	switch mode {
+// 	case "prod":
+// 		return handler.Production
+// 	case "test":
+// 		return handler.Test
+// 	case "dev":
+// 		return handler.Development
+// 	default:
+// 		logs.DefaultLogger.Fatal("Mode has no match")
+// 		return ""
+// 	}
+// }
 
 func getLogFormatter(mode string) logs.Formatter {
 	switch mode {
