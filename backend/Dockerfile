@@ -1,28 +1,25 @@
-# Start from golang base image
-FROM golang:alpine
+FROM golang:1.20.4-alpine AS builder
+LABEL stage=build
 
-# Add Maintainer info
-LABEL maintainer="Agus Wibawantara"
+ENV CGO_ENABLED 0
 
-# Install git.
-# Git is required for fetching the dependencies.
-RUN apk update && apk add --no-cache git && apk add --no-cache bash && apk add build-base
+ENV GOOS linux
+RUN apk update --no-cache
+WORKDIR /build
 
-# Setup folders
-RUN mkdir /app
+ADD go.mod .
+ADD go.sum .
+
+RUN go mod download
+
+COPY . .
+
+RUN go build -o /app/main ./cmd/main.go
+
+FROM alpine
+
 WORKDIR /app
 
-# Copy the source from the current directory to the working Directory inside the container
-COPY . .
-#COPY /app/.env.dev .
-#COPY configs .
-#COPY .env /app
+COPY --from=builder /app/main /app/main
 
-
-# Download all the dependencies
-RUN go get -d -v ./...
-
-# Install the package
-RUN go install -v ./...
-
-ENTRYPOINT go run main.go
+CMD ["./main"]
