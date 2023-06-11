@@ -108,14 +108,14 @@ func (h *Handler) GetAirports(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Internal server error"))
 			return
 		}
-		taxs, err := h.service.Airport.GetAirports(h.ctx)
+		airports, err := h.service.Airport.GetAirports(h.ctx)
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Invalid airports"))
 			return
 		}
-		err = json.NewEncoder(w).Encode(taxs)
+		err = json.NewEncoder(w).Encode(airports)
 		if err != nil {
 			log.Printf("error encoding airports as JSON: %v", err)
 			w.WriteHeader(http.StatusBadRequest)
@@ -167,7 +167,7 @@ func (h *Handler) GetAirport(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetAirportCount(w http.ResponseWriter, r *http.Request) {
 	count, err := h.service.Airport.GetAirportCount(h.ctx)
 	if err != nil {
-		http.Error(w, "Failed to get number of taxes", http.StatusInternalServerError)
+		http.Error(w, "Failed to get number of airports", http.StatusInternalServerError)
 		return
 	}
 	response := struct {
@@ -204,7 +204,7 @@ func (h *Handler) DeleteAirport(w http.ResponseWriter, r *http.Request) {
 	// Serialize the response as JSON and write to the response writer
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	//json.NewEncoder(w).Encode(taxs)
+	//json.NewEncoder(w).Encode(airports)
 }
 func (h *Handler) UpdateAirport(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))

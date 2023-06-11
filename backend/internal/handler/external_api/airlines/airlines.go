@@ -299,54 +299,54 @@ func (h *Handler) CreateTax(w http.ResponseWriter, r *http.Request) {
 }
 
 // test
-func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
-	// Create a channel to receive updated tax data
-	updateChan := make(chan []structs.Tax)
-
-	// Start a Goroutine to periodically fetch tax data in the background
-	go func() {
-		for {
-			taxs, err := h.service.Tax.GetTaxs(h.ctx)
-			if err == nil && len(taxs) > 0 {
-				// Send the updated tax data to the channel
-				updateChan <- taxs
-			}
-			time.Sleep(time.Minute)
-			log.Println(time.Minute) // Wait for a minute before fetching data again
-		}
-	}()
-
-	// Check if there is already tax data available
-	select {
-	case taxs := <-updateChan:
-		// If there is updated tax data available, use it
-		writeTaxsResponse(w, taxs)
-	default:
-		// If there is no tax data available, fetch it manually
-		taxs, err := h.service.Tax.GetTaxs(h.ctx)
-		if err != nil {
-			log.Printf("Error fetching tax data: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Internal server error"))
-			return
-		}
-		writeTaxsResponse(w, taxs)
-	}
-}
+//func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
+//	// Create a channel to receive updated tax data
+//	updateChan := make(chan []structs.Tax)
+//
+//	// Start a Goroutine to periodically fetch tax data in the background
+//	go func() {
+//		for {
+//			taxs, err := h.service.Tax.GetTaxs(h.ctx)
+//			if err == nil && len(taxs) > 0 {
+//				// Send the updated tax data to the channel
+//				updateChan <- taxs
+//			}
+//			time.Sleep(time.Minute)
+//			log.Println(time.Minute) // Wait for a minute before fetching data again
+//		}
+//	}()
+//
+//	// Check if there is already tax data available
+//	select {
+//	case taxs := <-updateChan:
+//		// If there is updated tax data available, use it
+//		writeTaxsResponse(w, taxs)
+//	default:
+//		// If there is no tax data available, fetch it manually
+//		taxs, err := h.service.Tax.GetTaxs(h.ctx)
+//		if err != nil {
+//			log.Printf("Error fetching tax data: %v", err)
+//			w.WriteHeader(http.StatusInternalServerError)
+//			w.Write([]byte("Internal server error"))
+//			return
+//		}
+//		writeTaxsResponse(w, taxs)
+//	}
+//}
 
 // Helper function to write tax data response
-func writeTaxsResponse(w http.ResponseWriter, taxs []structs.Tax) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err := json.NewEncoder(w).Encode(taxs)
-	if err != nil {
-		log.Printf("Error encoding tax data as JSON: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Error encoding json"))
-
-		return
-	}
-}
+//func writeTaxsResponse(w http.ResponseWriter, taxs []structs.Tax) {
+//	w.Header().Set("Content-Type", "application/json")
+//	w.WriteHeader(http.StatusOK)
+//	err := json.NewEncoder(w).Encode(taxs)
+//	if err != nil {
+//		log.Printf("Error encoding tax data as JSON: %v", err)
+//		w.WriteHeader(http.StatusBadRequest)
+//		w.Write([]byte("Error encoding json"))
+//
+//		return
+//	}
+//}
 
 // func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
 // 	taxs, err := h.service.Tax.GetTaxs(h.ctx)
@@ -420,38 +420,36 @@ func writeTaxsResponse(w http.ResponseWriter, taxs []structs.Tax) {
 // 	}
 // }
 
-// func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
-// 	taxs, err := h.service.Tax.GetTaxs(h.ctx)
-// 	if err != nil {
-// 		log.Printf("Error fetching tax data: %v", err)
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		w.Write([]byte("Internal server error"))
-// 		return
-// 	}
+func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
+	taxs, err := h.service.Tax.GetTaxs(h.ctx)
+	if err != nil {
+		log.Printf("Error fetching tax data: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Internal server error"))
+		return
+	}
 
-// 	if len(taxs) == 0 {
-// 		err := h.InsertTax(w, r)
-// 		if err != nil {
-// 			w.WriteHeader(http.StatusBadRequest)
-// 			w.Write([]byte("Invalid tax"))
-// 			return
-// 		}
+	if len(taxs) == 0 {
+		err := h.InsertTax(w, r)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Invalid tax"))
+			return
+		}
 
-// 		taxs = []Tax{} // Reset taxs to an empty slice
+		taxs, err = h.service.Tax.GetTaxs(h.ctx)
+		if err != nil {
+			log.Printf("Error fetching tax data: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal server error"))
+			return
+		}
+	}
 
-// 		taxs, err = h.service.Tax.GetTaxs(h.ctx)
-// 		if err != nil {
-// 			log.Printf("Error fetching tax data: %v", err)
-// 			w.WriteHeader(http.StatusInternalServerError)
-// 			w.Write([]byte("Internal server error"))
-// 			return
-// 		}
-// 	}
-
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(http.StatusOK)
-// 	json.NewEncoder(w).Encode(taxs)
-// }
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(taxs)
+}
 
 func (h *Handler) GetTax(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
