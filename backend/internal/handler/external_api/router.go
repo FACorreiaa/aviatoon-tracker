@@ -1,13 +1,15 @@
 package external_api
 
 import (
+	"time"
+
 	"github.com/FACorreiaa/aviatoon-tracker/internal/docs"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/airlines"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/airports"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/locations"
-	"time"
 
 	"context"
+
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/auth"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
 	"github.com/go-chi/chi/v5"
@@ -57,6 +59,7 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 
 	//Tax
 	router.Get("/api/v1/tax", taxHandler.GetTaxs)
+	router.Get("/api/v1/tax/tax-name={tax_name}", taxHandler.GetTaxName)
 	router.Get("/api/v1/tax/count", taxHandler.GetTaxesCount)
 
 	router.Route("/api/v1/tax/{id}", func(r chi.Router) {

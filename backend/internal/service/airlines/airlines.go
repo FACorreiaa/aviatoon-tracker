@@ -2,6 +2,7 @@ package airlines
 
 import (
 	"context"
+
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/google/uuid"
@@ -42,6 +43,10 @@ func (s *Service) UpdateTax(ctx context.Context, id uuid.UUID, updates map[strin
 
 func (s *Service) GetTaxesCount(ctx context.Context) (int, error) {
 	return s.repo.Tax.GetTaxesCount(ctx)
+}
+
+func (s *Service) GetTaxName(ctx context.Context, name string) ([]structs.Tax, error) {
+	return s.repo.Tax.GetTaxName(ctx, name)
 }
 
 /*****************

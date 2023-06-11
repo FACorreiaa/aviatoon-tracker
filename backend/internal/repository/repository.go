@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres/airlines"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres/airports"
@@ -34,6 +35,7 @@ type Tax interface {
 	UpdateTax(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error
 	DeleteTax(ctx context.Context, id uuid.UUID) error
 	GetTaxesCount(ctx context.Context) (int, error)
+	GetTaxName(ctx context.Context, name string) ([]structs.Tax, error)
 }
 
 type Airport interface {

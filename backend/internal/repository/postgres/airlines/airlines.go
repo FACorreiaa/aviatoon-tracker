@@ -4,12 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
+
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pkg/errors"
-	"strings"
 )
 
 type Repository struct {
@@ -395,6 +396,44 @@ func (r *Repository) GetAircraftCount(ctx context.Context) (int, error) {
 	}
 
 	return count, nil
+}
+
+func (r *Repository) GetTaxName(ctx context.Context, name string) ([]structs.Tax, error) {
+	var tax []structs.Tax
+
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return tax, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	rows, err := tx.Query(ctx, `
+        SELECT DISTINCT t.id, t.iata_code, t.tax_id, t.tax_name, t.created_at, t.updated_at
+        FROM tax t
+        WHERE c.tax_name = $1
+        ORDER BY a.airline_id`, name)
+	if err != nil {
+		return tax, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var taxInfo structs.Tax
+		err := rows.Scan(&taxInfo.ID, &taxInfo.IataCode, &taxInfo.TaxId, &taxInfo.TaxName, &taxInfo.CreatedAt, &taxInfo.UpdatedAt)
+		if err != nil {
+			return tax, fmt.Errorf("failed to scan airline info: %w", err)
+		}
+		tax = append(tax, taxInfo)
+	}
+	if err := rows.Err(); err != nil {
+		return tax, fmt.Errorf("failed to iterate over results: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return tax, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return tax, nil
 }
 
 //Airline

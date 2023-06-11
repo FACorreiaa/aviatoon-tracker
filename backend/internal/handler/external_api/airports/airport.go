@@ -247,10 +247,11 @@ func (h *Handler) GetCitiesAirport(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(airportInfo)
 }
+
 func (h *Handler) GetCityNameAirport(w http.ResponseWriter, r *http.Request) {
 	cityName := chi.URLParam(r, "city_name")
 
-	airportInfo, err := h.service.Airport.GetCityNameAirport(h.ctx, cityName)
+	airport, err := h.service.Airport.GetCityNameAirport(h.ctx, cityName)
 	if err != nil {
 		log.Printf("Error fetching airport data: %v", err)
 
@@ -263,8 +264,9 @@ func (h *Handler) GetCityNameAirport(w http.ResponseWriter, r *http.Request) {
 	// Serialize the response as JSON and write to the response writer
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(airportInfo)
+	json.NewEncoder(w).Encode(airport)
 }
+
 func (h *Handler) GetCountryNameAirport(w http.ResponseWriter, r *http.Request) {
 	countryName := chi.URLParam(r, "country_name")
 

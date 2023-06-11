@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service/airlines"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service/airports"
@@ -26,6 +27,7 @@ type Tax interface {
 	UpdateTax(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error
 	DeleteTax(ctx context.Context, id uuid.UUID) error
 	GetTaxesCount(ctx context.Context) (int, error)
+	GetTaxName(ctx context.Context, name string) ([]structs.Tax, error)
 }
 
 type Airport interface {

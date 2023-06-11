@@ -547,6 +547,25 @@ func (h *Handler) GetTaxesCount(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBytes)
 }
 
+func (h *Handler) GetTaxName(w http.ResponseWriter, r *http.Request) {
+	taxName := chi.URLParam(r, "tax_name")
+	println(taxName)
+	tax, err := h.service.Tax.GetTaxName(h.ctx, taxName)
+	if err != nil {
+		log.Printf("Error fetching tax data: %v", err)
+
+		// Write an error response to the client
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Internal server error"))
+		return
+	}
+
+	// Serialize the response as JSON and write to the response writer
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(tax)
+}
+
 //Airline
 
 func (h *Handler) InsertAirlines(w http.ResponseWriter, r *http.Request) error {
