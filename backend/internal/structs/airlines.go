@@ -12,7 +12,7 @@ import (
 //airlines
 
 type Airline struct {
-	ID                   string     `json:"id" pg:"default:gen_random_uuid()"`
+	ID                   uuid.UUID  `json:"id" pg:"default:gen_random_uuid()"`
 	FleetAverageAge      float64    `json:"fleet_average_age,string"`
 	AirlineId            int        `json:"airline_id,string"`
 	Callsign             string     `json:"callsign"`
@@ -66,7 +66,7 @@ type AirlineResponse []Airline
 //aircrafts
 
 type Aircraft struct {
-	ID           string     `json:"id" pg:"default:gen_random_uuid()"`
+	ID           uuid.UUID  `json:"id" pg:"default:gen_random_uuid()"`
 	IataCode     string     `json:"iata_code"`
 	AircraftName string     `json:"aircraft_name"`
 	PlaneTypeId  int        `json:"plane_type_id,string"`
@@ -79,7 +79,7 @@ type AircraftResponse []Aircraft
 //airplanes
 
 type Airplane struct {
-	ID                     string      `json:"id" pg:"default:gen_random_uuid()"`
+	ID                     uuid.UUID   `json:"id" pg:"default:gen_random_uuid()"`
 	IataType               string      `json:"iata_type"`
 	AirplaneId             int         `json:"airplane_id,string"`
 	AirlineIataCode        string      `json:"airline_iata_code"`
@@ -110,7 +110,7 @@ type Airplane struct {
 }
 
 type AirplaneInfo struct {
-	ID                     string      `json:"id"`
+	ID                     uuid.UUID   `json:"id"`
 	IataType               string      `json:"iata_type"`
 	AirplaneId             string      `json:"airplane_id"`
 	AirlineIataCode        string      `json:"airline_iata_code"`
@@ -151,7 +151,7 @@ type AirplaneInfo struct {
 type AirplaneResponse []Airplane
 
 type Tax struct {
-	ID        string     `json:"id" pg:"default:gen_random_uuid()"`
+	ID        uuid.UUID  `json:"id" pg:"default:gen_random_uuid()"`
 	TaxId     int        `json:"tax_id,string"`
 	TaxName   string     `json:"tax_name"`
 	IataCode  string     `json:"iata_code"`

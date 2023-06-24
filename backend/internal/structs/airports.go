@@ -10,7 +10,7 @@ import (
 
 // create an intermediate type & then convert to a concrete one
 type Airport struct {
-	ID           string      `json:"id,string" pg:"default:gen_random_uuid()"`
+	ID           uuid.UUID   `json:"id,string" pg:"default:gen_random_uuid()"`
 	GMT          float64     `json:"gmt,string"`
 	AirportId    int64       `json:"-"`
 	IataCode     string      `json:"iata_code"`

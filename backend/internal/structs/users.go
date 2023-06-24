@@ -3,9 +3,9 @@ package structs
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"errors"
 
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 )
 
 // User struct describe user object.
