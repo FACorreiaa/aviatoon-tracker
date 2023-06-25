@@ -3,6 +3,7 @@ package airlines
 import (
 	"context"
 	"encoding/json"
+	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"strconv"
@@ -12,7 +13,6 @@ import (
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 )
 
 func NewCustomTime(t time.Time) structs.CustomTime {
@@ -51,7 +51,7 @@ func (h *Handler) InsertAircraft(w http.ResponseWriter, r *http.Request) error {
 		createdAt := NewCustomTime(createdTime)
 
 		err := h.service.Aircraft.CreateAircraft(h.ctx, &structs.Aircraft{
-			ID:           uuid.NewString(),
+			ID:           a.ID,
 			IataCode:     a.IataCode,
 			AircraftName: a.AircraftName,
 			PlaneTypeId:  a.PlaneTypeId,
@@ -101,6 +101,13 @@ func (h *Handler) CreateAircraft(w http.ResponseWriter, r *http.Request) {
 // 	w.WriteHeader(http.StatusOK)
 // }
 
+// @Summary      Get aircraft
+// @Description  Get aircraft
+// @Tags         aircrafts
+// @Accept       json
+// @Produce      json
+// @Success      200  {array}   structs.Aircraft
+// @Router       /api/v1/aircrafts [get]
 func (h *Handler) GetAircrafts(w http.ResponseWriter, r *http.Request) {
 	aircrafts, err := h.service.Aircraft.GetAircrafts(h.ctx)
 	if len(aircrafts) == 0 {
@@ -265,7 +272,7 @@ func (h *Handler) InsertTax(w http.ResponseWriter, r *http.Request) error {
 		createdAt := NewCustomTime(createdTime)
 
 		err := h.service.Tax.CreateTax(h.ctx, &structs.Tax{
-			ID:        uuid.NewString(),
+			ID:        t.ID,
 			TaxId:     t.TaxId,
 			TaxName:   t.TaxName,
 			IataCode:  t.IataCode,
@@ -589,7 +596,7 @@ func (h *Handler) InsertAirlines(w http.ResponseWriter, r *http.Request) error {
 		createdAt := NewCustomTime(createdTime)
 
 		err := h.service.Airline.CreateAirline(h.ctx, &structs.Airline{
-			ID:                   uuid.NewString(),
+			ID:                   a.ID,
 			FleetAverageAge:      a.FleetAverageAge,
 			AirlineId:            a.AirlineId,
 			Callsign:             a.Callsign,
@@ -893,7 +900,7 @@ func (h *Handler) InsertAirplane(w http.ResponseWriter, r *http.Request) error {
 		createdAt := NewCustomTime(createdTime)
 
 		err := h.service.Airplane.CreateAirplane(h.ctx, &structs.Airplane{
-			ID:                     uuid.NewString(),
+			ID:                     a.ID,
 			IataType:               a.IataType,
 			AirplaneId:             a.AirplaneId,
 			AirlineIataCode:        a.AirlineIataCode,

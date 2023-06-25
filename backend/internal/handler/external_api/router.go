@@ -3,10 +3,10 @@ package external_api
 import (
 	"time"
 
-	"github.com/FACorreiaa/aviatoon-tracker/internal/docs"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/airlines"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/airports"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/locations"
+	"github.com/FACorreiaa/aviatoon-tracker/internal/swagger"
 
 	"context"
 
@@ -37,7 +37,7 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 
 	//protected routes
 	//jwtProtected := jwtmiddleware.New(configs.JWTConfig())
-	docs.SwaggerRoutes(router)
+	swagger.SwaggerRoutes(router)
 
 	// Define JWT protected routes.
 	//createUser := jwtProtected.Handler(http.HandlerFunc(authHandler.CreateUser))

@@ -22,6 +22,7 @@ require (
 	github.com/bep/golibsass v1.1.0 // indirect
 	github.com/cli/safeexec v1.0.0 // indirect
 	github.com/cosmtrek/air v1.43.0 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/creack/pty v1.1.18 // indirect
 	github.com/fatih/color v1.14.1 // indirect
 	github.com/githubnemo/CompileDaemon v1.4.0 // indirect
@@ -30,7 +31,12 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/swaggo/files/v2 v2.0.0 // indirect
+	github.com/swaggo/http-swagger/v2 v2.0.1 // indirect
 	github.com/tdewolff/parse/v2 v2.6.5 // indirect
+	github.com/urfave/cli/v2 v2.3.0 // indirect
+	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
 require (

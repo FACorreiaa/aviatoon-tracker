@@ -1,0 +1,43 @@
+definitions:
+  structs.Aircraft:
+    properties:
+      aircraft_name:
+        type: string
+      created_at:
+        $ref: '#/definitions/structs.CustomTime'
+      iata_code:
+        type: string
+      id:
+        type: string
+      plane_type_id:
+        example: "0"
+        type: string
+      updated_at:
+        type: string
+    type: object
+  structs.CustomTime:
+    properties:
+      time.Time:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/aircrafts:
+    get:
+      consumes:
+      - application/json
+      description: Get aircraft
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/structs.Aircraft'
+            type: array
+      summary: Get aircraft
+      tags:
+      - aircrafts
+swagger: "2.0"
