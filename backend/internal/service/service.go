@@ -4,21 +4,12 @@ import (
 	"context"
 
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository"
-	"github.com/FACorreiaa/aviatoon-tracker/internal/service/airlines"
-	"github.com/FACorreiaa/aviatoon-tracker/internal/service/airports"
-	"github.com/FACorreiaa/aviatoon-tracker/internal/service/locations"
-	"github.com/FACorreiaa/aviatoon-tracker/internal/service/user"
+	"github.com/FACorreiaa/aviatoon-tracker/internal/service/airline"
+	"github.com/FACorreiaa/aviatoon-tracker/internal/service/airport"
+	"github.com/FACorreiaa/aviatoon-tracker/internal/service/location"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/google/uuid"
 )
-
-type User interface {
-	CreateUser(user *structs.User) error
-	GetUser(id uuid.UUID) (user structs.User, err error)
-	GetUsers() ([]structs.User, error)
-	DeleteUser(id uuid.UUID) error
-	UpdateUser(u *structs.User) error
-}
 
 type Tax interface {
 	CreateTax(ctx context.Context, t *structs.Tax) error
@@ -27,7 +18,7 @@ type Tax interface {
 	UpdateTax(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error
 	DeleteTax(ctx context.Context, id uuid.UUID) error
 	GetTaxesCount(ctx context.Context) (int, error)
-	GetTaxName(ctx context.Context, name string) ([]structs.Tax, error)
+	//GetTaxName(ctx context.Context, name string) ([]structs.Tax, error)
 }
 
 type Airport interface {
@@ -100,7 +91,6 @@ type Airplane interface {
 }
 
 type Service struct {
-	User     User
 	Tax      Tax
 	Airport  Airport
 	Country  Country
@@ -112,13 +102,12 @@ type Service struct {
 
 func NewService(repo *repository.Repository) *Service {
 	return &Service{
-		User:     user.NewService(repo),
-		Tax:      airlines.NewService(repo),
-		Airport:  airports.NewService(repo),
-		Country:  locations.NewService(repo),
-		City:     locations.NewService(repo),
-		Aircraft: airlines.NewService(repo),
-		Airline:  airlines.NewService(repo),
-		Airplane: airlines.NewService(repo),
+		Tax:      airline.NewService(repo),
+		Airport:  airport.NewService(repo),
+		Country:  location.NewService(repo),
+		City:     location.NewService(repo),
+		Aircraft: airline.NewService(repo),
+		Airline:  airline.NewService(repo),
+		Airplane: airline.NewService(repo),
 	}
 }

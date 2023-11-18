@@ -29,18 +29,17 @@ type Config struct {
 	} `mapstructure:"handlers"`
 	Repositories struct {
 		Postgres struct {
-			Host               string `mapstructure:"host"`
-			Port               string `mapstructure:"port"`
-			Username           string `mapstructure:"username"`
-			DB                 string `mapstructure:"db"`
-			SSLMode            string `mapstructure:"sslmode"`
-			MaxConnWaitingTime int    `mapstructure:"maxConnWaitingTime"`
+			Host              string `mapstructure:"host"`
+			Port              string `mapstructure:"port"`
+			Username          string `mapstructure:"username"`
+			DB                string `mapstructure:"db"`
+			SSLMODE           string `mapstructure:"SSLMODE"`
+			MAXCONWAITINGTIME int    `mapstructure:"MAXCONWAITINGTIME"`
 		}
 	}
 }
 
 func InitConfig() (Config, error) {
-
 	var config Config
 	v := viper.New()
 	v.AddConfigPath("configs")

@@ -30,7 +30,7 @@ type Airport struct {
 
 //create an intermediate type & then convert to a concrete one
 // type Deez struct {
-//   Data map[string]string `json:"data"`
+//   Data map[string]string `json:".data"`
 // }
 
 // func (d Deez) MyBeautifulWellFormattedStruct() (Airport, error) {...}
@@ -79,5 +79,5 @@ type AirportInfo struct {
 type AirportResponse []Airport
 
 type AirportApiData struct {
-	Data []Airport `json:"data"`
+	Data []Airport `json:".data"`
 }

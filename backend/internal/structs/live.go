@@ -15,7 +15,7 @@ type LiveFlights struct {
 	FlightDate   string       `json:"flight_date"`
 	FlightStatus FlightStatus `json:"flight_status"`
 	Departure    struct {
-		Airport         string      `json:"airports"`
+		Airport         string      `json:"airport"`
 		Timezone        string      `json:"timezone"`
 		Iata            string      `json:"iata"`
 		Icao            string      `json:"icao"`
@@ -29,7 +29,7 @@ type LiveFlights struct {
 		ActualRunway    interface{} `json:"actual_runway"`
 	} `json:"departure"`
 	Arrival struct {
-		Airport         string      `json:"airports"`
+		Airport         string      `json:"airport"`
 		Timezone        string      `json:"timezone"`
 		Iata            string      `json:"iata"`
 		Icao            string      `json:"icao"`

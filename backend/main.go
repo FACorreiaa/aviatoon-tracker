@@ -47,7 +47,7 @@ func main() {
 				config.Repositories.Postgres.Username,
 				os.Getenv("POSTGRES_PASSWORD"),
 				config.Repositories.Postgres.DB,
-				config.Repositories.Postgres.SSLMode,
+				config.Repositories.Postgres.SSLMODE,
 				10*time.Second,
 				postgres.CacheStatement,
 			),

@@ -56,7 +56,7 @@ func NewHandler(
 }
 
 func (h *Handler) Handle(exitSignal *os.Signal) {
-	h.externalApi = external_api.New(h.config.externalApiConfig, h.service, h.ctx)
+	h.externalApi = external_api.New(h.config.externalApiConfig, h.service)
 	h.pprof = pprof.New(h.config.pprofConfig)
 	h.prometheus = prometheus.New(h.config.prometheusConfig)
 	go func() {

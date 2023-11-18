@@ -1,4 +1,4 @@
-package locations
+package location
 
 import (
 	"context"

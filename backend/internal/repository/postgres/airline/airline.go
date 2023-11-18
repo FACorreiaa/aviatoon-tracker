@@ -1,30 +1,31 @@
-package airlines
+package airline
 
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
-	"strings"
-
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/pkg/errors"
+	"strings"
 )
 
-type Repository struct {
+type AirlineRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewRepository(db *pgxpool.Pool) *Repository {
-	return &Repository{db: db}
+func NewRepositoryAirline(db *pgxpool.Pool) *AirlineRepository {
+	return &AirlineRepository{db: db}
 }
 
-func (q *Repository) CreateTax(ctx context.Context, t *structs.Tax) error {
+// Tax
+
+func (r *AirlineRepository) CreateTax(ctx context.Context, t *structs.Tax) error {
 	// Start a transaction.
 
-	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("error starting transaction: %w", err)
 	}
@@ -52,7 +53,7 @@ func (q *Repository) CreateTax(ctx context.Context, t *structs.Tax) error {
 	return nil
 }
 
-func (q *Repository) GetTaxs(ctx context.Context) ([]structs.Tax, error) {
+func (q *AirlineRepository) GetTaxs(ctx context.Context) ([]structs.Tax, error) {
 	var tax []structs.Tax
 
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -95,7 +96,7 @@ func (q *Repository) GetTaxs(ctx context.Context) ([]structs.Tax, error) {
 	return tax, nil
 }
 
-func (q *Repository) GetTax(ctx context.Context, id uuid.UUID) (structs.Tax, error) {
+func (q *AirlineRepository) GetTax(ctx context.Context, id uuid.UUID) (structs.Tax, error) {
 	var tax structs.Tax
 
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -121,9 +122,9 @@ func (q *Repository) GetTax(ctx context.Context, id uuid.UUID) (structs.Tax, err
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return tax, fmt.Errorf("airlines with ID %s not found: %w", id, err)
+			return tax, fmt.Errorf("airline with ID %s not found: %w", id, err)
 		}
-		return tax, fmt.Errorf("failed to scan airlines: %w", err)
+		return tax, fmt.Errorf("failed to scan airline: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
@@ -133,7 +134,7 @@ func (q *Repository) GetTax(ctx context.Context, id uuid.UUID) (structs.Tax, err
 	return tax, nil
 }
 
-func (q *Repository) DeleteTax(ctx context.Context, id uuid.UUID) error {
+func (q *AirlineRepository) DeleteTax(ctx context.Context, id uuid.UUID) error {
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -142,7 +143,7 @@ func (q *Repository) DeleteTax(ctx context.Context, id uuid.UUID) error {
 
 	_, err = tx.Exec(ctx, "DELETE FROM tax WHERE id = $1", id)
 	if err != nil {
-		return fmt.Errorf("failed to delete airlines: %w", err)
+		return fmt.Errorf("failed to delete airline: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
@@ -152,7 +153,7 @@ func (q *Repository) DeleteTax(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (q *Repository) UpdateTax(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
+func (q *AirlineRepository) UpdateTax(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -171,7 +172,7 @@ func (q *Repository) UpdateTax(ctx context.Context, id uuid.UUID, updates map[st
 	stmt := fmt.Sprintf("UPDATE tax SET %s WHERE id = $%d", strings.Join(setColumns, ", "), len(args))
 	_, err = tx.Exec(ctx, stmt, args...)
 	if err != nil {
-		return fmt.Errorf("failed to update airlines: %w", err)
+		return fmt.Errorf("failed to update airline: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
@@ -181,7 +182,7 @@ func (q *Repository) UpdateTax(ctx context.Context, id uuid.UUID, updates map[st
 	return nil
 }
 
-func (q *Repository) GetTaxesCount(ctx context.Context) (int, error) {
+func (q *AirlineRepository) GetTaxesCount(ctx context.Context) (int, error) {
 	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return 0, err
@@ -192,9 +193,9 @@ func (q *Repository) GetTaxesCount(ctx context.Context) (int, error) {
 	err = tx.QueryRow(ctx, "SELECT COUNT(*) FROM tax").Scan(&count)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return 0, fmt.Errorf("no airlines found")
+			return 0, fmt.Errorf("no airline found")
 		}
-		return 0, fmt.Errorf("failed to get number of airlines: %w", err)
+		return 0, fmt.Errorf("failed to get number of airline: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
@@ -204,9 +205,9 @@ func (q *Repository) GetTaxesCount(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-//Aircraft
+// Aircraft
 
-func (r *Repository) CreateAircraft(ctx context.Context, a *structs.Aircraft) error {
+func (r *AirlineRepository) CreateAircraft(ctx context.Context, a *structs.Aircraft) error {
 	// Start a transaction.
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
@@ -242,7 +243,7 @@ func (r *Repository) CreateAircraft(ctx context.Context, a *structs.Aircraft) er
 	return nil
 }
 
-func (r *Repository) GetAircrafts(ctx context.Context) ([]structs.Aircraft, error) {
+func (r *AirlineRepository) GetAircrafts(ctx context.Context) ([]structs.Aircraft, error) {
 	var aircraftTypes []structs.Aircraft
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -285,7 +286,7 @@ func (r *Repository) GetAircrafts(ctx context.Context) ([]structs.Aircraft, erro
 	return aircraftTypes, nil
 }
 
-func (r *Repository) GetAircraft(ctx context.Context, id uuid.UUID) (structs.Aircraft, error) {
+func (r *AirlineRepository) GetAircraft(ctx context.Context, id uuid.UUID) (structs.Aircraft, error) {
 	var aircraft structs.Aircraft
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -327,7 +328,7 @@ func (r *Repository) GetAircraft(ctx context.Context, id uuid.UUID) (structs.Air
 	return aircraft, nil
 }
 
-func (r *Repository) DeleteAircraft(ctx context.Context, id uuid.UUID) error {
+func (r *AirlineRepository) DeleteAircraft(ctx context.Context, id uuid.UUID) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -346,7 +347,7 @@ func (r *Repository) DeleteAircraft(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (r *Repository) UpdateAircraft(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
+func (r *AirlineRepository) UpdateAircraft(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -375,7 +376,7 @@ func (r *Repository) UpdateAircraft(ctx context.Context, id uuid.UUID, updates m
 	return nil
 }
 
-func (r *Repository) GetAircraftCount(ctx context.Context) (int, error) {
+func (r *AirlineRepository) GetAircraftCount(ctx context.Context) (int, error) {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return 0, err
@@ -398,47 +399,9 @@ func (r *Repository) GetAircraftCount(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-func (r *Repository) GetTaxName(ctx context.Context, name string) ([]structs.Tax, error) {
-	var tax []structs.Tax
-
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
-	if err != nil {
-		return tax, fmt.Errorf("failed to begin transaction: %w", err)
-	}
-	defer tx.Rollback(ctx)
-
-	rows, err := tx.Query(ctx, `
-        SELECT DISTINCT t.id, t.iata_code, t.tax_id, t.tax_name, t.created_at, t.updated_at
-        FROM tax t
-        WHERE c.tax_name = $1
-        ORDER BY a.airline_id`, name)
-	if err != nil {
-		return tax, fmt.Errorf("failed to execute query: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var taxInfo structs.Tax
-		err := rows.Scan(&taxInfo.ID, &taxInfo.IataCode, &taxInfo.TaxId, &taxInfo.TaxName, &taxInfo.CreatedAt, &taxInfo.UpdatedAt)
-		if err != nil {
-			return tax, fmt.Errorf("failed to scan airline info: %w", err)
-		}
-		tax = append(tax, taxInfo)
-	}
-	if err := rows.Err(); err != nil {
-		return tax, fmt.Errorf("failed to iterate over results: %w", err)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return tax, fmt.Errorf("failed to commit transaction: %w", err)
-	}
-
-	return tax, nil
-}
-
 //Airline
 
-func (r *Repository) CreateAirline(ctx context.Context, a *structs.Airline) error {
+func (r *AirlineRepository) CreateAirline(ctx context.Context, a *structs.Airline) error {
 	// Start a transaction.
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
@@ -481,7 +444,7 @@ func (r *Repository) CreateAirline(ctx context.Context, a *structs.Airline) erro
 	return nil
 }
 
-func (r *Repository) GetAirlines(ctx context.Context) ([]structs.Airline, error) {
+func (r *AirlineRepository) GetAirlines(ctx context.Context) ([]structs.Airline, error) {
 	var airlines []structs.Airline
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -535,7 +498,7 @@ func (r *Repository) GetAirlines(ctx context.Context) ([]structs.Airline, error)
 	return airlines, nil
 }
 
-func (r *Repository) GetAirline(ctx context.Context, id uuid.UUID) (structs.Airline, error) {
+func (r *AirlineRepository) GetAirline(ctx context.Context, id uuid.UUID) (structs.Airline, error) {
 	var airline structs.Airline
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -597,7 +560,7 @@ func (r *Repository) GetAirline(ctx context.Context, id uuid.UUID) (structs.Airl
 	return airline, nil
 }
 
-func (r *Repository) DeleteAirline(ctx context.Context, id uuid.UUID) error {
+func (r *AirlineRepository) DeleteAirline(ctx context.Context, id uuid.UUID) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -616,7 +579,7 @@ func (r *Repository) DeleteAirline(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (r *Repository) UpdateAirline(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
+func (r *AirlineRepository) UpdateAirline(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -645,7 +608,7 @@ func (r *Repository) UpdateAirline(ctx context.Context, id uuid.UUID, updates ma
 	return nil
 }
 
-func (r *Repository) GetAirlineCount(ctx context.Context) (int, error) {
+func (r *AirlineRepository) GetAirlineCount(ctx context.Context) (int, error) {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return 0, err
@@ -658,7 +621,7 @@ func (r *Repository) GetAirlineCount(ctx context.Context) (int, error) {
 		if err == sql.ErrNoRows {
 			return 0, fmt.Errorf("no airline found")
 		}
-		return 0, fmt.Errorf("failed to get number of airlines: %w", err)
+		return 0, fmt.Errorf("failed to get number of airline: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
@@ -668,7 +631,7 @@ func (r *Repository) GetAirlineCount(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-func (r *Repository) GetAirlinesCountry(ctx context.Context) ([]structs.AirlineInfo, error) {
+func (r *AirlineRepository) GetAirlinesCountry(ctx context.Context) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
@@ -719,7 +682,7 @@ func (r *Repository) GetAirlinesCountry(ctx context.Context) ([]structs.AirlineI
 	return airlines, nil
 }
 
-func (r *Repository) GetAirlineCountry(ctx context.Context, id int) ([]structs.AirlineInfo, error) {
+func (r *AirlineRepository) GetAirlineCountry(ctx context.Context, id int) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
@@ -770,7 +733,7 @@ func (r *Repository) GetAirlineCountry(ctx context.Context, id int) ([]structs.A
 	return airlines, nil
 }
 
-func (r *Repository) GetAirlineCountryName(ctx context.Context, countryName string) ([]structs.AirlineInfo, error) {
+func (r *AirlineRepository) GetAirlineCountryName(ctx context.Context, countryName string) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -821,7 +784,7 @@ func (r *Repository) GetAirlineCountryName(ctx context.Context, countryName stri
 	return airlines, nil
 }
 
-func (r *Repository) GetAirlineCityName(ctx context.Context, cityName string) ([]structs.AirlineInfo, error) {
+func (r *AirlineRepository) GetAirlineCityName(ctx context.Context, cityName string) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -873,7 +836,7 @@ func (r *Repository) GetAirlineCityName(ctx context.Context, cityName string) ([
 	return airlines, nil
 }
 
-func (r *Repository) GetAirlineCountryCityName(ctx context.Context, countryName string, cityName string) ([]structs.AirlineInfo, error) {
+func (r *AirlineRepository) GetAirlineCountryCityName(ctx context.Context, countryName string, cityName string) ([]structs.AirlineInfo, error) {
 	var airlines []structs.AirlineInfo
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -927,7 +890,7 @@ func (r *Repository) GetAirlineCountryCityName(ctx context.Context, countryName 
 
 // Airplane
 
-func (r *Repository) CreateAirplane(ctx context.Context, a *structs.Airplane) error {
+func (r *AirlineRepository) CreateAirplane(ctx context.Context, a *structs.Airplane) error {
 	// Start a transaction.
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
@@ -984,7 +947,7 @@ func (r *Repository) CreateAirplane(ctx context.Context, a *structs.Airplane) er
 	return nil
 }
 
-func (r *Repository) GetAirplanes(ctx context.Context) ([]structs.Airplane, error) {
+func (r *AirlineRepository) GetAirplanes(ctx context.Context) ([]structs.Airplane, error) {
 	var airplanes []structs.Airplane
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -1049,7 +1012,7 @@ func (r *Repository) GetAirplanes(ctx context.Context) ([]structs.Airplane, erro
 	return airplanes, nil
 }
 
-func (r *Repository) GetAirplane(ctx context.Context, id uuid.UUID) (structs.Airplane, error) {
+func (r *AirlineRepository) GetAirplane(ctx context.Context, id uuid.UUID) (structs.Airplane, error) {
 	var airplane structs.Airplane
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -1091,7 +1054,7 @@ func (r *Repository) GetAirplane(ctx context.Context, id uuid.UUID) (structs.Air
 	return airplane, nil
 }
 
-func (r *Repository) DeleteAirplane(ctx context.Context, id uuid.UUID) error {
+func (r *AirlineRepository) DeleteAirplane(ctx context.Context, id uuid.UUID) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -1110,7 +1073,7 @@ func (r *Repository) DeleteAirplane(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (r *Repository) UpdateAirplane(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
+func (r *AirlineRepository) UpdateAirplane(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -1139,7 +1102,7 @@ func (r *Repository) UpdateAirplane(ctx context.Context, id uuid.UUID, updates m
 	return nil
 }
 
-func (r *Repository) GetAirplaneCount(ctx context.Context) (int, error) {
+func (r *AirlineRepository) GetAirplaneCount(ctx context.Context) (int, error) {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return 0, err
@@ -1152,7 +1115,7 @@ func (r *Repository) GetAirplaneCount(ctx context.Context) (int, error) {
 		if err == sql.ErrNoRows {
 			return 0, fmt.Errorf("no airline found")
 		}
-		return 0, fmt.Errorf("failed to get number of airlines: %w", err)
+		return 0, fmt.Errorf("failed to get number of airline: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
@@ -1162,7 +1125,7 @@ func (r *Repository) GetAirplaneCount(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-func (r *Repository) GetAirplaneAirline(ctx context.Context) ([]structs.AirplaneInfo, error) {
+func (r *AirlineRepository) GetAirplaneAirline(ctx context.Context) ([]structs.AirplaneInfo, error) {
 	var airplanesInfo []structs.AirplaneInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
@@ -1213,7 +1176,7 @@ func (r *Repository) GetAirplaneAirline(ctx context.Context) ([]structs.Airplane
 	return airplanesInfo, nil
 }
 
-func (r *Repository) GetAirplanesFromAirlineName(ctx context.Context, airlineName string) ([]structs.AirplaneInfo, error) {
+func (r *AirlineRepository) GetAirplanesFromAirlineName(ctx context.Context, airlineName string) ([]structs.AirplaneInfo, error) {
 	var airplanesInfo []structs.AirplaneInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
@@ -1264,7 +1227,7 @@ func (r *Repository) GetAirplanesFromAirlineName(ctx context.Context, airlineNam
 	return airplanesInfo, nil
 }
 
-func (r *Repository) GetAirplanesFromAirlineCountry(ctx context.Context, countryName string) ([]structs.AirplaneInfo, error) {
+func (r *AirlineRepository) GetAirplanesFromAirlineCountry(ctx context.Context, countryName string) ([]structs.AirplaneInfo, error) {
 	var airplanesInfo []structs.AirplaneInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {

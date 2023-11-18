@@ -11,7 +11,7 @@ tmp/
 
 # Environment variables
 .env
-data/
-/data/
+.data/
+/.data/
 
 .mock

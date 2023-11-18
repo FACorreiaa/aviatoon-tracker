@@ -1,4 +1,4 @@
-package airports
+package airport
 
 import (
 	"context"

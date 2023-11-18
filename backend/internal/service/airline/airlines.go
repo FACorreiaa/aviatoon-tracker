@@ -1,4 +1,4 @@
-package airlines
+package airline
 
 import (
 	"context"
@@ -45,9 +45,9 @@ func (s *Service) GetTaxesCount(ctx context.Context) (int, error) {
 	return s.repo.Tax.GetTaxesCount(ctx)
 }
 
-func (s *Service) GetTaxName(ctx context.Context, name string) ([]structs.Tax, error) {
-	return s.repo.Tax.GetTaxName(ctx, name)
-}
+//func (s *Service) GetTaxName(ctx context.Context, name string) ([]structs.Tax, error) {
+//	return s.repo.Tax.GetTaxName(ctx, name)
+//}
 
 /*****************
 ** AIRLINE AIRCRAFT  **

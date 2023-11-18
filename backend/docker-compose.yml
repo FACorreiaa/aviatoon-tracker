@@ -1,8 +1,43 @@
-version: '3'
+version: '3.9'
 services:
-  app:
-    build: .
+  debug:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: debug
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
     ports:
-      - '8080:8080'
-    env_file:
-      - ./.env/dev
+      - "40000:40000"
+    command: "dlv exec --listen=127.0.0.1:40000 --headless=true --api-version=2 --accept-multiclient /stay-healthy-backend"
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: dev
+    volumes:
+      - .:/opt/app/api
+    environment:
+      AH_AHSERVER_PORT: ":8080"
+    ports:
+      - "7070:8080"
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGREST_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SSLMODE: ${POSTGRES_SSLMODE}
+      DB_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS}
+      MAXCONWAITINGTIME: ${MAXCONWAITINGTIME}
+      DB_MAX_LIFETIME_CONNECTIONS: ${DB_MAX_LIFETIME_CONNECTIONS}
+    ports:
+      - "5432:5432"

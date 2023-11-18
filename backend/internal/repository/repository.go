@@ -2,12 +2,10 @@ package repository
 
 import (
 	"context"
-
 	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres"
-	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres/airlines"
-	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres/airports"
-	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres/locations"
-	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres/user"
+	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres/airline"
+	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres/airport"
+	"github.com/FACorreiaa/aviatoon-tracker/internal/repository/postgres/location"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/google/uuid"
 )
@@ -20,14 +18,6 @@ func NewConfig(postgresConfig postgres.Config) Config {
 	return Config{postgresConfig: postgresConfig}
 }
 
-type User interface {
-	CreateUser(u *structs.User) error
-	GetUsers() ([]structs.User, error)
-	GetUser(id uuid.UUID) (structs.User, error)
-	UpdateUser(u *structs.User) error
-	DeleteUser(id uuid.UUID) error
-}
-
 type Tax interface {
 	CreateTax(ctx context.Context, t *structs.Tax) error
 	GetTaxs(ctx context.Context) ([]structs.Tax, error)
@@ -35,8 +25,9 @@ type Tax interface {
 	UpdateTax(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error
 	DeleteTax(ctx context.Context, id uuid.UUID) error
 	GetTaxesCount(ctx context.Context) (int, error)
-	GetTaxName(ctx context.Context, name string) ([]structs.Tax, error)
 }
+
+// GetTaxName(ctx context.Context, name string) ([]structs.Tax, error)
 
 type Airport interface {
 	CreateAirport(ctx context.Context, a *structs.Airport) error
@@ -96,7 +87,7 @@ type Airline interface {
 }
 
 type Airplane interface {
-	CreateAirplane(ctx context.Context, t *structs.Airplane) error
+	CreateAirplane(ctx context.Context, a *structs.Airplane) error
 	GetAirplanes(ctx context.Context) ([]structs.Airplane, error)
 	GetAirplane(ctx context.Context, id uuid.UUID) (structs.Airplane, error)
 	UpdateAirplane(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error
@@ -108,7 +99,6 @@ type Airplane interface {
 }
 
 type Repository struct {
-	User     User
 	Tax      Tax
 	Airport  Airport
 	Country  Country
@@ -121,13 +111,12 @@ type Repository struct {
 func NewRepository(config Config) *Repository {
 	psql := postgres.NewPostgres(config.postgresConfig)
 	return &Repository{
-		User:     user.NewRepository(psql.GetDB()),
-		Tax:      airlines.NewRepository(psql.GetDB()),
-		Airport:  airports.NewRepository(psql.GetDB()),
-		Country:  locations.NewRepository(psql.GetDB()),
-		City:     locations.NewRepository(psql.GetDB()),
-		Aircraft: airlines.NewRepository(psql.GetDB()),
-		Airline:  airlines.NewRepository(psql.GetDB()),
-		Airplane: airlines.NewRepository(psql.GetDB()),
+		Tax:      airline.NewRepositoryAirline(psql.GetDB()),
+		Airport:  airport.NewRepositoryAirport(psql.GetDB()),
+		Country:  location.NewRepositoryLocation(psql.GetDB()),
+		City:     location.NewRepositoryLocation(psql.GetDB()),
+		Aircraft: airline.NewRepositoryAirline(psql.GetDB()),
+		Airline:  airline.NewRepositoryAirline(psql.GetDB()),
+		Airplane: airline.NewRepositoryAirline(psql.GetDB()),
 	}
 }

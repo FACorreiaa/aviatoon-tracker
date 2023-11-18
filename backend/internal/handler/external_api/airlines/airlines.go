@@ -34,7 +34,7 @@ func (h *Handler) InsertAircraft(w http.ResponseWriter, r *http.Request) error {
 	apiResponse, err, _ := internal_api.FetchAviationStackData("aircraft_types")
 
 	if err != nil {
-		log.Printf("error getting data: %v", err)
+		log.Printf("error getting .data: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
@@ -71,11 +71,10 @@ func (h *Handler) CreateAircraft(w http.ResponseWriter, r *http.Request) {
 	aircraft := &structs.Aircraft{} // create a pointer to the Airport struct
 	err := h.service.Aircraft.CreateAircraft(h.ctx, aircraft)
 	if err != nil {
-		log.Printf("Error fetching aircraft data: %v", err)
+		log.Printf("Error fetching aircraft .data: %v", err)
 
-		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+
 		return
 	}
 
@@ -88,7 +87,7 @@ func (h *Handler) CreateAircraft(w http.ResponseWriter, r *http.Request) {
 // 	tax := &structs.Tax{} // create a pointer to the Airport struct
 // 	err := h.service.Tax.CreateTax(h.ctx, tax)
 // 	if err != nil {
-// 		log.Printf("Error fetching aircraft data: %v", err)
+// 		log.Printf("Error fetching aircraft .data: %v", err)
 
 // 		// Write an error response to the client
 // 		w.WriteHeader(http.StatusInternalServerError)
@@ -115,9 +114,8 @@ func (h *Handler) GetAircrafts(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("Error inserting aircraft: %v", err)
 
-			// Write an error response to the client
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Internal server error"))
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+
 			return
 		}
 		aircrafts, err := h.service.Aircraft.GetAircrafts(h.ctx)
@@ -138,11 +136,10 @@ func (h *Handler) GetAircrafts(w http.ResponseWriter, r *http.Request) {
 
 	}
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airline .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -155,7 +152,6 @@ func (h *Handler) GetAircrafts(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetAircraft(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		// Handle the error for invalid UUID format
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Invalid aircraft ID"))
 		return
@@ -163,11 +159,10 @@ func (h *Handler) GetAircraft(w http.ResponseWriter, r *http.Request) {
 
 	aircraft, err := h.service.Aircraft.GetAircraft(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching aircraft data: %v", err)
+		log.Printf("Error fetching aircraft .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -188,11 +183,10 @@ func (h *Handler) DeleteAircraft(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.Aircraft.DeleteAircraft(h.ctx, id)
 	if err != nil {
-		log.Printf("Error deleting aircraft data: %v", err)
+		log.Printf("Error deleting aircraft .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -255,7 +249,7 @@ func (h *Handler) InsertTax(w http.ResponseWriter, r *http.Request) error {
 	apiResponse, err, _ := internal_api.FetchAviationStackData("taxes")
 
 	if err != nil {
-		log.Printf("error getting data: %v", err)
+		log.Printf("error getting .data: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
@@ -292,11 +286,10 @@ func (h *Handler) CreateTax(w http.ResponseWriter, r *http.Request) {
 	tax := &structs.Tax{} // create a pointer to the Airport struct
 	err := h.service.Tax.CreateTax(h.ctx, tax)
 	if err != nil {
-		log.Printf("Error fetching aircraft data: %v", err)
+		log.Printf("Error fetching aircraft .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -307,32 +300,32 @@ func (h *Handler) CreateTax(w http.ResponseWriter, r *http.Request) {
 
 // test
 //func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
-//	// Create a channel to receive updated tax data
+//	// Create a channel to receive updated tax .data
 //	updateChan := make(chan []structs.Tax)
 //
-//	// Start a Goroutine to periodically fetch tax data in the background
+//	// Start a Goroutine to periodically fetch tax .data in the background
 //	go func() {
 //		for {
 //			taxs, err := h.service.Tax.GetTaxs(h.ctx)
 //			if err == nil && len(taxs) > 0 {
-//				// Send the updated tax data to the channel
+//				// Send the updated tax .data to the channel
 //				updateChan <- taxs
 //			}
 //			time.Sleep(time.Minute)
-//			log.Println(time.Minute) // Wait for a minute before fetching data again
+//			log.Println(time.Minute) // Wait for a minute before fetching .data again
 //		}
 //	}()
 //
-//	// Check if there is already tax data available
+//	// Check if there is already tax .data available
 //	select {
 //	case taxs := <-updateChan:
-//		// If there is updated tax data available, use it
+//		// If there is updated tax .data available, use it
 //		writeTaxsResponse(w, taxs)
 //	default:
-//		// If there is no tax data available, fetch it manually
+//		// If there is no tax .data available, fetch it manually
 //		taxs, err := h.service.Tax.GetTaxs(h.ctx)
 //		if err != nil {
-//			log.Printf("Error fetching tax data: %v", err)
+//			log.Printf("Error fetching tax .data: %v", err)
 //			w.WriteHeader(http.StatusInternalServerError)
 //			w.Write([]byte("Internal server error"))
 //			return
@@ -341,13 +334,13 @@ func (h *Handler) CreateTax(w http.ResponseWriter, r *http.Request) {
 //	}
 //}
 
-// Helper function to write tax data response
+// Helper function to write tax .data response
 //func writeTaxsResponse(w http.ResponseWriter, taxs []structs.Tax) {
 //	w.Header().Set("Content-Type", "application/json")
 //	w.WriteHeader(http.StatusOK)
 //	err := json.NewEncoder(w).Encode(taxs)
 //	if err != nil {
-//		log.Printf("Error encoding tax data as JSON: %v", err)
+//		log.Printf("Error encoding tax .data as JSON: %v", err)
 //		w.WriteHeader(http.StatusBadRequest)
 //		w.Write([]byte("Error encoding json"))
 //
@@ -386,7 +379,7 @@ func (h *Handler) CreateTax(w http.ResponseWriter, r *http.Request) {
 
 // 	}
 // 	if err != nil {
-// 		log.Printf("Error fetching airlines data: %v", err)
+// 		log.Printf("Error fetching airline .data: %v", err)
 
 // 		// Write an error response to the client
 // 		w.WriteHeader(http.StatusInternalServerError)
@@ -430,9 +423,8 @@ func (h *Handler) CreateTax(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
 	taxs, err := h.service.Tax.GetTaxs(h.ctx)
 	if err != nil {
-		log.Printf("Error fetching tax data: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		log.Printf("Error fetching tax .data: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -446,7 +438,7 @@ func (h *Handler) GetTaxs(w http.ResponseWriter, r *http.Request) {
 
 		taxs, err = h.service.Tax.GetTaxs(h.ctx)
 		if err != nil {
-			log.Printf("Error fetching tax data: %v", err)
+			log.Printf("Error fetching tax .data: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal server error"))
 			return
@@ -469,11 +461,10 @@ func (h *Handler) GetTax(w http.ResponseWriter, r *http.Request) {
 
 	taxs, err := h.service.Tax.GetTax(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airline .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -494,11 +485,10 @@ func (h *Handler) DeleteTax(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.Tax.DeleteTax(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airline .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -554,32 +544,31 @@ func (h *Handler) GetTaxesCount(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonBytes)
 }
 
-func (h *Handler) GetTaxName(w http.ResponseWriter, r *http.Request) {
-	taxName := chi.URLParam(r, "tax_name")
-	println(taxName)
-	tax, err := h.service.Tax.GetTaxName(h.ctx, taxName)
-	if err != nil {
-		log.Printf("Error fetching tax data: %v", err)
-
-		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
-		return
-	}
-
-	// Serialize the response as JSON and write to the response writer
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(tax)
-}
+//func (h *Handler) GetTaxName(w http.ResponseWriter, r *http.Request) {
+//	taxName := chi.URLParam(r, "tax_name")
+//	println(taxName)
+//	tax, err := h.service.Tax.GetTaxName(h.ctx, taxName)
+//	if err != nil {
+//		log.Printf("Error fetching tax .data: %v", err)
+//
+//		// Write an error response to the client
+//		http.Error(w, err.Error(), http.StatusInternalServerError)
+//		return
+//	}
+//
+//	// Serialize the response as JSON and write to the response writer
+//	w.Header().Set("Content-Type", "application/json")
+//	w.WriteHeader(http.StatusOK)
+//	json.NewEncoder(w).Encode(tax)
+//}
 
 //Airline
 
 func (h *Handler) InsertAirlines(w http.ResponseWriter, r *http.Request) error {
-	apiResponse, err, _ := internal_api.FetchAviationStackData("airlines")
+	apiResponse, err, _ := internal_api.FetchAviationStackData("airline")
 
 	if err != nil {
-		log.Printf("error getting airline data: %v", err)
+		log.Printf("error getting airline .data: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
@@ -627,11 +616,10 @@ func (h *Handler) CreateAirline(w http.ResponseWriter, r *http.Request) {
 	airline := &structs.Airline{} // create a pointer to the Airport struct
 	err := h.service.Airline.CreateAirline(h.ctx, airline)
 	if err != nil {
-		log.Printf("Error fetching aircraft data: %v", err)
+		log.Printf("Error fetching aircraft .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -645,7 +633,7 @@ func (h *Handler) GetAirlines(w http.ResponseWriter, r *http.Request) {
 	if len(airlines) == 0 {
 		err := h.InsertAirlines(w, r)
 		if err != nil {
-			log.Printf("Error inserting airlines: %v", err)
+			log.Printf("Error inserting airline: %v", err)
 
 			// Write an error response to the client
 			w.WriteHeader(http.StatusInternalServerError)
@@ -670,11 +658,10 @@ func (h *Handler) GetAirlines(w http.ResponseWriter, r *http.Request) {
 
 	}
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airline .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -695,11 +682,10 @@ func (h *Handler) GetAirline(w http.ResponseWriter, r *http.Request) {
 
 	airlines, err := h.service.Airline.GetAirline(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airline .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -720,11 +706,10 @@ func (h *Handler) DeleteAirline(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.Airline.DeleteAirline(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airline .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -783,11 +768,10 @@ func (h *Handler) GetAirlineCount(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetAirlinesCountry(w http.ResponseWriter, r *http.Request) {
 	airlines, err := h.service.Airline.GetAirlinesCountry(h.ctx)
 	if err != nil {
-		log.Printf("Error fetching airlines from coutry data: %v", err)
+		log.Printf("Error fetching airline from coutry .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -808,11 +792,10 @@ func (h *Handler) GetAirlineCountry(w http.ResponseWriter, r *http.Request) {
 
 	airlines, err := h.service.Airline.GetAirlineCountry(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airline .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -826,11 +809,10 @@ func (h *Handler) GetAirlineCountryName(w http.ResponseWriter, r *http.Request) 
 	countryName := chi.URLParam(r, "country_name")
 	airline, err := h.service.Airline.GetAirlineCountryName(h.ctx, countryName)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airline .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -844,11 +826,10 @@ func (h *Handler) GetAirlineCityName(w http.ResponseWriter, r *http.Request) {
 	cityName := chi.URLParam(r, "city_name")
 	airline, err := h.service.Airline.GetAirlineCityName(h.ctx, cityName)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airline .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -863,11 +844,10 @@ func (h *Handler) GetAirlineCountryCityName(w http.ResponseWriter, r *http.Reque
 	countryName := chi.URLParam(r, "country_name")
 	airline, err := h.service.Airline.GetAirlineCountryCityName(h.ctx, countryName, cityName)
 	if err != nil {
-		log.Printf("Error fetching airlines data: %v", err)
+		log.Printf("Error fetching airline .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -883,7 +863,7 @@ func (h *Handler) InsertAirplane(w http.ResponseWriter, r *http.Request) error {
 	apiResponse, err, _ := internal_api.FetchAviationStackData("airplanes")
 
 	if err != nil {
-		log.Printf("error getting airplane data: %v", err)
+		log.Printf("error getting airplane .data: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
@@ -943,11 +923,10 @@ func (h *Handler) CreateAirplane(w http.ResponseWriter, r *http.Request) {
 	airplane := &structs.Airplane{} // create a pointer to the Airport struct
 	err := h.service.Airplane.CreateAirplane(h.ctx, airplane)
 	if err != nil {
-		log.Printf("Error fetching aircraft data: %v", err)
+		log.Printf("Error fetching aircraft .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -986,11 +965,10 @@ func (h *Handler) GetAirplanes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if err != nil {
-		log.Printf("Error fetching airplanes data: %v", err)
+		log.Printf("Error fetching airplanes .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -1011,11 +989,10 @@ func (h *Handler) GetAirplane(w http.ResponseWriter, r *http.Request) {
 
 	airplane, err := h.service.Airplane.GetAirplane(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching airplanes data: %v", err)
+		log.Printf("Error fetching airplanes .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -1036,11 +1013,10 @@ func (h *Handler) DeleteAirplane(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.Airplane.DeleteAirplane(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching airplanes data: %v", err)
+		log.Printf("Error fetching airplanes .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -1099,11 +1075,10 @@ func (h *Handler) GetAirplaneCount(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetAirplaneAirline(w http.ResponseWriter, r *http.Request) {
 	airplane, err := h.service.Airplane.GetAirplaneAirline(h.ctx)
 	if err != nil {
-		log.Printf("Error fetching airplanes data: %v", err)
+		log.Printf("Error fetching airplanes .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -1117,11 +1092,10 @@ func (h *Handler) GetAirplanesFromAirlineName(w http.ResponseWriter, r *http.Req
 	param := chi.URLParam(r, "airline_name")
 	airplane, err := h.service.Airplane.GetAirplanesFromAirlineName(h.ctx, param)
 	if err != nil {
-		log.Printf("Error fetching airplanes data: %v", err)
+		log.Printf("Error fetching airplanes .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -1135,11 +1109,10 @@ func (h *Handler) GetAirplanesFromAirlineCountry(w http.ResponseWriter, r *http.
 	countryName := chi.URLParam(r, "country_name")
 	airplane, err := h.service.Airplane.GetAirplanesFromAirlineCountry(h.ctx, countryName)
 	if err != nil {
-		log.Printf("Error fetching airplanes data: %v", err)
+		log.Printf("Error fetching airplanes .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

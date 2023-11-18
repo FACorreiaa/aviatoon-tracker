@@ -37,10 +37,10 @@ type Api interface {
 	Shutdown(ctx context.Context) error
 }
 
-func New(config Config, s *service.Service, c context.Context) Api {
+func New(config Config, s *service.Service) Api {
 	return &server{
 		port:      config.port,
-		handler:   InitRouter(s, c),
+		handler:   InitRouter(s),
 		certFile:  config.certFile,
 		keyFile:   config.keyFile,
 		enableTls: config.enableTls,

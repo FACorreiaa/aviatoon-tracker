@@ -153,7 +153,7 @@ func FetchAviationStackData(endpoint string, queryParams ...string) ([]byte, err
 //}
 
 //type TaxData struct {
-//	// Define the fields of your tax data struct
+//	// Define the fields of your tax .data struct
 //	// Make sure the field names match the corresponding API response fields
 //	TaxId    string `json:"tax_id"`
 //	TaxName  string `json:"tax_name"`
@@ -161,7 +161,7 @@ func FetchAviationStackData(endpoint string, queryParams ...string) ([]byte, err
 //}
 //
 //type TaxCreator interface {
-//	CreateTax(data interface{}) error
+//	CreateTax(.data interface{}) error
 //}
 //
 //func InsertAviationTaxIntoDB(endpoint string, taxCreator TaxCreator) error {

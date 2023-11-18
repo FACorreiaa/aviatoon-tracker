@@ -1,4 +1,4 @@
-package airports
+package airport
 
 import (
 	"context"
@@ -12,15 +12,15 @@ import (
 	"strings"
 )
 
-type Repository struct {
+type AirportRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewRepository(db *pgxpool.Pool) *Repository {
-	return &Repository{db: db}
+func NewRepositoryAirport(db *pgxpool.Pool) *AirportRepository {
+	return &AirportRepository{db: db}
 }
 
-func (r *Repository) CreateAirport(ctx context.Context, a *structs.Airport) error {
+func (r *AirportRepository) CreateAirport(ctx context.Context, a *structs.Airport) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("error starting transaction: %w", err)
@@ -61,7 +61,7 @@ func (r *Repository) CreateAirport(ctx context.Context, a *structs.Airport) erro
 	return nil
 }
 
-func (r *Repository) GetAirports(ctx context.Context) ([]structs.Airport, error) {
+func (r *AirportRepository) GetAirports(ctx context.Context) ([]structs.Airport, error) {
 	var airport []structs.Airport
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -109,7 +109,7 @@ func (r *Repository) GetAirports(ctx context.Context) ([]structs.Airport, error)
 	return airport, nil
 }
 
-func (r *Repository) GetAirport(ctx context.Context, id uuid.UUID) (structs.Airport, error) {
+func (r *AirportRepository) GetAirport(ctx context.Context, id uuid.UUID) (structs.Airport, error) {
 	var airport structs.Airport
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -145,9 +145,9 @@ func (r *Repository) GetAirport(ctx context.Context, id uuid.UUID) (structs.Airp
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return airport, fmt.Errorf("airports with ID %s not found: %w", id, err)
+			return airport, fmt.Errorf("airport with ID %s not found: %w", id, err)
 		}
-		return airport, fmt.Errorf("failed to scan airports: %w", err)
+		return airport, fmt.Errorf("failed to scan airport: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
@@ -157,7 +157,7 @@ func (r *Repository) GetAirport(ctx context.Context, id uuid.UUID) (structs.Airp
 	return airport, nil
 }
 
-func (r *Repository) DeleteAirport(ctx context.Context, id uuid.UUID) error {
+func (r *AirportRepository) DeleteAirport(ctx context.Context, id uuid.UUID) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -176,7 +176,7 @@ func (r *Repository) DeleteAirport(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (r *Repository) UpdateAirport(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
+func (r *AirportRepository) UpdateAirport(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -205,7 +205,7 @@ func (r *Repository) UpdateAirport(ctx context.Context, id uuid.UUID, updates ma
 	return nil
 }
 
-func (r *Repository) GetAirportCount(ctx context.Context) (int, error) {
+func (r *AirportRepository) GetAirportCount(ctx context.Context) (int, error) {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return 0, err
@@ -216,9 +216,9 @@ func (r *Repository) GetAirportCount(ctx context.Context) (int, error) {
 	err = tx.QueryRow(ctx, "SELECT COUNT(*) FROM airport").Scan(&count)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return 0, fmt.Errorf("no airports found")
+			return 0, fmt.Errorf("no airport found")
 		}
-		return 0, fmt.Errorf("failed to get number of airports: %w", err)
+		return 0, fmt.Errorf("failed to get number of airport: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {
@@ -228,7 +228,7 @@ func (r *Repository) GetAirportCount(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-func (r *Repository) GetCitiesAirports(ctx context.Context) ([]structs.AirportInfo, error) {
+func (r *AirportRepository) GetCitiesAirports(ctx context.Context) ([]structs.AirportInfo, error) {
 	var airportsInfo []structs.AirportInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
@@ -281,7 +281,7 @@ func (r *Repository) GetCitiesAirports(ctx context.Context) ([]structs.AirportIn
 	return airportsInfo, nil
 }
 
-func (r *Repository) GetCityNameAirport(ctx context.Context, cityName string) ([]structs.AirportInfo, error) {
+func (r *AirportRepository) GetCityNameAirport(ctx context.Context, cityName string) ([]structs.AirportInfo, error) {
 	var airportsInfo []structs.AirportInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
@@ -335,7 +335,7 @@ func (r *Repository) GetCityNameAirport(ctx context.Context, cityName string) ([
 	return airportsInfo, nil
 }
 
-func (r *Repository) GetCityNameAirportAlternative(ctx context.Context, cityName string) ([]structs.AirportInfo, error) {
+func (r *AirportRepository) GetCityNameAirportAlternative(ctx context.Context, cityName string) ([]structs.AirportInfo, error) {
 	var airportsInfo []structs.AirportInfo
 
 	// create a map of city IATA codes to city names
@@ -386,7 +386,7 @@ func (r *Repository) GetCityNameAirportAlternative(ctx context.Context, cityName
 			&airportInfo.CreatedAt,
 			&airportInfo.UpdatedAt)
 		if err != nil {
-			return airportsInfo, fmt.Errorf("failed to scan airports info: %w", err)
+			return airportsInfo, fmt.Errorf("failed to scan airport info: %w", err)
 		}
 		airportInfo.CityName = cityMap[airportInfo.CityIataCode]
 		airportsInfo = append(airportsInfo, airportInfo)
@@ -402,7 +402,7 @@ func (r *Repository) GetCityNameAirportAlternative(ctx context.Context, cityName
 	return airportsInfo, nil
 }
 
-func (r *Repository) GetCountryNameAirport(ctx context.Context, countryName string) ([]structs.AirportInfo, error) {
+func (r *AirportRepository) GetCountryNameAirport(ctx context.Context, countryName string) ([]structs.AirportInfo, error) {
 	var airportsInfo []structs.AirportInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
@@ -460,9 +460,7 @@ func (r *Repository) GetCountryNameAirport(ctx context.Context, countryName stri
 	return airportsInfo, nil
 }
 
-// a
-
-func (r *Repository) GetCityIataCodeAirport(ctx context.Context, iataCode string) ([]structs.AirportInfo, error) {
+func (r *AirportRepository) GetCityIataCodeAirport(ctx context.Context, iataCode string) ([]structs.AirportInfo, error) {
 	var airportsInfo []structs.AirportInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {

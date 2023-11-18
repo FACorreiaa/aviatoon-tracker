@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-//airlines
+//airline
 
 type Airline struct {
 	ID                   uuid.UUID  `json:"id" pg:"default:gen_random_uuid()"`
@@ -175,19 +175,19 @@ type TaxPerCityInfo struct {
 type TaxListResponse []Tax
 
 type TaxApiData struct {
-	Data []Tax `json:"data"`
+	Data []Tax `json:".data"`
 }
 
 type AircraftApiData struct {
-	Data []Aircraft `json:"data"`
+	Data []Aircraft `json:".data"`
 }
 
 type AirlineApiData struct {
-	Data []Airline `json:"data"`
+	Data []Airline `json:".data"`
 }
 
 type AirplaneApiData struct {
-	Data []Airplane `json:"data"`
+	Data []Airplane `json:".data"`
 }
 
 type CustomTime struct {

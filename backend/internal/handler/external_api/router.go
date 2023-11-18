@@ -5,18 +5,15 @@ import (
 
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/airlines"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/airports"
-	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/locations"
+	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/location"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/swagger"
 
-	"context"
-
-	"github.com/FACorreiaa/aviatoon-tracker/internal/handler/external_api/auth"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func InitRouter(s *service.Service, c context.Context) *chi.Mux {
+func InitRouter(s *service.Service) *chi.Mux {
 	router := chi.NewRouter()
 
 	//Middleware
@@ -27,10 +24,9 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 	router.Use(middleware.Timeout(60 * time.Second))
 
 	//Handlers
-	authHandler := auth.NewHandler(s)
 	taxHandler := airlines.NewHandler(s)
 	airportHandler := airports.NewHandler(s)
-	locationHandler := locations.NewHandler(s)
+	locationHandler := location.NewHandler(s)
 	aircraftHandler := airlines.NewHandler(s)
 	airlineHandler := airlines.NewHandler(s)
 	airplaneHandler := airlines.NewHandler(s)
@@ -51,15 +47,9 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 	//
 	//})
 
-	//Users
-	router.Route("/api/v1/user", func(r chi.Router) {
-		r.Get("/sign-up", authHandler.SignUp)
-		r.Post("/sign-in", authHandler.SignUp)
-	})
-
 	//Tax
 	router.Get("/api/v1/tax", taxHandler.GetTaxs)
-	router.Get("/api/v1/tax/tax-name={tax_name}", taxHandler.GetTaxName)
+	//router.Get("/api/v1/tax/tax-name={tax_name}", taxHandler.GetTaxName)
 	router.Get("/api/v1/tax/count", taxHandler.GetTaxesCount)
 
 	router.Route("/api/v1/tax/{id}", func(r chi.Router) {
@@ -69,15 +59,15 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 	})
 
 	//Airport
-	router.Get("/api/v1/airports", airportHandler.GetAirports)
-	router.Get("/api/v1/airports/count", airportHandler.GetAirportCount)
-	router.Get("/api/v1/airports/city", airportHandler.GetCitiesAirport)
-	router.Get("/api/v1/airports/city={city_name}", airportHandler.GetCityNameAirport)
-	router.Get("/api/v1/airports/country={country_name}", airportHandler.GetCountryNameAirport)
-	router.Get("/api/v1/airports/city={city_name}/alternative", airportHandler.GetCityNameAirportAlternative)
-	router.Get("/api/v1/airports/iata={iata_code}", airportHandler.GetCityIataCodeAirport)
+	router.Get("/api/v1/airport", airportHandler.GetAirports)
+	router.Get("/api/v1/airport/count", airportHandler.GetAirportCount)
+	router.Get("/api/v1/airport/city", airportHandler.GetCitiesAirport)
+	router.Get("/api/v1/airport/city={city_name}", airportHandler.GetCityNameAirport)
+	router.Get("/api/v1/airport/country={country_name}", airportHandler.GetCountryNameAirport)
+	router.Get("/api/v1/airport/city={city_name}/alternative", airportHandler.GetCityNameAirportAlternative)
+	router.Get("/api/v1/airport/iata={iata_code}", airportHandler.GetCityIataCodeAirport)
 
-	router.Route("/api/v1/airports/{id}", func(r chi.Router) {
+	router.Route("/api/v1/airport/{id}", func(r chi.Router) {
 		r.Get("/", airportHandler.GetAirport)
 		r.Delete("/", airportHandler.DeleteAirport)
 		r.Put("/", airportHandler.UpdateAirport)
@@ -114,14 +104,14 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 	})
 
 	//Airline
-	router.Get("/api/v1/airlines", airlineHandler.GetAirlines)
-	router.Get("/api/v1/airlines/count", airlineHandler.GetAirlineCount)
-	//router.Get("/api/v1/airlines/city/country", airlineHandler.GetAirlineCountry)
-	router.Get("/api/v1/airlines/country={country_name}", airlineHandler.GetAirlineCountryName)
-	router.Get("/api/v1/airlines/city={city_name}", airlineHandler.GetAirlineCityName)
-	router.Get("/api/v1/airlines/country={country_name}/city={city_name}", airlineHandler.GetAirlineCountryCityName)
+	router.Get("/api/v1/airline", airlineHandler.GetAirlines)
+	router.Get("/api/v1/airline/count", airlineHandler.GetAirlineCount)
+	//router.Get("/api/v1/airline/city/country", airlineHandler.GetAirlineCountry)
+	router.Get("/api/v1/airline/country={country_name}", airlineHandler.GetAirlineCountryName)
+	router.Get("/api/v1/airline/city={city_name}", airlineHandler.GetAirlineCityName)
+	router.Get("/api/v1/airline/country={country_name}/city={city_name}", airlineHandler.GetAirlineCountryCityName)
 
-	router.Route("/api/v1/airlines/{id}", func(r chi.Router) {
+	router.Route("/api/v1/airline/{id}", func(r chi.Router) {
 		r.Get("/", airlineHandler.GetAirline)
 		r.Get("/city/country", airlineHandler.GetAirlineCountry)
 
@@ -137,9 +127,9 @@ func InitRouter(s *service.Service, c context.Context) *chi.Mux {
 		r.Delete("/", airplaneHandler.DeleteAirplane)
 		r.Put("/", airplaneHandler.UpdateAirplane)
 	})
-	router.Get("/api/v1/airplanes/airlines", airplaneHandler.GetAirplaneAirline)
-	router.Get("/api/v1/airplanes/airlines/airline={airline_name}", airplaneHandler.GetAirplanesFromAirlineName)
-	router.Get("/api/v1/airplanes/airlines/country={country_name}", airplaneHandler.GetAirplanesFromAirlineCountry)
+	router.Get("/api/v1/airplanes/airline", airplaneHandler.GetAirplaneAirline)
+	router.Get("/api/v1/airplanes/airline/airline={airline_name}", airplaneHandler.GetAirplanesFromAirlineName)
+	router.Get("/api/v1/airplanes/airline/country={country_name}", airplaneHandler.GetAirplanesFromAirlineCountry)
 
 	return router
 }

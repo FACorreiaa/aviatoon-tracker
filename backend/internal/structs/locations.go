@@ -38,7 +38,7 @@ type CityListResponse []City
 //countries
 
 type Country struct {
-	ID                uuid.UUID  `json:"id" pg:"default:gen_random_uuid()"`
+	ID                uuid.UUID  `json:"id, string" pg:"default:gen_random_uuid()"`
 	CountryName       string     `json:"country_name"`
 	CountryIso2       string     `json:"country_iso2"`
 	CountryIso3       string     `json:"country_iso3"`
@@ -57,9 +57,9 @@ type Country struct {
 type CountryListResponse []Country
 
 type CountryApiData struct {
-	Data []Country `json:"data"`
+	Data []Country `json:".data"`
 }
 
 type CityApiData struct {
-	Data []City `json:"data"`
+	Data []City `json:".data"`
 }

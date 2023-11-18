@@ -1,4 +1,4 @@
-package locations
+package location
 
 import (
 	"context"
@@ -35,7 +35,7 @@ func (h *Handler) InsertCountry(w http.ResponseWriter, r *http.Request) error {
 	apiResponse, err, _ := internal_api.FetchAviationStackData("countries")
 
 	if err != nil {
-		log.Printf("error getting data: %v", err)
+		log.Printf("error getting .data: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
@@ -52,7 +52,7 @@ func (h *Handler) InsertCountry(w http.ResponseWriter, r *http.Request) error {
 		createdAt := NewCustomTime(createdTime)
 
 		err := h.service.Country.CreateCountry(h.ctx, &structs.Country{
-			ID:                uuid.NewString(),
+			ID:                uuid.New(),
 			CountryName:       c.CountryName,
 			CountryIso2:       c.CountryIso2,
 			CountryIso3:       c.CountryIso3,
@@ -80,11 +80,10 @@ func (h *Handler) CreateCountry(w http.ResponseWriter, r *http.Request) {
 	country := &structs.Country{} // create a pointer to the Airport struct
 	err := h.service.Country.CreateCountry(h.ctx, country)
 	if err != nil {
-		log.Printf("Error fetching country data: %v", err)
+		log.Printf("Error fetching country .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -126,11 +125,10 @@ func (h *Handler) GetCountries(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		log.Printf("Error fetching countries data: %v", err)
+		log.Printf("Error fetching countries .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -153,11 +151,10 @@ func (h *Handler) GetCountry(w http.ResponseWriter, r *http.Request) {
 
 	country, err := h.service.Country.GetCountry(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching country data: %v", err)
+		log.Printf("Error fetching country .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -198,11 +195,10 @@ func (h *Handler) DeleteCountry(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.Airport.DeleteAirport(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching countries data: %v", err)
+		log.Printf("Error fetching countries .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -249,7 +245,7 @@ func (h *Handler) InsertCity(w http.ResponseWriter, r *http.Request) error {
 	apiResponse, err, _ := internal_api.FetchAviationStackData("cities")
 
 	if err != nil {
-		log.Printf("error getting data: %v", err)
+		log.Printf("error getting .data: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
@@ -266,7 +262,7 @@ func (h *Handler) InsertCity(w http.ResponseWriter, r *http.Request) error {
 		createdAt := NewCustomTime(createdTime)
 
 		err := h.service.City.CreateCity(h.ctx, &structs.City{
-			ID:          uuid.NewString(),
+			ID:          uuid.New(),
 			GMT:         c.GMT,
 			CityId:      c.CityId,
 			IataCode:    c.IataCode,
@@ -293,11 +289,10 @@ func (h *Handler) CreateCity(w http.ResponseWriter, r *http.Request) {
 	city := &structs.City{} // create a pointer to the Airport struct
 	err := h.service.City.CreateCity(h.ctx, city)
 	if err != nil {
-		log.Printf("Error fetching city data: %v", err)
+		log.Printf("Error fetching city .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -340,11 +335,10 @@ func (h *Handler) GetCities(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		log.Printf("Error fetching city data: %v", err)
+		log.Printf("Error fetching city .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -367,11 +361,10 @@ func (h *Handler) GetCity(w http.ResponseWriter, r *http.Request) {
 
 	city, err := h.service.City.GetCity(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching country data: %v", err)
+		log.Printf("Error fetching country .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -412,11 +405,10 @@ func (h *Handler) DeleteCity(w http.ResponseWriter, r *http.Request) {
 
 	err = h.service.City.DeleteCity(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching countries data: %v", err)
+		log.Printf("Error fetching countries .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -457,11 +449,10 @@ func (h *Handler) UpdateCity(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetCitiesFromCountry(w http.ResponseWriter, r *http.Request) {
 	city, err := h.service.City.GetCitiesFromCountry(h.ctx)
 	if err != nil {
-		log.Printf("Error fetching country data: %v", err)
+		log.Printf("Error fetching country .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -484,11 +475,10 @@ func (h *Handler) GetCityFromCountry(w http.ResponseWriter, r *http.Request) {
 
 	city, err := h.service.City.GetCityFromCountry(h.ctx, id)
 	if err != nil {
-		log.Printf("Error fetching country data: %v", err)
+		log.Printf("Error fetching country .data: %v", err)
 
 		// Write an error response to the client
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal server error"))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

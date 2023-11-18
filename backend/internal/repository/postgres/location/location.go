@@ -1,30 +1,245 @@
-package locations
+package location
 
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/FACorreiaa/aviatoon-tracker/internal/structs"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/pkg/errors"
 	"strings"
 )
 
-type Repository struct {
+type LocationRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewRepository(db *pgxpool.Pool) *Repository {
-	return &Repository{db: db}
+func NewRepositoryLocation(db *pgxpool.Pool) *LocationRepository {
+	return &LocationRepository{db: db}
+}
+
+/** City **/
+
+func (r *LocationRepository) CreateCity(ctx context.Context, c *structs.City) error {
+	// Start a transaction.
+
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return fmt.Errorf("error starting transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		}
+	}()
+
+	if _, err := tx.Exec(ctx,
+		`INSERT INTO city VALUES ($1, $2::float8, $3::int, $4, $5,
+                         				$6::int, $7::float8, $8::float8,
+                         				$9, $10, $11, $12)`,
+		c.ID,
+		c.GMT,
+		c.CityId,
+		c.IataCode,
+		c.CountryIso2,
+		c.GeonameId,
+		c.Latitude,
+		c.Longitude,
+		c.CityName,
+		c.Timezone,
+		c.CreatedAt,
+		c.UpdatedAt,
+	); err != nil {
+		return fmt.Errorf("error inserting values: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("error committing transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (r *LocationRepository) GetCities(ctx context.Context) ([]structs.City, error) {
+	var cities []structs.City
+
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	// Send query to database.
+	rows, err := tx.Query(ctx, `SELECT * FROM city ORDER BY city_id`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var city structs.City
+		err := rows.Scan(
+			&city.ID,
+			&city.GMT,
+			&city.CityId,
+			&city.IataCode,
+			&city.CountryIso2,
+			&city.GeonameId,
+			&city.Latitude,
+			&city.Longitude,
+			&city.CityName,
+			&city.Timezone,
+			&city.CreatedAt,
+			&city.UpdatedAt)
+
+		if err != nil {
+			return nil, err
+		}
+		cities = append(cities, city)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	return cities, nil
+}
+
+func (r *LocationRepository) GetCity(ctx context.Context, id uuid.UUID) (structs.City, error) {
+	var city structs.City
+
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return city, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	row := tx.QueryRow(ctx, `SELECT
+			id,
+			gmt,
+			city_id,
+			iata_code,
+			country_iso2,
+			geoname_id,
+			latitude,
+			longitude,
+			city_name,
+			timezone,
+			created_at,
+			updated_at
+		FROM city
+		WHERE id = $1 LIMIT 1`, id)
+	err = row.Scan(
+		&city.ID,
+		&city.GMT,
+		&city.CityId,
+		&city.IataCode,
+		&city.CountryIso2,
+		&city.GeonameId,
+		&city.Latitude,
+		&city.Longitude,
+		&city.CityName,
+		&city.Timezone,
+		&city.CreatedAt,
+		&city.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return city, fmt.Errorf("city with ID %s not found: %w", id, err)
+		}
+		return city, fmt.Errorf("failed to scan ctx: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return city, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return city, nil
+}
+
+func (q *LocationRepository) DeleteCity(ctx context.Context, id uuid.UUID) error {
+	tx, err := q.db.BeginTx(context.Background(), pgx.TxOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	_, err = tx.Exec(ctx, "DELETE FROM city WHERE id = $1", id)
+	if err != nil {
+		return fmt.Errorf("failed to delete city: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (r *LocationRepository) UpdateCity(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
+	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+
+	var setColumns []string
+	var args []interface{}
+
+	for key, value := range updates {
+		setColumns = append(setColumns, fmt.Sprintf("%s = $%d", key, len(args)+1))
+		args = append(args, value)
+	}
+	args = append(args, id)
+
+	stmt := fmt.Sprintf("UPDATE city SET %s WHERE id = $%d", strings.Join(setColumns, ", "), len(args))
+	_, err = tx.Exec(ctx, stmt, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update country: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (r *LocationRepository) GetCityCount(ctx context.Context) (int, error) {
+	tx, err := r.db.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback(ctx)
+
+	var count int
+	err = tx.QueryRow(ctx, "SELECT COUNT(*) FROM city").Scan(&count)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, fmt.Errorf("no cities found")
+		}
+		return 0, fmt.Errorf("failed to get number of cities: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 /*
 	Country
 */
 
-func (r *Repository) CreateCountry(ctx context.Context, c *structs.Country) error {
+func (r *LocationRepository) CreateCountry(ctx context.Context, c *structs.Country) error {
 	// Start a transaction.
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
@@ -65,7 +280,7 @@ func (r *Repository) CreateCountry(ctx context.Context, c *structs.Country) erro
 	return nil
 }
 
-func (r *Repository) GetCountries(ctx context.Context) ([]structs.Country, error) {
+func (r *LocationRepository) GetCountries(ctx context.Context) ([]structs.Country, error) {
 	var countries []structs.Country
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -110,7 +325,7 @@ func (r *Repository) GetCountries(ctx context.Context) ([]structs.Country, error
 	return countries, nil
 }
 
-func (r *Repository) GetCountry(ctx context.Context, id uuid.UUID) (structs.Country, error) {
+func (r *LocationRepository) GetCountry(ctx context.Context, id uuid.UUID) (structs.Country, error) {
 	var country structs.Country
 
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
@@ -167,7 +382,7 @@ func (r *Repository) GetCountry(ctx context.Context, id uuid.UUID) (structs.Coun
 	return country, nil
 }
 
-func (r *Repository) DeleteCountry(ctx context.Context, id uuid.UUID) error {
+func (r *LocationRepository) DeleteCountry(ctx context.Context, id uuid.UUID) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -186,7 +401,7 @@ func (r *Repository) DeleteCountry(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (r *Repository) UpdateCountry(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
+func (r *LocationRepository) UpdateCountry(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -215,7 +430,7 @@ func (r *Repository) UpdateCountry(ctx context.Context, id uuid.UUID, updates ma
 	return nil
 }
 
-func (r *Repository) GetCountryCount(ctx context.Context) (int, error) {
+func (r *LocationRepository) GetCountryCount(ctx context.Context) (int, error) {
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return 0, err
@@ -238,7 +453,7 @@ func (r *Repository) GetCountryCount(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-func (r *Repository) GetCitiesFromCountry(ctx context.Context) ([]structs.CityInfo, error) {
+func (r *LocationRepository) GetCitiesFromCountry(ctx context.Context) ([]structs.CityInfo, error) {
 	var cities []structs.CityInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
@@ -279,7 +494,7 @@ func (r *Repository) GetCitiesFromCountry(ctx context.Context) ([]structs.CityIn
 	return cities, nil
 }
 
-func (r *Repository) GetCityFromCountry(ctx context.Context, id uuid.UUID) ([]structs.CityInfo, error) {
+func (r *LocationRepository) GetCityFromCountry(ctx context.Context, id uuid.UUID) ([]structs.CityInfo, error) {
 	var cities []structs.CityInfo
 	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
 	if err != nil {
@@ -320,219 +535,4 @@ func (r *Repository) GetCityFromCountry(ctx context.Context, id uuid.UUID) ([]st
 	}
 
 	return cities, nil
-}
-
-/** City **/
-
-func (r *Repository) CreateCity(ctx context.Context, c *structs.City) error {
-	// Start a transaction.
-
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
-	if err != nil {
-		return fmt.Errorf("error starting transaction: %w", err)
-	}
-	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		}
-	}()
-
-	if _, err := tx.Exec(ctx,
-		`INSERT INTO city VALUES ($1, $2::float8, $3::int, $4, $5,
-                         				$6::int, $7::float8, $8::float8,
-                         				$9, $10, $11, $12)`,
-		c.ID,
-		c.GMT,
-		c.CityId,
-		c.IataCode,
-		c.CountryIso2,
-		c.GeonameId,
-		c.Latitude,
-		c.Longitude,
-		c.CityName,
-		c.Timezone,
-		c.CreatedAt,
-		c.UpdatedAt,
-	); err != nil {
-		return fmt.Errorf("error inserting values: %w", err)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("error committing transaction: %w", err)
-	}
-
-	return nil
-}
-
-func (r *Repository) GetCities(ctx context.Context) ([]structs.City, error) {
-	var cities []structs.City
-
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback(ctx)
-
-	// Send query to database.
-	rows, err := tx.Query(ctx, `SELECT * FROM city ORDER BY city_id`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var city structs.City
-		err := rows.Scan(
-			&city.ID,
-			&city.GMT,
-			&city.CityId,
-			&city.IataCode,
-			&city.CountryIso2,
-			&city.GeonameId,
-			&city.Latitude,
-			&city.Longitude,
-			&city.CityName,
-			&city.Timezone,
-			&city.CreatedAt,
-			&city.UpdatedAt)
-
-		if err != nil {
-			return nil, err
-		}
-		cities = append(cities, city)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return nil, err
-	}
-
-	return cities, nil
-}
-
-func (r *Repository) GetCity(ctx context.Context, id uuid.UUID) (structs.City, error) {
-	var city structs.City
-
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
-	if err != nil {
-		return city, fmt.Errorf("failed to begin transaction: %w", err)
-	}
-	defer tx.Rollback(ctx)
-
-	row := tx.QueryRow(ctx, `SELECT
-			id,
-			gmt,
-			city_id,
-			iata_code,
-			country_iso2,
-			geoname_id,
-			latitude,
-			longitude,
-			city_name,
-			timezone,
-			created_at,
-			updated_at
-		FROM city
-		WHERE id = $1 LIMIT 1`, id)
-	err = row.Scan(
-		&city.ID,
-		&city.GMT,
-		&city.CityId,
-		&city.IataCode,
-		&city.CountryIso2,
-		&city.GeonameId,
-		&city.Latitude,
-		&city.Longitude,
-		&city.CityName,
-		&city.Timezone,
-		&city.CreatedAt,
-		&city.UpdatedAt,
-	)
-
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return city, fmt.Errorf("city with ID %s not found: %w", id, err)
-		}
-		return city, fmt.Errorf("failed to scan ctx: %w", err)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return city, fmt.Errorf("failed to commit transaction: %w", err)
-	}
-
-	return city, nil
-}
-
-func (q *Repository) DeleteCity(ctx context.Context, id uuid.UUID) error {
-	tx, err := q.db.BeginTx(context.Background(), pgx.TxOptions{})
-	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
-	}
-	defer tx.Rollback(ctx)
-
-	_, err = tx.Exec(ctx, "DELETE FROM city WHERE id = $1", id)
-	if err != nil {
-		return fmt.Errorf("failed to delete city: %w", err)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("failed to commit transaction: %w", err)
-	}
-
-	return nil
-}
-
-func (r *Repository) UpdateCity(ctx context.Context, id uuid.UUID, updates map[string]interface{}) error {
-	tx, err := r.db.BeginTx(ctx, pgx.TxOptions{})
-	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
-	}
-	defer tx.Rollback(ctx)
-
-	var setColumns []string
-	var args []interface{}
-
-	for key, value := range updates {
-		setColumns = append(setColumns, fmt.Sprintf("%s = $%d", key, len(args)+1))
-		args = append(args, value)
-	}
-	args = append(args, id)
-
-	stmt := fmt.Sprintf("UPDATE city SET %s WHERE id = $%d", strings.Join(setColumns, ", "), len(args))
-	_, err = tx.Exec(ctx, stmt, args...)
-	if err != nil {
-		return fmt.Errorf("failed to update country: %w", err)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("failed to commit transaction: %w", err)
-	}
-
-	return nil
-}
-
-func (r *Repository) GetCityCount(ctx context.Context) (int, error) {
-	tx, err := r.db.BeginTx(context.TODO(), pgx.TxOptions{})
-	if err != nil {
-		return 0, err
-	}
-	defer tx.Rollback(ctx)
-
-	var count int
-	err = tx.QueryRow(ctx, "SELECT COUNT(*) FROM city").Scan(&count)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return 0, fmt.Errorf("no cities found")
-		}
-		return 0, fmt.Errorf("failed to get number of cities: %w", err)
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return 0, err
-	}
-
-	return count, nil
 }
